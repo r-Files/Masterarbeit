@@ -1,0 +1,45 @@
+%% ========================================================================
+%%							Introduction
+%% ========================================================================
+
+
+\chapter{Introduction}
+\label{cha:introduction}
+
+This thesis reviews the currently used technique for grouping policies together and introduces furthermore some new approaches on how life insurance policies can be grouped together. We will therefore highlight drawbacks and advantages with a special emphasis on the regulatory requirements of every approach discussed. Theoretical considerations as well as practical implementations and tests with real world data will provide us some information on which method an insurance company should work with in order to obtain the best grouping results.  
+
+This thesis is structured as follows: First we give an overview on the legal framework which lays down the minimum requirements for grouping-approaches in insurance companies and introduce the two types of statistical learning, namely supervised and unsupervised. We then discuss how sensitive main characteristics of a policy are with respect to the interest rate, the age or the duration to get a better understanding on which parameters are important for grouping purposes. We therefore make a sensitivity analysis with real world data and a widely used projection tool . In the next chapter we introduce the currently used unsupervised learning algorithm k-means and derive some theoretical findings. 
+\todo{Weitere Details für jedes Kapitel folgen.}
+
+
+%--------------------------------------------------------------------- Legal Framework -----------------------------------------------------------------------
+\section{Legal Framework}
+
+Solvency II - entered into force on 1 January 2016 - is the new European framework for a common insurance supervision. It is intended to achieve a harmonization of the European insurance sector and was implemented in accordance with the Lamfalussy architecture which works on a 4 level basis \cite{Lamfalussy_homepage}. The most significant elements and aims of the new regulation framework can be studied on the homepage of the financial market authority (FMA) \cite{FMA_homepage} and on the homepage of the  European Insurance and Occupational Pensions Authority (EIOPA) \cite{EIOPA_homepage}. This work is intended not to cover all aspects and aims of the new Solvency II regulation framework but focuses on the topic of data quality regarding to the actuarial function. In order to meet all the requirements imposed by Solvency II, insurance companies need to process large amounts of data within a short period. One critical aspect of these calculations is the projection horizon which however should cover the full lifetime of all obligations as stated in \cite{Time_horizon}:
+\articlequote{3.83.}{}{The projection horizon used in the calculation of best estimate should
+cover the full lifetime of all obligations related to existing insurance and
+reinsurance contracts on the date of the valuation.}
+\articlequote{3.84.}{}{The determination of the lifetime of insurance and reinsurance obligations shall be based on up-to-date and credible information and realistic assumptions about when the existing insurance and reinsurance obligations will be discharged or cancelled or expired.}
+Another aspect needed to be considered is the fact that cash flow calculations need to be done for a variety of different economic scenarios which yields to an enormous computational effort. Due to the tight time schedule, insurance companies are looking for new possibilities to speed up these time consuming calculations. One approach is not to make all these calculations on a per policy level, but on a grouped level where similar policies are grouped together and represented by only a few policies. This approach raises the question of how to maintain data quality as mentioned in the level 1 directive \cite{Directive} while reducing the number of policies.
+
+\articlequote{Article 82}{Data quality and application of approximations, including
+case-by-case approaches, for technical provisions}{Member States shall ensure that insurance and reinsurance undertakings
+have internal processes and procedures in place to ensure the appropriateness, completeness and accuracy of the data used in the calculation of their technical provisions...}
+
+By publishing the level 2 regulations, supplementing the level 1 directive \cite{Directive} the European Commission is getting more specific on data quality (Article 19 in \cite{Regulations}) and also formulates concrete requirements for grouped policies \cite{Regulations}.
+
+\articlequote{Article 35}{Homogeneous risk groups of life insurance obligations}{The cash flow projections used in the calculation of best estimates for life insurance obligations shall be made separately for each policy. Where the separate calculation for each policy would be an undue burden on the insurance or reinsurance undertaking, it may carry out the projection by grouping policies, provided that the grouping complies with all of the following requirements:
+\begin{enumerate}[label=\emph{\alph*})]
+\item there are no significant differences in the nature and complexity of the risks underlying the policies that belong to the same group;
+\item the grouping of policies does not misrepresent the risk underlying the policies and does not misstate their expenses;
+\item the grouping of policies is likely to give approximately the same results for the best estimate calculation as a calculation on a per policy basis, in particular in relation to financial guarantees and contractual options included in the policies.
+\end{enumerate} }
+
+These level 2 regulations are a reference point on what to consider when grouping policies together and they are even further specified in the level 3 guidelines issued by EIOPA\cite{Guidelines_TP}. Further details on the level 3 guidelines including feedback statements to the consultation paper (EIOPACP-14/036) and the guidelines can be obtained from \cite{Final_Report}.
+
+%--------------------------------------------------------------------- Statistical Learning -----------------------------------------------------------------------
+
+\section{Statistical Learning}
+
+Statistical learning refers to set of methods which deals with predicting outcomes based on input variables or finding patterns in data sets. In order to accomplish the task of grouping together similar policies, different approaches from statistical learning can be applied. All these methods can be classified either as supervised or unsupervised. Within the framework of supervised methods, statistical models try to predict output variables $y_i$ based on some input variables $x_i$ where the relation $y=f(x)$ is unknown. It is therefore indispensable to have input as well as output data to parameterize such a model in order to find a prediction $\hat f$ of $f$. Unsupervised methods, in contrast, are used when inputs $x_i$ but no corresponding outputs $y_i$ are available. These methods then try to find some hidden patterns within to data. The task of grouping insurance policies involves aspects of both, supervised and unsupervised learning methods. On the one hand we have all data needed to apply supervised methods, but on the other hand we are only interested in the patterns that can be revealed by an unsupervised method. The input variables are given by the characteristics of each policy and the corresponding output variables are determined by the projection tool. Our primary goal is not to get a good $\hat f$ because the projection tool, which stands for $f$, is already known. We are more interested in hidden patterns that can be used for grouping purposes. In a first step we will apply unsupervised methods to the data and try to group the policies based on their characteristics and their cash flows. In a further step we will try to use the additional information of $f$ to improve the grouping results if possible. 
+

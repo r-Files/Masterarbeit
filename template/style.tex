@@ -1,0 +1,61 @@
+%% ========================================================================
+%%								Fabian Pribahsnik
+%% ========================================================================
+%%
+%% ========================================================================
+%%						All different kinds of style settings and other stuff
+%% ========================================================================
+
+\documentclass[% KOMA Script
+fontsize=\myfontsize,%% size of the main text
+paper=\mypapersize,  %% paper format
+parskip=\myparskip,  %% vertical space between paragraphs (instead of indenting first par-line)
+DIV=calc,            %% calculates a good DIV value for type area; 66 characters/line is great
+%headinclude=true,    %% is header part of margin space or part of page content?
+headinclude=false,
+footinclude=false,   %% is footer part of margin space or part of page content?
+open=right,          %% "right" or "left": start new chapter on right or left page
+appendixprefix=true, %% adds appendix prefix; only for book-classes with \backmatter
+bibliography=totoc,  %% adds the bibliography to table of contents (without number)
+draft=\mydraft,      %% if true: included graphics are omitted and black boxes
+                     %%          mark overfull boxes in margin space
+%BCOR=\myBCOR,        %% binding correction (depends on how you bind
+                     %% the resulting printout.
+\mylaterality        %% oneside: document is not printed on left and right sides, only right side
+                     %% twoside: document is printed on left and right sides
+]{scrbook}  %% article class of KOMA: "scrartcl", "scrreprt", or "scrbook".
+            %% CAUTION: If documentclass will be changed, *many* other things
+            %%          change as well like heading structure, ...
+            
+\usepackage[utf8]{inputenc} %% UTF8 as input characters
+\usepackage[ngerman,american]{babel}  %% used languages; default language is *last* language of options
+\usepackage{csquotes}	%% quotations
+\usepackage{scrpage2} %%  advanced page style using KOMA
+\usepackage{graphicx}
+%\usepackage[pdftex]{graphicx}%% The widely used package to use graphical images within a \LaTeX{} document.
+\usepackage[\mytodonotesoptions]{todonotes}  %% option "disable" removes all todonotes output from resulting document
+\usepackage{enumitem} %% enables the user to customize the enumerate,.. (make lists with a), b), c) or A), B), ....)
+\usepackage{amsmath} %% math environment for equations
+\usepackage{amsthm}   %% math environment for theorems, definitions,...
+\usepackage{amssymb} %% blackboard bold symbols for expectation,...
+\usepackage{algorithm} % environment to write pseudo code 
+\usepackage[noend]{algpseudocode}% environment to write pseudo code 
+\usepackage{xifthen}    %% makes it possible to make the output of a new command dependent on the input values for that command. (see articlequote)
+\usepackage{tabu, booktabs, makecell} %%tabu: make tables within the text; booktabs: vertical lines; makecell: multiline cells
+\usepackage[labelfont=bf]{caption}%%needed to reference on tables and figures make Table,... bold
+\usepackage{actuarialangle} %%needed for the annuity-symbol
+\usepackage{eurosym} %% get the euro symbol
+\usepackage{pdflscape} %% rotate pages to landscape (e.g. big tables)
+\usepackage{afterpage} %% clear all floating objects (used for pdflscape)
+\usepackage{enumitem} %% for roman enumeration
+
+
+\usepackage[backend=biber, %% using "biber" to compile references (instead of "biblatex")
+style=\mybiblatexstyle, %% see biblatex documentation
+%dashed=\mybiblatexdashed, %% do *not* replace recurring reference authors with a dash
+backref=\mybiblatexbackref, %% create backlings from references to citations
+natbib=true, %% offering natbib-compatible commands
+hyperref=true, %% using hyperref-package references
+]{biblatex}  %% remove, if using BibTeX instead of biblatex
+
+\addbibresource{\mybiblatexfile}			%% Name of the biblatex file that holds the references.

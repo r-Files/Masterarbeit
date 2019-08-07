@@ -1,0 +1,116 @@
+%% ========================================================================
+%%								Fabian Pribahsnik
+%% ========================================================================
+%%
+%% ========================================================================
+%%%% Basic settings
+%% ========================================================================
+
+%%%%%%%%%%	used in style.tex	%%%%%%%%%%
+\newcommand{\myfontsize}{12pt}
+%% e.g., 10pt, 11pt, 12pt
+%% The font size of the main text in pt (points).
+
+\newcommand{\mypapersize}{A4}
+%% e.g., "A4", "letter", "legal", "executive", ...
+%% The size of the paper of the resulting PDF file.
+
+\newcommand{\myparskip}{half}
+%% e.g., "no", "full", "half", ...
+%% How to separate paragraphs: indention ("no") or spacing ("half", "full", ...).
+
+\newcommand{\mydraft}{false}
+%% "true" or "false"
+%% Use of draft mode: If true, included graphics are replaced by empty rectangles (of same size) and overfull boxes 
+%% (in margin space) are marked with black box (-> easy to spot!)
+
+\newcommand{\myBCOR}{0mm}
+%% Inner binding correction. This value depends on the method which is being used to bind your printed result. Some
+%% techniques do not require a binding correction at all ("0mm"), other require for example "5mm". Refer to KOMA
+%% script documentation for a detailed explanation what a binding correction is and how to measure it.                                         
+
+\newcommand{\mylaterality}{twoside}
+%% "oneside" or "twoside"
+%% Either you are creating a document which is printed on both, left pages and right pages (twoside) or you create a
+%% document which is printed on right pages only (oneside).
+
+\newcommand{\mybiblatexstyle}{numeric}
+%% e.g., "alphabetic", "authoryear", ...
+%% The biblatex style which is being used for referencing. See biblatex documentation for further details and more values.
+
+\newcommand{\mybiblatexbackref}{true} 
+%% "true" or "false"
+%% If true: create backward links from reference to citations.
+
+\newcommand{\mybiblatexfile}{references.bib}
+%% Name of the biblatex file that holds the references.
+
+\newcommand{\mytodonotesoptions}{}
+%% e.g., "" (empty), "disable", ...
+%% Options for the todonotes-package. If "disable", all todonotes will be hidden (including listoftodos).
+
+
+
+
+\input{template/style}
+\input{template/mycommands}
+
+
+
+
+%\newwatermark*[allpages,color=red!50,angle=45,scale=3,xpos=0,ypos=0]{DRAFT}
+
+
+%% ========================================================================
+%%%% begin{document}
+%% ========================================================================
+
+\begin{document}
+
+\frontmatter                    				%% KOMA: roman page numbers and such; only available in scrbook
+\input{chapters/title_page}            		%% include title page
+\cleardoublepage					%% starts next text on an odd page 
+\input{chapters/affidavit}				%% include the affidavit
+\cleardoublepage					%% starts next text on an odd page 
+%% include the abstract without chapter number but include it on table of contents:
+\addcontentsline{toc}{chapter}{Abstract}	
+\include{abstract}					%% inlcude abstract
+
+\tableofcontents					%% inlcude table of contents
+\listoffigures						%% inlcude table of figures
+
+\listoftodos						%% include the list of to-dos
+	
+\mainmatter                     %% KOMA: marks main part using arabic page numbers and such; only available in scrbook
+
+\include{chapters/introduction}					%% inlcude introduction
+\include{chapters/Sensitivities}					%% inlcude Sensitivities
+\include{chapters/K-means}					%% inlcude K-means
+
+
+\appendix
+\include{chapters/appendix_tables}					%% inlcude appendix
+
+The todo text 
+is the text that will be shown in the todonote and in the
+list of todos. The optional argument options, allows the user to customize the
+appearance of the inserted todonotes. For a description of all the options see
+\todo{Make a cake \ldots}
+sadf
+The todo text is the text that will be shown in the todonote and in the
+list of todos. The optional argument options, allows the user to customize the
+appearance of the inserted todonotes. For a description of all the options see
+The todo text is the text that will be shown in the todonote and in the
+list of todos. The optional argument options, allows the user to customize the
+appearance of the inserted todonotes. For a description of all the options see
+The todo text is the text that will be shown in the todonote and in the
+list of todos. The optional argument options, allows the user to customize the
+appearance of the inserted todonotes. For a description of all the options see
+fasd
+fadsf
+asdf
+\missingfigure{Make a sketch of the structure of a trebuchet.}
+
+\printbibliography  %% remove, if using BibTeX instead of biblatex
+\end{document}
+

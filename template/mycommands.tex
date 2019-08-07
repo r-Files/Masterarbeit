@@ -1,0 +1,34 @@
+%% ========================================================================
+%%							mycommands
+%% ========================================================================
+
+\newcommand{\articlequote}[3]{
+	\begin{quotation}
+		\begin{center}
+			\textit{#1}
+			% \ifthenelse{〈test expression〉}{〈true code〉}{〈false code〉}
+			% \equal{〈string1〉}{〈string2〉}
+			\ifthenelse{\equal{#2}{}}{}{\\ \medskip \textbf{#2}}
+			\bigskip
+		\end{center}
+	#3
+	\end{quotation}
+}
+
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\R}{\mathbb{R}}
+
+% used for enumeration styles
+\newcommand{\subscript}[2]{$#1 _ #2$}
+
+% environments for definition, theorems, remarks,...
+\newtheorem{definition}{Definition}[chapter]
+\newtheorem{corollary}{Corollary}[chapter]
+\newtheorem{lemma}{Lemma}[chapter]
+\newtheorem{example}{Example}[chapter]
+\newtheorem{remark}{Remark}[chapter]
+
+% make the everything dependent --> 1 counter for all 
+	%\newtheorem{corollary}[definition]{Corollary}
+	%\newtheorem{lemma}[definition]{Lemma}
+	%\newtheorem{example}[definition]{Example}
