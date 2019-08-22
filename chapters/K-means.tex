@@ -6,42 +6,54 @@
 \chapter{$k$-means}
 \label{cha:K-means}
 
-To be able to process, summarize and understand huge amounts of data better, one is interested in methods that are able to find patterns in the data. The characteristics of these patterns then can be represented by just a few representative data points which behave like the whole data set. Given a  data set the challenge is, based on a measure of similarity, to find groups of observations which are quite similar within each group but quite different to all the other groups. If this task has to be done with unlabeled data it is referred to as unsupervised clustering. (c.f.\cite{jain2010data}) One of the most widely used unsupervised clustering approaches is the $k$-means clustering. The $k$-means method is a simple approach in cluster analysis which splits a data set of $n$ $p$-dimensional observations into $k$ distinct clusters. Each observation belongs uniquely to exactly one of the $k$ clusters, where $k$ is a predefined number of clusters. Let $C=\{C_1, C_2 \dots, C_k\}$ denote the sets containing the indices of the observations  related to the clusters, then we get:
+To be able to process, summarize and understand huge amounts of data better, one is interested in methods that are able to find patterns in the data. The characteristics of these patterns then can be represented by just a few representative data points which behave like the whole data set. Given a  data set the challenge is, based on a measure of similarity, to find groups of observations which are quite similar within each group but quite different to all the other groups. If this task has to be done with unlabeled data it is referred to as unsupervised clustering (c.f.\cite{jain2010data}). One of the most widely used unsupervised clustering approaches is the $k$-means clustering. The $k$-means method is a simple approach in cluster analysis which splits a data set of $n$ $p$-dimensional observations into $k$ distinct clusters. Each observation belongs uniquely to exactly one of the $k$ clusters, where $k$ is a predefined number of clusters. Let $C=\{C_1, C_2 \dots, C_k\}$ denote the sets containing the indices of the observations  related to the clusters, then we get:
 \begin{definition}
 Let $X=\{x_1, ..., x_n\}$ be a data set. X is said to be partitioned into $k$ different clusters $C_1, C_2 \dots, C_k$ if
 	\begin{enumerate}[label=(\roman*)] \centering
 		\item $C = C_1 \cup C_2 \dots \cup C_k = \{1, \dots, n\}$
 
 		\item $C_i \cap C_j = \emptyset \quad \forall i \neq j$
-		\item $\sum_{i=1}^k |C_i| = n$
 	\end{enumerate}
 \end{definition}
 The basic idea of the $k$-means clustering is to minimize the variation within the clusters. For this purpose some distance measure is needed in order to be able to define variation within clusters.
-\begin{definition} Let X be a set, d: X$\times$X $\rightarrow~\R$ a function. Then d is called a metric (or distance) on X if for all x, y, z $\in$ X the following conditions are fulfilled: 
+\begin{definition}\label{def:metric} Let X be a set, d: X$\times$X $\rightarrow~\R$ a function. Then d is called a metric (or distance) on X if for all x, y, z $\in$ X the following conditions are fulfilled: 
 \begin{enumerate}[label=(\subscript{D}{\arabic*})]
-	\item $d(x,y) \geq 0$
-	\item $d(x,y) = 0 \Leftrightarrow x = y$
-	\item $d(x,y) = d(y,x)$
-	\item $d(x,z) \leq d(x,y) + d(y,z)$
+	\item\label{itm:namee} $d(x,y) = 0 \Leftrightarrow x = y$ \quad (Identity of indiscernibles)
+	\item $d(x,y) = d(y,x)$ \quad (symmetry)
+	\item $d(x,z) \leq d(x,y) + d(y,z)$ \quad (triangle inequality)
 \end{enumerate}
 
-\begin{example}(c.f. \cite{analysis_1}) The most common used distance functions for two points $x=(x_1, ..., x_d)$ and  $y=(y_1, ..., y_d)$ in $\R^p$ are: 
+\begin{remark}
+	Given the axioms from definition \ref{def:metric} it can be shown that a non-necgativity property can be deducted e.g. $d(x,y) \geq 0 ~\forall x,y \in X$.
+	\begin{equation*}
+	\begin{split}
+		d(x,y) + d(y,x) & \geq d(x,x) \\
+		d(x,y) + d(x,y) & \geq d(x,x) \\
+		2d(x,y)         & \geq 0      \\
+		d(x,y)          & \geq 0      \\
+	\end{split}
+	\end{equation*}
+	%%	\item $d(x,y) \geq 0$ \quad (non-negativity) 
+\end{remark}
+
+
+\begin{example}(c.f. \cite{analysis_1}) The most common used distance functions for two points $x=(x_1, ..., x_p)$ and  $y=(y_1, ..., y_p)$ in $\R^p$ are: 
 	\begin{itemize}[label=$\star$]
 		\item Euclidean distance:
 			\begin{equation*}
-				d_2(x,y) := \sqrt{\sum_{j=1}^d(x_j - y_j)^2}
+				d_2(x,y) := \sqrt{\sum_{j=1}^p(x_j - y_j)^2}
 			\end{equation*}
 		\item Manhattan distance:
 			\begin{equation*}
-				d_1(x,y) := \sum_{j=1}^d|x_j - y_j|
+				d_1(x,y) := \sum_{j=1}^p|x_j - y_j|
 			\end{equation*}
 		\item Chebyshev (maximum) distance:
 			\begin{equation*}
 				d_\infty(x,y) := \max_j|x_j - y_j|
 			\end{equation*}		
-		\item Minkowski distance ($L^p$ distance) with p $\geq$ 1:
+		\item Minkowski distance ($L^q$ distance) with q $\geq$ 1:
 			\begin{equation*}
-				d_p(x,y) := \bigg(\sum_{j=1}^d(x_j - y_j)^p\bigg)^{\frac{1}{p}}
+				d_p(x,y) := \bigg(\sum_{j=1}^p(x_j - y_j)^q\bigg)^{\frac{1}{q}}
 			\end{equation*}	
 	\end{itemize}
 \end{example}
@@ -71,12 +83,14 @@ The variation within one cluster, $D(C_l)$ can be written as:
 	\end{equation}
 \end{corollary}
 \begin{proof}
-	\begin{equation*} \label{equ:Steiner}
+	\begin{equation*}
 	\begin{split} %% used to get only one number for all lines instead of one number per line
 		D(C_l)	&= \frac{1}{|C_l|}\sum_{j=1}^p \sum_{i,i' \in C_l} (x_{ij} - x_{i'j})^2 \\
-				& \overset{(\ref{rem:average})}{=} \sum_{j=1}^p \Bigg( \sum_{i \in C_l} x_{ij}^2 - 2 \bar x_{lj} \sum_{i \in C_l} x_{ij} + \sum_{i \in C_l} x_{ij}^2 \Bigg) \\
-				& \overset{(\ref{rem:average})}{=}2 \sum_{j=1}^p \Bigg( \sum_{i \in C_l} x_{ij}^2 - |C_l| \bar x_{lj}^2 \Bigg) \\
-				& \overset{(\ref{rem:identity})}{=} 2 \sum_{i \in C_l} \sum_{j=1}^p (x_{ij}-\bar x_{lj})^2
+				&= \frac{1}{|C_l|}\sum_{j=1}^p \sum_{i,i' \in C_l} x_{ij}^2 - 2x_{ij} x_{i'j} + x_{i'j}^2 \\
+				&= \sum_{j=1}^p \Bigg( \frac{1}{|C_l|} \sum_{i,i' \in C_l} x_{ij}^2 - 2 \frac{1}{|C_l|} \sum_{i,i' \in C_l} x_{ij} x_{i'j} + \frac{1}{|C_l|} \sum_{i,i' \in C_l} x_{i'j}^2 \Bigg) \\
+				& \overset{(Remark~\ref{rem:average})}{=} \sum_{j=1}^p \Bigg( \sum_{i \in C_l} x_{ij}^2 - 2 \bar x_{lj} \sum_{i \in C_l} x_{ij} + \sum_{i' \in C_l} x_{i'j}^2 \Bigg) \\
+				& \overset{(Remark~\ref{rem:average})}{=}2 \sum_{j=1}^p \Bigg( \sum_{i \in C_l} x_{ij}^2 - |C_l| \bar x_{lj}^2 \Bigg) \\
+				& \overset{(Remark~\ref{rem:identity})}{=} 2 \sum_{i \in C_l} \sum_{j=1}^p (x_{ij}-\bar x_{lj})^2
 	\end{split}
 	\end{equation*}
 \end{proof}
@@ -84,9 +98,9 @@ The variation within one cluster, $D(C_l)$ can be written as:
 The approach of $k$-means is to find a partitioning of the data set in such a way that the sum of the variations is minimized.
 
 \begin{definition}[$k$-means]
-Let $X = \{x_1, ..., x_n\}$ be a data set and $C=\{C_1, ..., C_k\}$ a partition. Then $k$-means tries to find a partition $C^*$ such that: 
+Let $X = \{x_1, ..., x_n\}$ be a data set and $\{C_1, ..., C_k\}$ a partition. Then $k$-means tries to find an optimal partition $C^* = \{C_1^*, ..., C_k^*\}$ such that: 
 	\begin{equation}\label{equ:K-means}
-		C^* = \underset{C_1, \dots, C_k}{\text{min}} \sum_{l=1}^k D(C_l) = \underset{C_1, \dots, C_k}{\text{min}} ~2 \sum_{l=1}^k  \sum_{i \in C_l} \sum_{j=1}^p (x_{ij}- \bar x_{lj})^2
+		\sum_{l=1}^k D(C_l^*) = \underset{C_1, \dots, C_k}{\text{min}} \sum_{l=1}^k D(C_l) = \underset{C_1, \dots, C_k}{\text{min}} ~2 \sum_{l=1}^k  \sum_{i \in C_l} \sum_{j=1}^p (x_{ij}- \bar x_{lj})^2
 	\end{equation}
 \end{definition}
 
@@ -97,7 +111,7 @@ Let $X = \{x_1, ..., x_n\}$ be a data set and $C=\{C_1, ..., C_k\}$ a partition.
 c.f. \cite{NP_hard}
 \end{proof}
 
-Even though the problem is NP-hard it is still possible to provide algorithms which converge to a local optimum. The algorithms used for finding a local minimum work on an iterative basis   and involve just a few different steps. The $k$-means algorithms either start with an initial assignment of all observations to $k$ different clusters or with $k$ distinctly selected cluster centers. The next step is to compute a new cluster center such that the variation $D(C_l)$ is minimized within each cluster. Then all data points $X = \{x_1, ..., x_n\}$ are reassigned to the cluster which is nearest and the minimization procedure is repeated until convergence. 
+Even though the problem is NP-hard it is still possible to provide algorithms which converge to a local optimum. The algorithms used for finding a local minimum work on an iterative basis   and involve just a few different steps. The $k$-means algorithms either start with an initial assignment of all observations to $k$ different clusters or with $k$ distinctly selected cluster centers. The next step is to find a new cluster center such that the variation $D(C_l)$ is minimized within each cluster. Then all data points $X = \{x_1, ..., x_n\}$ are reassigned to the cluster which is nearest and the minimization procedure is repeated until convergence. 
 
 \begin{remark}~
 	\begin{enumerate}[label=(\roman*)]
@@ -106,7 +120,7 @@ Even though the problem is NP-hard it is still possible to provide algorithms wh
 	\end{enumerate}
 \end{remark}
 
-One possible formulation for an algorithm that converges to a local optimum is the one from Lloyd \cite{lloyd1982least} which a pseudo code is given for below. Note that for algorithm \ref{alg:K-means} we have a fixed number of clusters $k$ as well as a finite set of possible partitions $k^n$. We can therefore show that the stated algorithm converges to a local minimum by minimizing (\ref{equ:Steiner}).
+One possible formulation for an algorithm that converges to a local optimum is the one from Lloyd \cite{lloyd1982least} which a pseudo code is given below. Note that for algorithm \ref{alg:K-means} we have a fixed number of clusters $k$ as well as a finite set of possible partitions $k^n$. We can therefore show that the stated algorithm converges to a local minimum by minimizing (\ref{equ:Steiner}).
 
 \begin{remark}~
 	\begin{enumerate}[label=(\roman*)]
@@ -126,7 +140,7 @@ One possible formulation for an algorithm that converges to a local optimum is t
 \\
 	\begin{enumerate}
 	\item Choose $k$ initial centroids randomly.
-	\item  \label{lev:K-means_two}Iterate still the cluster assignments stop changing:
+	\item  \label{lev:K-means_two}Iterate till the cluster assignments stop changing:
 	\begin{enumerate}[label=\emph{\alph*})]
 		\item \label{lev:K-means_two_a} For each of the $k$ clusters, compute the cluster centroid. The $i$-th cluster centroid is the vector of the $p$ parameter means for the observations in the $i$th cluster. 
 		\item \label{lev:K-means_two_b}Assign each observation to the cluster whose centroid is closest in the sense of Euclidean distance. 
@@ -147,12 +161,12 @@ One possible formulation for an algorithm that converges to a local optimum is t
 	\begin{enumerate}[label=(\roman*)]
 		\item Algortihm \ref{alg:K-means} has a running time of $O(nkpi)$, with n being the number of data points, k the number of cluster, p the number of dimensions and i the number of iterations needed to converge. The only unknown variable is the number of iterations. 
 		\item The trivial upper bound for the number of iterations needed is given by $O(k^n)$, because the algorithm visits every partition of points only once. 
-		\item It can be shown \cite{arthur2006slow} that in the worst case scenario the running time of the algorithm is superpolynomial with a lower bound for i of  $O(2^{\Omega(\sqrt{n})})$. That means that the running time cannot be bounded above by any polynomial function.
+		\item It can be shown \cite{arthur2006slow} that in the worst case scenario the running time of the algorithm is superpolynomial with a lower bound for the number of iterations of $O(2^{\Omega(\sqrt{n})})$. That means that the running time cannot be bounded above by any polynomial function.
 		\item In practice, the number of iterations required is often small, which makes the algorithm appear to be linearly complex.  
 	\end{enumerate}
 \end{remark}
 
-It is advisable to run the algorithm several times with different initial centroid assignments. This increases the likelihood of finding a partition that is close to the optimum and thus provides a low value for the objective function (\ref{equ:K-means}). However, the biggest challenge when using $k$-means is the estimation of the optimal number of clusters $k$. Figure (\ref{fig:cluster_centers}) shows an example with three clusters that illustrates the different clustering results when the number of $k$  increases. Panel (a) shows the raw data with three clusters ($k_{true} = 3$), each generated by an uniform distribution. Panels (b), (c) and (d) show the cluster results with $k = 2, 3 $ and $7$, respectively. If the number of $k$ is smaller than the actual number of clusters in the data, then $k$-means merges clusters, while for $k$ greater than $k_{true}$, $k$-means divides well seperated clusters. Panel (b) shows a merge of the clusters at the top right, whereas panel (d) shows an artificial split of two natural clusters for $k=5$. For the grouping of similar data points and their representation by a cluster center, an underestimation of the actual number of clusters is more critical than an overestimation. If $k$ underestimates the true value of clusters ($k < k_{true}$), then it's  not possible to capture the cluster specific characteristics for the merged clusters because they are represented by only one cluster center. However, an overestimation of $k_{true}$ is not so critical because some natural clusters will be represented by two cluster centers which has a negative impact on the compression ratio but not the clustering quality. For the most crucial step of $k$-means, a comprehensive collection of methods for estimating the correct number of clusters can be found in \cite{milligan1985examination}. In the following, the `elbow' and silhouette method, two widely used graphical methods for estimating $k_{true}$, are presented and applied to the sample data set. 
+It is advisable to run the algorithm several times with different initial centroid assignments. This increases the likelihood of finding a partition that is close to the optimum and thus provides a low value for the objective function (\ref{equ:K-means}). However, the biggest challenge when using $k$-means is the estimation of the optimal number of clusters $k$. Figure (\ref{fig:cluster_centers}) shows an example with three clusters that illustrates the different clustering results when the number of $k$  increases. Panel (a) shows the raw data with three clusters ($k_{true} = 3$), each generated by an uniform distribution. Panels (b), (c) and (d) show the cluster results with $k = 2, 3 $ and $7$, respectively. If the number of clusters $k$ is smaller than the actual number of clusters in the data, then $k$-means merges clusters, while for $k$ greater than $k_{true}$, $k$-means divides well seperated clusters. Panel (b) shows a merge of the clusters at the top right, whereas panel (d) shows an artificial split of two natural clusters for $k=5$. For the grouping of similar data points and their representation by a cluster center, an underestimation of the actual number of clusters is more critical than an overestimation. If $k$ underestimates the true value of clusters ($k < k_{true}$), then it's  not possible to capture the cluster specific characteristics for the merged clusters because they are represented by only one cluster center. However, an overestimation of $k_{true}$ is not so critical because some natural clusters will be represented by two cluster centers which has a negative impact on the compression ratio but not the clustering quality. For the most crucial step of $k$-means, a comprehensive collection of methods for estimating the correct number of clusters can be found in \cite{milligan1985examination}. In the following, the `elbow' and silhouette method, two widely used graphical methods for estimating $k_{true}$, are presented and applied to the sample data set. 
 \begin{figure}
 	\centering
 	\includegraphics[width=0.8\textwidth]{figures/chapter_k_means/cluster_centers}
