@@ -33,3 +33,6 @@
 *.synctex.gz(busy)
 *.pdfsync
 
+## R auxiliary files:
+*.Rhistory
+
