@@ -18,9 +18,9 @@ Let $X=\{x_1, ..., x_n\}$ be a data set. X is said to be partitioned into $k$ di
 The basic idea of the $k$-means clustering is to minimize the variation within the clusters. For this purpose some distance measure is needed in order to be able to define variation within clusters.
 \begin{definition}\label{def:metric} Let X be a set, d: X$\times$X $\rightarrow~\R$ a function. Then d is called a metric (or distance) on X if for all x, y, z $\in$ X the following conditions are fulfilled: 
 \begin{enumerate}[label=(\subscript{D}{\arabic*})]
-	\item\label{itm:namee} $d(x,y) = 0 \Leftrightarrow x = y$ \quad (Identity of indiscernibles)
-	\item $d(x,y) = d(y,x)$ \quad (symmetry)
-	\item $d(x,z) \leq d(x,y) + d(y,z)$ \quad (triangle inequality)
+	\item\label{itm:namee} $d(x,y) = 0 \Leftrightarrow x = y$ \hfill (Identity of indiscernibles)
+	\item $d(x,y) = d(y,x)$  \hfill (symmetry)
+	\item $d(x,z) \leq d(x,y) + d(y,z)$ \hfill (triangle inequality)
 \end{enumerate}
 
 \begin{remark}
@@ -104,6 +104,9 @@ Let $X = \{x_1, ..., x_n\}$ be a data set and $\{C_1, ..., C_k\}$ a partition. T
 	\end{equation}
 \end{definition}
 
+When it comes to solving the optimization problem defined by formula (\ref{equ:K-means}), the computational complexity of the algorithm to be used is of high interest. Therefore computational complexity theory categorizes problems into different classes that have some defining properties, one of which is called NP-hard. The definition of these classes would go beyond the scope of this work and therefore only a reference to the literature is given here e.g. \cite{np_hard_reference}. In very simplified terms one can say that there are currently no efficient algorithms for this type of problem. 
+
+
 \begin{corollary}
 	Solving the $k$-means problem defined in (\ref{equ:K-means}) is NP-hard.
 \end{corollary}
@@ -113,9 +116,8 @@ c.f. \cite{NP_hard}
 
 Even though the problem is NP-hard it is still possible to provide algorithms which converge to a local optimum. The algorithms used for finding a local minimum work on an iterative basis   and involve just a few different steps. The $k$-means algorithms either start with an initial assignment of all observations to $k$ different clusters or with $k$ distinctly selected cluster centers. The next step is to find a new cluster center such that the variation $D(C_l)$ is minimized within each cluster. Then all data points $X = \{x_1, ..., x_n\}$ are reassigned to the cluster which is nearest and the minimization procedure is repeated until convergence. 
 
-\begin{remark}~
+\begin{remark}~	
 	\begin{enumerate}[label=(\roman*)]
-		\item $D(C_l)$ is monotonically decreasing as the number of clusters k increases because the sum is taken over the same or a smaller set of indices. 
 		\item  For $k=n$, (\ref{equ:K-means}) is zero because each data point represents a cluster. 
 	\end{enumerate}
 \end{remark}
@@ -180,7 +182,7 @@ It is advisable to run the algorithm several times with different initial centro
 %%%			Elbow method
 %%%---------------------------------------------------------------------------------------------------------------------
 \section{Elbow method - gap statistic}
-The `elbow' method is  based on the fact that an increase of $k$ above the true value of clusters, $k_{true}$ does not improve the clustering result so much.
+Estimating $k$, the parameter that defines the number of clusters, is one of the most difficult  tasks when using k-means. While it is still possible to graphically determine the number of clusters by plotting the data in 2 or 3 dimensional spaces, other methods must be used in higher dimensions. The `elbow' method is one of the most commonly used methods in this context. 
 
 \begin{definition}
 Let $X = \{x_1, ..., x_n\}$ be a data set and k the number of clusters. Then $C=\{C_1, ..., C_k\}$ is the corresponding partition with the sum of variation within all clusters defined as: 
@@ -189,7 +191,7 @@ Let $X = \{x_1, ..., x_n\}$ be a data set and k the number of clusters. Then $C=
 	\end{equation*}
 \end{definition}
 
- Plotting $V_k$, the sum of variation within all clusters as a measure of total error versus the number of clusters used gives a good indication for the true value of $k$. Figure \ref{fig:gap_statistics}(a) shows that the error measure $V_k$ decreases monotonically as the number of clusters increases but there seems to exist a $k$ from which the decline is clearly flattened. Such an `elbow' indicates that one additional cluster reduces the total variation $V_k$ only slightly and an appropriate number of clusters can be derived from the location of the `elbow'. In accordance with $k_{true}=3$, the `elbow' plotted in \ref{fig:gap_statistics}(a) indicates that the true number of clusters is three. Even if the sample data set consists of very well separated clusters, the example indicates that the method could also be suitable in general. For a single use, the graphical determination of the "elbow" is practicable, but an automated method is needed with increasing number of clustering operations. A statistical method that formalizes this procedure of finding the `elbow' is described in \cite{tibshirani2001estimating}. The idea of the approach is to standardize $log(V_k)$ by comparing it with its expectation under an appropriate null reference distribution of the data. 
+ Plotting $V_k$, the sum of variation within all clusters as a measure of total error versus the number of clusters used gives a good indication for the true value of $k$. Figure \ref{fig:gap_statistics}(a) shows that the error measure $V_k$ decreases monotonically as the number of clusters increases but there seems to exist a $k$ from which the decline is clearly flattened. Such an `elbow' indicates that any additional cluster reduces the total variation $V_k$ only slightly and an appropriate number of clusters can be derived from the location of the `elbow'. In accordance with $k_{true}=3$, the `elbow' plotted in \ref{fig:gap_statistics}(a) indicates that the true number of clusters is three, because there the curve starts to flatten dramatically. Even if the sample data set consists of very well separated clusters, the example indicates that the method could also be suitable in general use cases. For a small number of tasks the graphical determination of the "elbow" is practicable, but an automated method is needed with an increasing number of clustering operations. A statistical method that formalizes this procedure of finding the `elbow' is described in \cite{tibshirani2001estimating}. The idea of the approach is to standardize $log(V_k)$ by comparing it with its expectation under an appropriate null reference distribution of the data. 
  
 \begin{definition}
 Let $k$ be the number of clusters and $\E_n$  the expectation with a sample size of $n$. Then the gap-statistic is defined as: 
