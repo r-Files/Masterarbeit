@@ -32,19 +32,18 @@ Note that during an iteration (algorithm \ref{alg:interaction}, 2a - 2d ) all re
 	\item Data compression in the sense that similar policies are grouped together and only the grouped portfolio is calculated.
 \end{itemize}
 
-With the increasing availability of cloud services, it is already an option these days to outsource complex computing operations to specialized providers. It is possible to rent different types of computing capacities for a certain period of time without much effort and run the projections there. The big advantage of this option is that there is no need to set up, maintain and configure an infrastructure. Since personal data such as age or gender are always used in the projection of insurance contracts, potential problems could arise with respect to the General Data Protection Regulation \cite{datenschutz}. Many companies have therefore decided to compress the insurance portfolio using various techniques and then calculate the projections with their own infrastructure. This avoids possible problems with data protection issues and the dependence on external services. On the other hand, an additional effort has to be made to compress the portfolio.
-Of course, it is of utmost importance that the compressed portfolio has the same characteristics and produces the same cash flows as the non-compressed one. Exactly here this thesis kicks in and shows possible ways how a portfolio of insurance contracts can be compressed. 
+With the increasing availability of cloud services, it is already an option these days to outsource complex computing operations to specialized providers. It is possible to rent different types of computing capacities for a certain period of time without much effort and run the projections there. The big advantage of this option is that there is no need to set up, maintain and configure an infrastructure. Since personal data such as age or gender are always used in the projection of insurance contracts, potential problems could arise with respect to the General Data Protection Regulation \cite{datenschutz}. Many companies have therefore decided to compress the insurance portfolio and therefore reducing the memory requirements using various techniques. It is then feasible to calculate the projections with infrastructure that is owned by the company. This approach has the big advantage that it avoids possible problems with data protection issues and also reduces the dependency on external services. On the other hand, an additional effort has to be made to compress the portfolio in a proper way. Of course, it is of utmost importance that the compressed portfolio has the same characteristics and produces the same cash flows as the non-compressed one. Exactly here, this thesis kicks in and shows possible ways, how a portfolio of insurance contracts can be compressed. 
 
 %--------------------------------------------------------------------- Problem formulation -----------------------------------------------------------------------
 \section{Problem formulation}
-The task is to find a reference portfolio with a reduced number of policies so that the projected cashflows match those from the initial portfolio as accurately as possible. 
+All values calculated by the projection tool are referred to as cashflows regardless of whether they are non-cumulative values such as the reserve or actual cashflows such as the premium. The task is to find a reference portfolio with a reduced number of policies so that the projected cashflows match those from the initial portfolio as accurately as possible. In order to be able to define what accurately means in terms of cashflow deviations, some basic concepts must first be defined. 
 
 \begin{definition}
-	Let $\V$ = \{V, V is a valid insurance contract\} be the set of all valid insurance contracts. 
+	Let $\V$ = \{V, V is a valid insurance contract\} be the set of all valid insurance contracts. A finite set of elements $P \subset \V$ is called a portfolio. 
 \end{definition}
 
 \begin{definition}
-	Let $P \subseteq \V$ be a portfolio of n policies (i.e. $\vert P \vert$ = n) and $m$ the number of projected cashflows by the simulation $s$. The individual cashflows corresponding to $P$ are encoded in $A \in \R^{m \times n}$. The summed cashflows are encoded in $b \in \R^m$.
+	Let $P \subset \V$ be a portfolio of n policies (i.e. $\vert P \vert$ = n) and $m$ the number of projected cashflows by the simulation $s$. Then the individual cashflows corresponding to $P$ are encoded in $A \in \R^{m \times n}$ and the summed cashflows are encoded in $b \in \R^m$.
 
 	\begin{equation*}
 	\begin{aligned}[c]
@@ -61,13 +60,22 @@ The task is to find a reference portfolio with a reduced number of policies so t
 \end{definition}
 
 \begin{definition}
-	Let $P \subset \V$ be a portfolio with $\vert P \vert = n$, $\tilde{P} \subset \V$  a portfolio with $\vert \tilde{P} \vert = \tilde{n}$, $\tilde{n} \leq n$ and $w \in \R^+$ a vector of weights. Then the weighted sum of squares of the cashflows over the entire projection horizon between the grouped portfolio $\tilde{P}$ and the ungrouped one $P$ is given by: 
+	Let $P \subset \V$ be a portfolio with $\vert P \vert = n$, $\tilde{P} \subset \V$  the grouped portfolio with $\vert \tilde{P} \vert = \tilde{n}$, $\tilde{n} < n$ and $w \in \R^m_{\geq 0} = \{x \in \R^m, x \geq 0\}$ a vector of weights. Then the weighted sum of squares of the cashflows over the entire projection horizon between the grouped portfolio $\tilde{P}$ and the ungrouped one $P$ is given by: 
 	
-	\begin{equation*}
+	\begin{equation}\label{eq:objective_function}
 		WSS_{total} = \lVert w \circ (b - \tilde{b})\lVert_2^2
-	\end{equation*}
-	
+	\end{equation}
 \end{definition}
+
+The weighting parameter $w$ makes it possible to weight deviations from certain cashflows more or less important. This can be useful, for example, to weight deviations at the end of the projection period less heavily compared to deviations at the beginning of the projection horizon.
+
+\begin{remark}
+	In a situation where every deviation of cashflows between the grouped and the ungrouped portfolio is equally important, the elements of $w$ are all one. In this situation equation (\ref{eq:objective_function}) simplifies to:	
+	\begin{equation}\label{eq:objective_function_simple}
+		WSS_{total} = \lVert b - \tilde{b}\lVert_2^2
+	\end{equation}
+	
+\end{remark}
 
 \begin{definition}
 	Let $A \in \R^{m \times n}$ be the matrix with periodic (i.e. monthly, quarterly, yearly) cashflows from the reference portfolio and $b \in \R^m$ the vector with periodic summed cashflows for the reference portfolio. Then $x \in \R^n$, the vector of weights, should be optimized such that:  
