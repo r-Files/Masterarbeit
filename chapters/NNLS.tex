@@ -10,10 +10,12 @@ Another way to find a grouped portfolio that minimizes the deviation defined in 
 
 \begin{definition}[Non-negative least squares]\label{def:NNLS}
 	Let $P \subset \V$ be a portfolio, $A \in \R^{m \times n}$ the matrix with the corresponding cashflows and $b \in \R^m$ the vector with the summed cashflows. Then $x \in \R^n$, the vector of scaling, should be optimized such that:  
-	\begin{align*}
-	\argmin_x \lVert Ax -b \rVert_2 \\
-	\text{subject to } x \geq 0
-	\end{align*}
+	\begin{equation}\label{eq:NNLS}
+		\begin{aligned}
+			\argmin_x \lVert Ax -b \rVert_2^2 \\
+			\text{subject to } x \geq 0
+		\end{aligned}
+	\end{equation}
 \end{definition}
 
 \begin{remark}
@@ -32,7 +34,7 @@ Another way to find a grouped portfolio that minimizes the deviation defined in 
 	The number of policies in the grouped portfolio corresponds exactly to the number of entires greater than zero in the vector $x$.
 \end{remark}
 
-One of the well known algorithms for solving the non-negative least square problem is that of Lawson and Hanson. The steps necessary for solving that problem are given in \cite{lawson}. Additionally to those parameters defined in definition \ref{def:NNLS} one also needs a real value variable $\epsilon$ as a stopping criterion.
+One of the well known algorithms for solving the non-negative least square problem is that of Lawson and Hanson, which uses an active set method. The steps necessary for solving that problem are given in \cite{lawson}. Additionally to those parameters defined in definition \ref{def:NNLS} one also needs a real value variable $\epsilon$ as a stopping criterion.
 
 \begin{algorithm}
 	\caption{Non-negative least squares \cite{lawson}}\label{alg:NNLS}
@@ -53,7 +55,7 @@ One of the well known algorithms for solving the non-negative least square probl
 				\begin{enumerate}
 					\item Set $\alpha = min\frac{x_i}{x_i - s_i}$ or $i$ in $P$ where $s_i \leq 0$
 					\item Set $x = x + a(s-x)$
-					\item Move from $R$ to $P$ all indices $j \in P$ for which $x_j = 0$.
+					\item Move from $P$ to $R$ all indices $j \in P$ for which $x_j = 0$.
 					\item Compute $s^P = ((A^P)^\top A^P)^{-1} (A^P)^\top y$
 					\item Set $s^R = 0$
 				\end{enumerate}
@@ -63,6 +65,36 @@ One of the well known algorithms for solving the non-negative least square probl
 		\end{enumerate}
 	\end{algorithmic}
 \end{algorithm}
+
+Algorithm \ref{alg:NNLS} consists, apart from the initialization, of a main loop and an inner loop. The loops are highlighted by indentations and start at point 3 and point g) respectively. If for a variable reference is made to those indices of the variable which are contained in the set $R$, then these entries are 0. All indexes that exist in the set P, by contrast, have nonzero values. If such a variable has a negative value, the algorithm either moves it to the positive value range or sets it to zero. By setting a variable to zero, the index is also shifted from the set $P$ to the set $R$. This ensures that the following condition is met at the end of the algorithm.   
+\begin{align*}
+	x_j &> 0, \quad j \in P \\
+	x_j &= 0, \quad j \in R
+\end{align*}
+
+
+
+\begin{remark}\label{rem:gradient}
+	Let $f(x) = \lVert Ax -b \rVert_2^2$ be the function, then the gradient is given by: 
+	\begin{equation*}
+		\nabla f(x) = \lVert Ax -b \rVert_2^2 = A^\top(Ax-b)
+	\end{equation*}
+	
+	\begin{align*}
+		\nabla \lVert Ax -b \rVert_2^2	&= \nabla (Ax-b)^\top (Ax-b) \\
+										&= \nabla (x^\top A^\top - b^\top)(Ax-b) \\
+										&= \nabla (x^\top A^\top Ax - x^\top A^\top b - b^\top Ax + b^\top b) \\
+										&= \nabla (x^\top A^\top Ax - 2x^\top A^\top b + b^\top b) \\
+										&= 2 (A^\top A x - A^\top b) \\
+										&= 2A^\top (Ax - b)
+	\end{align*}
+\end{remark}
+
+As shown in remark \ref{rem:gradient}, step 2 of algorithm \ref{alg:NNLS} calculates the negative gradient of the ordinary least squares problem. In the next step it is checked whether the inner loop still has to be executed or not. If the index set $R$ correspond to the empty set then all indexes are already in $P$ which means that all entries of $x$ are positive. This case is not desirable, as no compression can be achieved. If $max(w) \leq \epsilon$ is satisfied, the gradient has no entry large enough so that an substantial improvement can be achieved and the algorithm has reached the optimum. 
+
+
+
+
 
 
 
