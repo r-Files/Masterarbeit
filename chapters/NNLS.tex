@@ -42,42 +42,44 @@ One of the well known algorithms for solving the non-negative least square probl
 		\\
 		\begin{enumerate}
 			\item Set $P = \emptyset$, $R = \{1, ..., n\}$, $x$ = $0_{n \times 1}$
-			\item Compute $w = A^\top(y - Ax)$.
+			\item Compute $w = A^\top(b - Ax)$.
 			\item While $R \neq \emptyset$ and $max(w) > \epsilon$
 			\begin{enumerate}[label=\emph{\alph*})]
 				\item Find index $j \in R$ such that $w_j = max\{w_t, t \in R\}$.
 				\item Move the index $j$ from $R$ to $P$.
 				\item Let $A^P$ be $A$ restricted to the variables included in $P$.
 				\item Let $s$ be a vector of same length as $x$. Let $s^P$ denote the sub-vector with indexes from $P$, and let $s^R$ denote the sub-vector with indexes from $R$.
-				\item Compute $s^P = ((A^P)^\top A^P)^{-1} (A^P)^\top y$
+				\item Compute $s^P = ((A^P)^\top A^P)^{-1} (A^P)^\top b$
 				\item Set $s^R = 0$.
 				\item While $min(s^P) \leq 0$
 				\begin{enumerate}
 					\item Set $\alpha = min\frac{x_i}{x_i - s_i}$ for $i$ in $P$ where $s_i \leq 0$
 					\item Set $x = x + \alpha(s-x)$
 					\item Move from $P$ to $R$ all indices $j \in P$ for which $x_j = 0$.
-					\item Compute $s^P = ((A^P)^\top A^P)^{-1} (A^P)^\top y$
+					\item Compute $s^P = ((A^P)^\top A^P)^{-1} (A^P)^\top b$
 					\item Set $s^R = 0$
 				\end{enumerate}
 				\item Set $x$ to $s$
-				\item Compute $w = A^\top(y - Ax)$.
+				\item Compute $w = A^\top(b - Ax)$.
 			\end{enumerate}
 		\end{enumerate}
 	\end{algorithmic}
 \end{algorithm}
 
 Algorithm \ref{alg:NNLS} consists, apart from the initialization, of a main loop and an inner loop. The loops are highlighted by indentations and start at step 3 and step g) respectively. If for a variable reference is made to those indices of the variable which are contained in the set $R$, then these entries are 0. All indexes that exist in the set P, by contrast, have nonzero values. If such a variable has a negative value, the algorithm either moves it to the positive value range or sets it to zero. By setting a variable to zero, the index is also shifted from the set $P$ to the set $R$. This ensures that the following condition is met at the end of the algorithm.   
-\begin{align*}
+\begin{align}\label{equ:final_conditions}
+\begin{split}
 	x_j &> 0, \quad j \in P \\
 	x_j &= 0, \quad j \in R
-\end{align*}
+\end{split}
+\end{align}
 
 
 
 \begin{remark}\label{rem:gradient}
 	Let $f(x) = \lVert Ax -b \rVert_2^2$ be the function, then the gradient is given by: 
 	\begin{equation*}
-		\nabla f(x) = \lVert Ax -b \rVert_2^2 = A^\top(Ax-b)
+		\nabla f(x) = \nabla \lVert Ax -b \rVert_2^2 = A^\top(Ax-b)
 	\end{equation*}
 	
 	\begin{align*}
@@ -90,9 +92,56 @@ Algorithm \ref{alg:NNLS} consists, apart from the initialization, of a main loop
 	\end{align*}
 \end{remark}
 
-As shown in remark \ref{rem:gradient}, step 2 of algorithm \ref{alg:NNLS} calculates the negative gradient of the ordinary least squares problem. In the next step it is checked whether the inner loop still has to be executed or not. If the index set $R$ correspond to the empty set then all indexes are already in $P$ which means that all entries of $x$ are positive. This case is not desirable, as no compression can be achieved. If $max(w) \leq \epsilon$ is satisfied, the gradient has no entry large enough, so that an substantial improvement can be achieved and the algorithm has reached the optimum.
+As shown in remark \ref{rem:gradient}, step 2 of algorithm \ref{alg:NNLS} calculates the negative gradient of the ordinary least squares problem. In the next step it is checked whether the inner loop still has to be executed or not. If the index set $R$ correspond to the empty set then all indexes are already in $P$ which means that all entries of $x$ are positive (see formula (\ref{equ:final_conditions})). This case is not desirable, as no compression can be achieved. If $max(w) \leq \epsilon$ is satisfied, the gradient has no entry large enough, so that an substantial improvement can be achieved and the algorithm has reached the optimum. If one of the two conditions in step 3) is fulfilled, the main loop is executed. 
 
-The main loop starts with searching for the index of the gradient that is not yet present in the set $P$ and has the highest value. After this index has been moved from the set $R$ to the set $P$, the solution of the least square problem is calculated in step e), limited to the columns of the matrix $A$ whose indices occur in the set $P$. If all components of this least square solution are positive, the solution vector $x$ is overwritten with $s$ and after a new calculation of the gradient the main loop is started again. 
+The main loop starts with searching for the index of the gradient that is not yet present in the set $P$ and has the highest value. After this index has been moved from the set $R$ to the set $P$, the solution of a restricted least square problem is calculated in step e). This least squares problem is limited to the columns of the matrix $A$ whose indices occur in the set $P$. The result is then a vector of dimension $P$ which is indicated by the notation $s^P$. To get a solution vector of the dimension $n$, the $n - \vert P \vert = \vert R \vert$ entries $s^R$ of the vector $s$ are filled with 0 - see step f). 
+
+\begin{example}
+	Based on algorithm \ref{alg:NNLS}, be $n = 15$, $P = \{2, 3, 4, 5, 7, 9\}$ and  $R = P^c = \{1, 6, 8, 10, 11, 12, 13, 14, 15\}$ then
+	\begin{equation*}
+		\begin{aligned}[c]	
+		s = 
+		\left( 
+		\begin{array}{c}
+		s_{1} \\
+		s_{2} \\
+		\vdots\\
+		s_{15}\\
+		\end{array}
+		\right)	
+		\end{aligned}
+		\qquad
+		\begin{aligned}[c]
+		s^P = 
+		\left( 
+		\begin{array}{c}
+		s_{2} \\
+		s_{3} \\
+		s_{4} \\
+		s_{5} \\
+		s_{7} \\
+		s_{9} \\
+		\end{array}
+		\right)	
+		\end{aligned}
+		\qquad
+		\begin{aligned}[c]
+		s^R = 
+		\left( 
+		\begin{array}{c}
+		s_{1} \\
+		s_{6} \\
+		s_{8} \\
+		s_{10} \\
+		\vdots \\
+		s_{15} \\
+		\end{array}
+		\right)	
+		\end{aligned}	
+	\end{equation*}
+\end{example}
+
+If all components of this least square solution (i.e. $s^P$) are positive, the solution vector $x$ is overwritten with $s$ and after a new calculation of the gradient the main loop is started again. 
 
 If there are non positive entries in the solution, the inner loop is executed. 
 
