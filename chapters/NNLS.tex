@@ -141,9 +141,9 @@ The main loop starts with searching for the index of the gradient that is not ye
 	\end{equation*}
 \end{example}
 
-If all components of this least square solution (i.e. $s^P$) are positive, the solution vector $x$ is overwritten with $s$ and after a new calculation of the gradient the main loop is started again. 
+If all components of this least square solution (i.e. $s^P$) are positive, the solution vector $x$ is overwritten with $s$ as seen in step h). In step i) a recalculation of the gradient with the solution x adapted in the previous step is carried out and the main loop is restarted by checking the conditions in step 3. 
 
-If there are non positive entries in the solution, the inner loop is executed. 
+If there are non positive entries in the solution of the restricted least squares problem computed in step e), the inner loop is executed. 
 
 
 
