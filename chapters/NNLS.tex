@@ -145,6 +145,10 @@ If all components of this least square solution (i.e. $s^P$) are positive, the s
 
 If there are non positive entries in the solution of the restricted least squares problem computed in step e), the inner loop is executed. Basically, negative entries in the result vector $s^P$ would lead to a new solution vector $x$ which would also have negative entries without further adjustments, resulting in an undesired solution. Therefore, based on the current solution $x$ which has only positive entries, a shift is carried out by using $s^P$. In the first step an index $k \in P$ is determined which leads to the smallest scaling factor $\alpha$. The current solution vector $x$ is then shifted by using this factor which causes the entry $x_k$ to be zero after the shift. The index $k$ can thus be moved from set $P$ back to set $R$. If several entries of the new solution vector $x$ were changed to zero as a result of the shift, all these indexes must of course be moved to set $R$. Based on the new set $P$, a limited least squares problem will be solved and the inner loop will be redone if necessary.
 
+
+Within the loop, at least one index $k$ per iteration is transferred from the set $P$ to the set $R$.  As a result, with each pass of the inner loop, the number of entries in the solution vector $x$ that are not equal to zero is reduced by at least one. Since the cardinality of the set P is finite, it is also determined how often the inner loop is run through at the most, namely $|P| - 1$ times.
+
+
 The steps of the inner loop are limited.
 Solution vector gets smaller every time.
 Alpha immer zwischen 0 und 1
