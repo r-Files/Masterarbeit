@@ -53,8 +53,8 @@ One of the well known algorithms for solving the non-negative least square probl
 				\item Set $s^R = 0$.
 				\item While $min(s^P) \leq 0$
 				\begin{enumerate}
-					\item Set $\alpha = min\frac{x_i}{x_i - s_i}$ for $i$ in $P$ where $s_i \leq 0$
-					\item Set $x = x + \alpha(s-x)$
+					\item Set $\alpha_k = min\frac{x_i}{x_i - s_i}$ for $i$ in $P$ where $s_i \leq 0$
+					\item Set $x = x + \alpha_k(s-x)$
 					\item Move from $P$ to $R$ all indices $k \in P$ for which $x_k = 0$.
 					\item Compute $s^P = ((A^P)^\top A^P)^{-1} (A^P)^\top b$
 					\item Set $s^R = 0$
@@ -141,21 +141,15 @@ The main loop starts with searching for the index of the gradient that is not ye
 	\end{equation*}
 \end{example}
 
-If all components of this least square solution (i.e. $s^P$) are positive, the solution vector $x$ is overwritten with $s$ as seen in step h). In step i) a recalculation of the gradient with the solution $x$, adapted in the previous step, is carried out and the main loop is restarted by checking the conditions in step 3. 
+If all components of this least square solution (i.e. $s^P$) are positive a new solution has been found and the solution vector $x$ is overwritten with $s$ as seen in step h). In step i) a recalculation of the gradient with the solution $x$, adapted in the previous step, is carried out and the main loop is restarted by checking the conditions in step 3. 
 
-If there are non positive entries in the solution of the restricted least squares problem computed in step e), the inner loop is executed. Basically, negative entries in the result vector $s^P$ would lead to a new solution vector $x$ which would also have negative entries without further adjustments, resulting in an undesired solution. Therefore, based on the current solution $x$ which has only positive entries, a shift is carried out by using $s^P$. In the first step an index $k \in P$ is determined which leads to the smallest scaling factor $\alpha$. The current solution vector $x$ is then shifted by using this factor which causes the entry $x_k$ to be zero after the shift. The index $k$ can thus be moved from set $P$ back to set $R$. If several entries of the new solution vector $x$ were changed to zero as a result of the shift, all these indexes must of course be moved to set $R$. Based on the new set $P$, a limited least squares problem will be solved and the inner loop will be redone if necessary.
+If there are non positive entries in the solution of the restricted least squares problem computed in step e), the inner loop is executed. Basically, negative entries in the result vector $s^P$ would lead to a new solution vector $x$ which would also have negative entries without further adjustments, resulting in an undesired solution since $x$ must be non-negative (i.e $x \geq 0$). Therefore, based on the current solution vector $x$ which has only positive entries, a shift is carried out by using $s^P$. In the first step the index $k \in P$ is determined which leads to the smallest scaling factor $\alpha_k$. The current solution vector $x$ is then shifted by using this factor which causes the entry $x_k$ to be zero after the shift. The index $k$ can thus be moved from set $P$ back to set $R$ because the corresponding entry $x_k$ is zero after the shift. In the unlikely event that several entries of the new solution vector $x$ were changed to zero as a result of the shift, all these indexes must of course be moved from set $P$ to set $R$ (see iii.). Based on the new set $P$, a new limited least squares problem will be solved and the inner loop will be redone if necessary.
 
+\begin{remark}
+	Since $x_i \geq 0$ at all times and $s_j \leq 0$ within the inner loop, the scaling factor is bounded by $0 \leq \alpha_k \leq 1$.  
+\end{remark}
 
-Within the loop, at least one index $k$ per iteration is transferred from the set $P$ to the set $R$.  As a result, with each pass of the inner loop, the number of entries in the solution vector $x$ that are not equal to zero is reduced by at least one. Since the cardinality of the set P is finite, it is also determined how often the inner loop is run through at the most, namely $|P| - 1$ times.
-
-
-The steps of the inner loop are limited.
-Solution vector gets smaller every time.
-Alpha immer zwischen 0 und 1
-
-
-
-
-
-
+\begin{remark}
+	Within the inner loop, at least one index $k$ per iteration is transferred from the set $P$ to the set $R$.  As a result, with each pass of the inner loop, the number of entries in the solution vector $x$ that are not equal to zero is reduced by at least one. Since the cardinality of the set P is finite, it is also determined how often the inner loop is run through at the most, namely $|P| - 1$ times.
+\end{remark}
 
