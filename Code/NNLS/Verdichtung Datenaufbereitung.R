@@ -31,7 +31,7 @@ start_time <- Sys.time()
 
 #+ load-tes
 suppressWarnings(library("pacman"))
-pacman::p_load(data.table, dplyr, lubridate, openxlsx, pivottabler, 
+pacman::p_load(data.table, dplyr, lubridate, openxlsx, pivottabler, ggplot2,
                tcltk, rstudioapi, stringr, testthat, crayon, kableExtra, 
                nnls, matrixStats, microbenchmark, Rcpp, pracma, Rfast) #bit64
 
@@ -85,18 +85,10 @@ Sollwerte <- paste0(Hauptverzeichnis, "RUN_984/DMESGP/") %>%
   select(Variablen) %>% 
   setDT()
 
-# Numbers of SPCodes
-MaxSPCode <- max(DatenPro[,DGO_SPCODE_I])
-
 # Add the year 
 #Jahr <- unlist(lapply(diff(c(NeuSPCode,dim(DatenPro)[1]+1)),seq)) - 1 # Old version
 DatenPro[, Jahr := 1:.N - 1, by = DGO_SPCODE_I]
 Sollwerte[, Jahr := 1:.N - 1, by = DGO_SPCODE_I]
-
-# Determine the lines in which a SP code appears for the first time
-NeuSPCode <- match(1:MaxSPCode, DatenPro[,DGO_SPCODE_I]) # no longer needed
-
-
 
 #
 # Some tests => can be removed
@@ -129,7 +121,8 @@ Sollwerte [Jahr == 0, .(AnzPol = sum(NO_POLS_IF),
 #StandDatenPro <- copy(DatenPro)
 #StandDatenPro[, (Standardisieren) := lapply(.SD, scale), .SDcols=Standardisieren]
 
-Spalten <- colnames(DatenPro)[c(-1, -dim(DatenPro)[2])]
+# take all columnnames except Jahr and DGO_SPCODE_I
+Spalten <- colnames(DatenPro) %>% setdiff(c("Jahr", "DGO_SPCODE_I"))
 Daten <- dcast(DatenPro[Jahr %in% Auswertungsjahre, ], DGO_SPCODE_I ~ Jahr, value.var = Spalten) %>% 
   select(., -DGO_SPCODE_I) %>% as.matrix(.) %>% t(.)
 Daten[is.na(Daten)] <- 0 # SPCodes mit geringerer Laufzeit als das Maximum in "Auswertungsjahre" haben "na" als Wert.
@@ -173,7 +166,25 @@ system.time(a <- nnls_QR(A, b, 0, Ausgabe = 0, MainloopMax = 0, Test = 1))
 a$nsetp
 sort(a$passive)
 
+
+
+A <- DatenSicherung[, 1:20000]
+b <- t(SollDaten)
 system.time(a1 <- nnls_VMF(A, b, 0, Ausgabe = 0))
+plotData <- data.table(nonZeros = a1$Entwicklung %>% as.vector(), count = 0:(length(a1$Entwicklung)-1))
+
+ggplot(data = plotData, aes(x = count, y = nonZeros, group=1)) +
+  geom_line() +
+  labs(x = "Number of iterations", y = "non-zero entries")
+
+
+A <- DatenSicherung[, 1:40000]
+b <- t(SollDaten)
+system.time(a1 <- nnls_VMF(A, b, 0, Ausgabe = 0))
+plotData <- data.table(nonZeros = a1$Entwicklung %>% as.vector(), count = 0:(length(a1$Entwicklung)-1))
+
+ggplot(data = plotData, aes(x = count, y = nonZeros, group=1)) +
+  geom_line()
 a1$nsetp
 sort(a1$passive)
 
