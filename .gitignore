@@ -36,8 +36,8 @@
 ## R auxiliary files:
 *.Rhistory
 
-## Ignore folders with result data
+## Ignore folders with result data or modelpoints
 RUN_984/
 RUN_985/
 RUN_986/
-
+IF_G_DGO/
