@@ -49,6 +49,7 @@ draft=\mydraft,      %% if true: included graphics are omitted and black boxes
 \usepackage{afterpage} %% clear all floating objects (used for pdflscape)
 \usepackage{enumitem} %% for roman enumeration
 \usepackage{bbm} %% make the math symbol for Indicator 1 (\mathbbm{1})
+\usepackage{listings} %% implemnt R code 
 
 
 \usepackage[backend=biber, %% using "biber" to compile references (instead of "biblatex")
@@ -60,3 +61,29 @@ hyperref=true, %% using hyperref-package references
 ]{biblatex}  %% remove, if using BibTeX instead of biblatex
 
 \addbibresource{\mybiblatexfile}			%% Name of the biblatex file that holds the references.
+
+%define colours
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+
+\lstset{%Settings for how I want the code included
+	language=R,
+	basicstyle=\scriptsize\ttfamily,
+	commentstyle=\ttfamily\color{blue},
+	stringstyle=\color{codepurple},
+	keywordstyle=\color{magenta},
+	stepnumber=1,
+	numbersep=5pt,
+	backgroundcolor=\color{backcolour},
+	showspaces=false,
+	showstringspaces=false,
+	showtabs=false,
+	numbers=left,
+	frame=single,
+	tabsize=2,
+	captionpos=b,
+	breaklines=true,
+	breakatwhitespace=false,
+	escapeinside={},
+	morekeywords={}
+}

@@ -24,13 +24,14 @@
 #' - **matrixStats:** High-performing functions operating on rows and columns of matrices.
 #' - **microbenchmark:**  Accurately measure the time it takes to evaluate expressions.
 #' - **Rcpp:** Seamless integration of R and C++.
-#' - **pracma:** Practical Numerical Math Functions
-#' - **Rfast:** A Collection of Efficient and Extremely Fast R Functions
+#' - **pracma:** Practical Numerical Math Functions.
+#' - **Rfast:** A Collection of Efficient and Extremely Fast R Functions.
+#' - **latex2exp:** Parses and converts LaTeX math formulas to R's plotmath expressions.
 
 #+ load-tes
 suppressWarnings(library("pacman"))
 pacman::p_load(data.table, dplyr, ggplot2, rstudioapi, stringr, openxlsx,
-               nnls, matrixStats, microbenchmark, Rcpp, pracma, Rfast) #bit64
+               nnls, matrixStats, microbenchmark, Rcpp, pracma, Rfast, latex2exp) #bit64
 
 Hauptverzeichnis <- paste0(dirname(rstudioapi::getActiveDocumentContext()$path), "/")
 setwd (Hauptverzeichnis)
@@ -88,11 +89,23 @@ source("NNLS_default.R")
 A <- DatenSicherung[, 1:20000]
 b <- t(SollDaten)
 system.time(a1 <- nnls_VMF(A, b, 0, Ausgabe = 0))
-plotData <- data.table(nonZeros = a1$Entwicklung %>% as.vector(), count = 0:(length(a1$Entwicklung)-1))
+plotData_nonZero_Entries <- data.table(nonZeros = a1$Entwicklung %>% as.vector(),
+                                       count = 0:(length(a1$Entwicklung)-1))
 
-ggplot(data = plotData, aes(x = count, y = nonZeros, group=1)) +
+plotData_residuals <- data.table(deviance = a1$Residual_Entwicklung,
+                                 count = 0:(length(a1$Residual_Entwicklung)-1))
+
+# plot the number of non-zero entries in x againt the number of iterations
+ggplot(data = plotData_nonZero_Entries, aes(x = count, y = nonZeros, group = 1)) +
   geom_line() +
   labs(x = "Number of iterations", y = "non-zero entries")
+
+# plot the log sumed residuals (=deviance) against the number of iterations
+ggplot(data = plotData_residuals, aes(x = count, y = deviance, group = 1)) +
+  geom_line() +
+  # scale_y_continuous(trans='log10') + 
+  scale_y_log10() +
+  labs(x = "Number of iterations", y = TeX("$log_{10}$ $||  Ax - b  ||_2^2$"))
 
 
 A <- DatenSicherung[, 1:40000]
@@ -100,9 +113,13 @@ b <- t(SollDaten)
 system.time(a1 <- nnls_VMF(A, b, 0, Ausgabe = 0))
 plotData <- data.table(nonZeros = a1$Entwicklung %>% as.vector(), count = 0:(length(a1$Entwicklung)-1))
 
-ggplot(data = plotData, aes(x = count, y = nonZeros, group=1)) +
-  geom_line()
+plotData_residuals <- data.table(deviance = a1$Residual_Entwicklung,
+                                 count = 0:(length(a1$Residual_Entwicklung)-1))
 
+ggplot(data = plotData_residuals, aes(x = count, y = deviance, group = 1)) +
+  geom_line() +
+  scale_y_continuous(trans='log10') + 
+  labs(x = "Number of iterations", y = TeX("$log$ $||  Ax - b  ||_2^2$"))
 
 #source("Verdichtung Funktionen.R")
 
