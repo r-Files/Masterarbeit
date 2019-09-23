@@ -157,6 +157,8 @@ As stated in \cite[p.~163]{lawson}, for many examples the steps of the outer loo
 
 Figure (\ref{fig:iterations}) shows how the number of non-negative entries of the solution vector $x$ evolves. After the algorithm is started with an initialization, the solution vector $x$ only has entries that are zero and the next step is to execute the main loop for the first time. So the graph starts in (0,0). After passing through the main loop for the first time, the first entry of $x$ became a positive value and the graph displays this as the point (1,1). Also the next 9 passes of the main loop run exactly as just described so that after 10 iterations 10 entries of $x$ are not equal to zero and the graph is at (10,10). In the next pass of the main loop, the solution $s^P$, see step e), of the restricted least squares problem becomes for the first time not positive for at least one entry and the inner loop is executed. When entering the inner loop, $s^P$ has the dimension 11. Within the inner loop, as explained above, a shift is performed and the index $k$ is shifted from the set $P$ to the set $R$. Due to this shift of the index and the subsequent recalculation of the now dimensionally reduced least squares problem (see iv.), $s^P$ now has only dimension 10. Since none of these 10 entries is not positive, the inner loop is now left. The solution vector still has only 10 positive entries after the 11 iteration and therefore the point (11,10) results. The just described phenomenon that the inner loop is left again after one iteration, since all negative entries have been removed, can be observed in figure (\ref{fig:iterations}) more often. This is exactly the case when a horizontal line is present. In the above example, it is also easy to see that this phenomenon of horizontal lines occurs more frequently after about 50 iterations. This can be explained by the fact that at the beginning of an optimization the limited least square problem which need to be solved has a small dimension and therefore it is less likely to get negative solution values. In the progress of the optimization, the achievable improvements of the objective function become smaller and smaller on also the cardinality of the set $P$ increases. The last feature in figure (\ref{fig:iterations}) that can be observed is that of a descending line. This case occurs for the first time at the transition from iteration 28 to iteration 29. In iteration 29 the solution vector of the limited least square problem $s^P$ has entries that are not positive such as in the case described previously. The difference to before is that the inner loop is not left after one iteration. So there are several loop cycles required to adapt all negative entries by shifting. In the particular case of iteration 29, the inner loop is executed exactly twice until all entries of $s^P$ are positive. Since with each pass of the inner loop the number of positive entries of the solution vector $x$ is reduced by one, a descending line results after 2 passes. It is therefore clear that the steepness of the descent is a measure of how often the inner loop has been looped before all entries were positive. 
 
+Af
+
 \begin{figure}
 	\centering
 	\includegraphics[width=\textwidth]{figures/chapter_NNLS/number_iterations}
@@ -174,7 +176,10 @@ If not the number of non-negative entries is considered but the development of \
 \end{figure}
 
 \section{Numerical Aspects}
- 
+As evident in figure (\ref{fig:iterations}) as well as in figure (\ref{fig:residuals}), the optimization is stopped after 214 iterations. The reason for this is neither that a sufficiently large gradient is no longer available nor that the set $R$ is empty. So all conditions of the main loop stated in step 3 of algorithm \ref{alg:NNLS} are still fulfilled. 
+Rather, a stable state has occurred which does not allow any further improvement of the results. Reaching a stable state during an optimization is one of several reasons a 
+
+A stable state is characterized by the fact that 
 
 
 
