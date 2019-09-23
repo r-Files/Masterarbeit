@@ -176,10 +176,13 @@ If not the number of non-negative entries is considered but the development of \
 \end{figure}
 
 \section{Numerical Aspects}
-As evident in figure (\ref{fig:iterations}) as well as in figure (\ref{fig:residuals}), the optimization is stopped after 214 iterations. The reason for this is neither that a sufficiently large gradient is no longer available nor that the set $R$ is empty. So all conditions of the main loop stated in step 3 of algorithm \ref{alg:NNLS} are still fulfilled. 
-Rather, a stable state has occurred which does not allow any further improvement of the results. Reaching a stable state during an optimization is one of several reasons a 
+As evident in figure (\ref{fig:iterations}) as well as figure (\ref{fig:residuals}), the optimization is stopped after 214 iterations. The reason for this is neither that a sufficiently large gradient is no longer available nor that the set $R$ is empty. So all conditions of the main loop stated in step 3 of algorithm \ref{alg:NNLS} are still fulfilled. 
+Rather, a stable state has occurred which does not allow any further improvement of the results. Reaching a stable state during an optimization is one of several reasons for an optimization to stop.
 
-A stable state is characterized by the fact that 
+Facing a stable state involves a very special case of index shifts between the sets $R$ and $P$, which must be handled separately by the algorithm. Starting from a gradient calculated in step i), the new index $j$ in $R$ is searched for which has the maximum gradient. This new index is then moved from the set $R$ to the set $P$ and the constrained least squares problem is calculated as specified in step e). Since the vector $s^P$ now has exactly one negative entry, the inner loop must be entered in the next step. It turns out that exactly that index $j$ of $s$ is negative which was added by the shift from $j$ to $P$ in the last main loop. 
+Since the corresponding entry $x_j$ is zero and $s$ has only one negative entry, the scaling factor $\alpha$ also has a value of zero. This leads to the fact that the shift specified in step ii. has no effect and the solution vector $x$ remains the same. In step iii. the previously determined index $j$ will be shifted back from the set $P$ to the set $R$. In the next iteration of the main loop, the index with the largest gradient is found again as the previously discarded index $j$. This will lead to what has just been described, resulting in an infinite loop. So the main problem is that:
 
-
-
+\begin{enumerate}
+	\item nur ein negativer Eintrag
+	\item Genau der Eintrag negativ der neu hinzugekommen ist. 
+\end{enumerate}
