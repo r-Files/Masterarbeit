@@ -180,9 +180,11 @@ As evident in figure (\ref{fig:iterations}) as well as figure (\ref{fig:residual
 Rather, a stable state has occurred which does not allow any further improvement of the results. Reaching a stable state during an optimization is one of several reasons for an optimization to stop.
 
 Facing a stable state involves a very special case of index shifts between the sets $R$ and $P$, which must be handled separately by the algorithm. Starting from a gradient calculated in step i), the new index $j$ in $R$ is searched for which has the maximum gradient. This new index is then moved from the set $R$ to the set $P$ and the constrained least squares problem is calculated as specified in step e). Since the vector $s^P$ now has exactly one negative entry, the inner loop must be entered in the next step. It turns out that exactly that index $j$ of $s$ is negative which was added by the shift from $j$ to $P$ in the last main loop. 
-Since the corresponding entry $x_j$ is zero and $s$ has only one negative entry, the scaling factor $\alpha$ also has a value of zero. This leads to the fact that the shift specified in step ii. has no effect and the solution vector $x$ remains the same. In step iii. the previously determined index $j$ will be shifted back from the set $P$ to the set $R$. In the next iteration of the main loop, the index with the largest gradient is found again as the previously discarded index $j$. This will lead to what has just been described, resulting in an infinite loop. So the main problem is that:
+Since the corresponding entry $x_j$ is zero and $s$ has only one negative entry, the scaling factor $\alpha$ also has a value of zero. This leads to the fact that the shift specified in step ii. has no effect and the solution vector $x$ remains the same. In step iii. the previously determined index $j$ will then be shifted back from the set $P$ to the set $R$. In the next iteration of the main loop, the index with the largest gradient is found again as the previously moved index $j$. This will lead to what has just been described, resulting in an infinite loop. A case such as this therefore only occurs if the following two conditions occur simultaneously: 
 
 \begin{enumerate}
-	\item nur ein negativer Eintrag
-	\item Genau der Eintrag negativ der neu hinzugekommen ist. 
+	\item The solution vector $s^P$ of the constrained least squares problem has one negative entry.
+	\item This negative entry is in vector $s$ exactly at the index that was transferred from set $R$ to set $P$ in the current loop pass in step b).
 \end{enumerate}
+
+Another reason that can lead to an unplanned termination of the optimization algorithm is related to solving process of the restricted least squares problem.
