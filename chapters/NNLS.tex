@@ -192,7 +192,9 @@ Since the corresponding entry $x_j$ is zero and $s$ has only one negative entry,
 \end{remark}
 
 Another reason that can lead to an unplanned termination of the optimization algorithm is related to solving process of the restricted least squares problem in step e) and iv). In these steps the solution of the constrained least squares problem is calculated which requires the use of an inverse matrix. If the inverse of $((A^P)^\top A^P)^{-1}$ does not exist, an alternative solution has to be found. The most practicable approach is to test whether an inverse exists using the determinant of $(A^P)^\top A^P$. If this is not the case, remove the just added index $j$ from the set $P$ and replace it with a $j'$ which has the second largest gradient. 
-Not only the existence of the inverse matrix is important but also its numerical stability. Therefore it should be ensured that with a small change of the matrix $A$, the inverse matrix $A^{-1}$ do not change significantly in order to get stable results. In order to determine whether the inversion of a matrix $A$ is numerically stable, the concept of the condition number is used.
+Not only the existence of the inverse matrix is important but also its numerical stability. Therefore it should be ensured that with a small change of the matrix $A$, the inverse matrix $A^{-1}$ do not change significantly in order to get stable results. To determine whether the inversion of a matrix $A$ is numerically stable, a new concept must be introduced which characterizes the numerical stability.
+
+
 
 
 To reduce the influence of numerical instabilities, in general a system of equations $Ax = b$ is not solved by using the inverse $A^{-1}$ for $x=A^{-1}b$ but by other methods. One of the most frequently used methods is that of QR decomposition.  
