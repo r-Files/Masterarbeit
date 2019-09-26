@@ -194,6 +194,57 @@ Since the corresponding entry $x_j$ is zero and $s$ has only one negative entry,
 Another reason that can lead to an unplanned termination of the optimization algorithm is related to solving process of the restricted least squares problem in step e) and iv). In these steps the solution of the constrained least squares problem is calculated which requires the use of an inverse matrix. If the inverse of $((A^P)^\top A^P)^{-1}$ does not exist, an alternative solution has to be found. The most practicable approach is to test whether an inverse exists using the determinant of $(A^P)^\top A^P$. If this is not the case, remove the just added index $j$ from the set $P$ and replace it with a $j'$ which has the second largest gradient. 
 Not only the existence of the inverse matrix is important but also its numerical stability. Therefore it should be ensured that with a small change of the matrix $A$, the inverse matrix $A^{-1}$ do not change significantly in order to get stable results. In order to determine whether the inversion of a matrix $A$ is numerically stable, the concept of the condition number is used.
 
+\begin{definition}
+	Let $V$ and $W$ be normed vector spaces and $f:V \to W$ a linear operator. Then the operator norm is given by: 
+	\begin{align}\label{eq:operator_Norm}
+		\lVert f \rVert := \sup_{x \in V \setminus \{0\}} \frac{\lVert f(x) \rVert_W}{\lVert x \rVert_V} = \sup_{\lVert x \rVert_{V} = 1} \lVert f(x) \rVert_V
+	\end{align}
+\end{definition}
+
+\begin{remark}
+	Since every real valued matrix $A \in \R^{m \times n}$ corresponds to a linear map from $\R^n$ to $R^m$ each pair of norms induces an operator norm. In the special case of choosing the Euclidean norm for both vector spaces, (\ref{eq:operator_Norm}) simplifies to:
+	\begin{align}\label{eq:matrix_Norm}
+		\lVert A \rVert_2 := \max_{x \neq 0} \frac{\lVert Ax \rVert_2}{\lVert x \rVert_2} = \max_{\lVert x \rVert_{2 = 1}} \lVert Ax \rVert_2
+	\end{align}	
+	which is a naturally induced matrix norm called spectral norm. 
+\end{remark}
+
+\begin{remark}[\cite{stewart1998matrix}]
+	The 2-norm has the following properties:
+	\begin{enumerate}
+		\item $\lVert A \rVert_2$ = $\sigma_{max}(A)$ \hfill largest singular value of $A$
+		\item $\lVert A \rVert_2^2$ = $\lambda_{max}(A^T A)$ \hfill largest eigenvalue value of $A^T A$
+		\item $\lVert A \rVert_2 = \lVert A^T \rVert_2$
+	\end{enumerate}
+\end{remark}
+
+\begin{definition}
+	Let $A \in \R^{m \times n}$ be a matrix and $\lVert . \rVert$ a matrix norm. Then the condition number of $A$ is defined as:	
+	\begin{align}\label{eq:condition_number}
+	\kappa(A) := \lVert A^+ \rVert \lVert A \rVert
+	\end{align}
+\end{definition}
+
+\begin{remark}
+	For the special case that matrix $A$ is regular, the pseudo inverse can be replaced with the inverse matrix and the condition number becomes:
+	\begin{align}
+	\kappa(A) = \lVert A^{-1} \rVert \lVert A \rVert
+	\end{align}	
+\end{remark}
+
+\begin{remark}
+	Let $A$ be a nonsingular matrix then a lower bound for the condition number is given by: 
+	\begin{align*}
+	 1 \leq \lVert I \rVert = \lVert A A^{-1} \rVert \leq \lVert A \rVert \lVert A^{-1} \rVert = \kappa(A)
+	\end{align*}
+\end{remark}
+
+\begin{remark}
+	Let $A \in \R^{m \times n}$ be a matrix and $\lVert . \rVert_2$ the induced matrix norm. Then (\ref{eq:condition_number}) simplifies to: 
+	\begin{align*}
+		\kappa_2(A) = \frac{\sigma_{max}(A)}{\sigma_{min}(A)}
+	\end{align*}	
+\end{remark}
 
 To reduce the influence of numerical instabilities, in general a system of equations $Ax = b$ is not solved by using the inverse $A^{-1}$ for $x=A^{-1}b$ but by other methods. One of the most frequently used methods is that of QR decomposition.  
 
