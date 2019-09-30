@@ -259,7 +259,7 @@ The natural matrix norm thus vividly corresponds to the greatest possible stretc
 	\end{align*}	
 \end{remark}
 
-As already mentioned above, it is necessary to estimate to what extent changes in the input variables have an effect on the output variables. In the case of the calculation of an inverse matrix the following approach can be followed. Starting from a matrix $A$ which should be inverted another matrix $E$ is defined. This matrix $E$ represents small changes of matrix $A$ and should therefore be seen as perturbation of matrix $A$. In order to determine how numerically stable the inversion of a matrix $A$is, the following term is considered.
+As already mentioned above, it is necessary to estimate to what extent changes in the input variables have an effect on the output variables. In the case of the calculation of an inverse matrix the following approach can be followed. Starting from a matrix $A$ which should be inverted another matrix $E$ is defined. This matrix $E$ represents small changes of matrix $A$ and should therefore be seen as perturbation of matrix $A$. In order to determine how numerically stable the inversion of a matrix $A$ is, the following term is considered.
 \begin{equation}\label{eq:stable}
 	\lVert A^{-1} - (A + E)^{-1} \rVert
 \end{equation}
@@ -281,7 +281,7 @@ The task now is to find a constant $c$, so that for all sufficiently small matri
 		S = \sum_{k=0}^\infty B^k = (I-B)^{-1}
 	\end{equation}  
 \end{corollary}
-It therefore follows by applying (\ref{eq:simplify}) and (\ref{eq:Neumann}) that:
+It therefore follows by applying remark \ref{eq:simplify} and corolarry \ref{eq:Neumann} that:
 \begin{align*}
 	(A + E)^{-1} 	&= (I + A^{-1}E)^{-1}A^{-1} \\
 					&= (I - (A^{-1}E) + (A^{-1}E)^2 - (A^{-1}E)^3 + H.O.T.) A^{-1} \\
@@ -293,7 +293,7 @@ It therefore follows by applying (\ref{eq:simplify}) and (\ref{eq:Neumann}) that
 		& = \lVert A^{-1}EA^{-1} - H.O.T. \rVert \\
 		& \leq \lVert A^{-1} \rVert^2 \lVert E \rVert +  H.O.T.
 \end{align*}
-The relative error caused by the implementation of the perturbation of matrix $A$ has therefore an upper bound which is given by: 
+The relative error caused by applying a perturbation to matrix $A$ has therefore an upper bound which is given by: 
 \begin{equation}\label{eq:upper_bound}
  \frac{\lVert A^{-1} - (A + E)^{-1} \rVert}{\lVert A^{-1}\rVert} \leq \lVert A \rVert \lVert A^{-1} \rVert \frac{\lVert E \rVert}{\lVert A \rVert} + H.O.T.
 \end{equation}
