@@ -204,11 +204,22 @@ Not only the existence of the inverse matrix is important but also its numerical
 \end{definition}
 
 \begin{remark}
-	Since every real valued matrix $A \in \R^{m \times n}$ corresponds to a linear map from $\R^n$ to $R^m$ each pair of norms induces an operator norm. In the special case of choosing the Euclidean norm for both vector spaces, (\ref{eq:operator_Norm}) simplifies to:
+	Since every real valued matrix $A \in \R^{m \times n}$ corresponds to a linear map from $\R^n$ to $R^m$, each pair of norms induces an operator norm. In the special case of choosing the Euclidean norm for both vector spaces, (\ref{eq:operator_Norm}) simplifies to:
 	\begin{align}\label{eq:matrix_Norm}
 		\lVert A \rVert_2 := \max_{x \neq 0} \frac{\lVert Ax \rVert_2}{\lVert x \rVert_2} = \max_{\lVert x \rVert_{2 = 1}} \lVert Ax \rVert_2
 	\end{align}	
 	which is a naturally induced matrix norm called spectral norm. 
+\end{remark}
+
+The natural matrix norm thus vividly corresponds to the greatest possible stretching factor, which results from the application of the linear mapping (i.e. matrix) to a unit vector.
+
+\begin{remark}
+	The naturally induced matrix norm satisfies the three norm axioms:
+	\begin{itemize}
+		\item $\lVert A \rVert = 0$ iff $A = 0$ \hfill (being definite)
+		\item $\lVert \alpha A \rVert = |\alpha| \lVert A \rVert$ \hfill (being absolutely homogeneous)
+		\item $\lVert A + B  \rVert \leq \lVert A \rVert + \lVert B \rVert$ \hfill (being sub-additive)
+	\end{itemize}
 \end{remark}
 
 \begin{remark}[\cite{stewart1998matrix}]
@@ -247,6 +258,55 @@ Not only the existence of the inverse matrix is important but also its numerical
 		\kappa_2(A) = \frac{\sigma_{max}(A)}{\sigma_{min}(A)}
 	\end{align*}	
 \end{remark}
+
+As already mentioned above, it is necessary to estimate to what extent changes in the input variables have an effect on the output variables. In the case of the calculation of an inverse matrix the following approach can be followed. Starting from a matrix $A$ which should be inverted another matrix $E$ is defined. This matrix $E$ represents small changes of matrix $A$ and should therefore be seen as perturbation of matrix $A$. In order to determine how numerically stable the inversion of a matrix $A$is, the following term is considered.
+\begin{equation}\label{eq:stable}
+	\lVert A^{-1} - (A + E)^{-1} \rVert
+\end{equation}
+The task now is to find a constant $c$, so that for all sufficiently small matrices $E$ it applies that:
+\begin{equation}
+	\lVert A^{-1} - (A + E)^{-1} \rVert \leq c \lVert E \rVert
+\end{equation}
+ 
+\begin{remark}\label{eq:simplify}
+	It can be shown that:
+	\begin{equation*}
+		(A + E)^{-1} = (I + A^{-1}E)^{-1}A^{-1}
+	\end{equation*}
+\end{remark}
+
+\begin{corollary}[\cite{AnaII}]\label{eq:Neumann}
+	Suppose that B is a bounded linear operator on a Banach space X with $\lVert B \rVert < 1$. Then	
+	\begin{equation}
+		S = \sum_{k=0}^\infty B^k = (I-B)^{-1}
+	\end{equation}  
+\end{corollary}
+It therefore follows by applying (\ref{eq:simplify}) and (\ref{eq:Neumann}) that:
+\begin{align*}
+	(A + E)^{-1} 	&= (I + A^{-1}E)^{-1}A^{-1} \\
+					&= (I - (A^{-1}E) + (A^{-1}E)^2 - (A^{-1}E)^3 + H.O.T.) A^{-1} \\
+					&= A^{-1} + A^{-1} E A^{-1} + H.O.T.
+\end{align*}
+ For the estimation of the stability the following inequality can be obtained by using the previous results as well as (\ref{eq:stable}):
+\begin{align*}
+	\lVert A^{-1} - (A + E)^{-1} \rVert & = \lVert A^{-1} - (A^{-1} - A^{-1}EA^{-1} + H.O.T.) \rVert \\
+		& = \lVert A^{-1}EA^{-1} - H.O.T. \rVert \\
+		& \leq \lVert A^{-1} \rVert^2 \lVert E \rVert +  H.O.T.
+\end{align*}
+The relative error caused by the implementation of the perturbation of matrix $A$ has therefore an upper bound which is given by: 
+\begin{equation}\label{eq:upper_bound}
+ \frac{\lVert A^{-1} - (A + E)^{-1} \rVert}{\lVert A^{-1}\rVert} \leq \lVert A \rVert \lVert A^{-1} \rVert \frac{\lVert E \rVert}{\lVert A \rVert} + H.O.T.
+\end{equation}
+
+\begin{remark}
+	If the naturally induced spectral norm is used as the matrix norm, (\ref{eq:upper_bound}) simplifies to:
+	\begin{align*}
+		\frac{\lVert A^{-1} - (A + E)^{-1} \rVert}{\lVert A^{-1}\rVert} & \leq \kappa_2(A) \frac{\lVert E \rVert}{\lVert A \rVert} + H.O.T. \\
+		& = \frac{\sigma_{max}}{\sigma_{min}} \frac{\lVert E \rVert}{\lVert A \rVert} + H.O.T.
+	\end{align*}
+\end{remark}
+
+
 
 To reduce the influence of numerical instabilities, in general a system of equations $Ax = b$ is not solved by using the inverse $A^{-1}$ for $x=A^{-1}b$ but by other methods. One of the most frequently used methods is that of QR decomposition.  
 
