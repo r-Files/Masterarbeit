@@ -84,10 +84,11 @@ nnls_VMF <- function(A, b, Modellpunkte = 0, Fehlertol = 1e-10, MainloopMax = 10
     # if the new candidate is the same as in the last iteration of the loop
     # a stable state is reached and the optimization is finished
     if (R[j] == jprev) {
-      Stabiler_Zustand <- 1
+      #Stabiler_Zustand <- 1
     }
     
-    if (Stabiler_Zustand == 0) {
+    #if (Stabiler_Zustand == 0) {
+    if (0 == 0) {
       jprev <- R[j]
       
       # move index form R to P
