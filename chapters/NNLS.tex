@@ -281,7 +281,7 @@ The task now is to find a constant $c$, so that for all sufficiently small matri
 		S = \sum_{k=0}^\infty B^k = (I-B)^{-1}
 	\end{equation}  
 \end{corollary}
-It therefore follows by applying remark \ref{eq:simplify} and corolarry \ref{eq:Neumann} that:
+It therefore follows by applying remark \ref{eq:simplify} and corollary \ref{eq:Neumann} that:
 \begin{align*}
 	(A + E)^{-1} 	&= (I + A^{-1}E)^{-1}A^{-1} \\
 					&= (I - (A^{-1}E) + (A^{-1}E)^2 - (A^{-1}E)^3 + H.O.T.) A^{-1} \\
@@ -307,8 +307,24 @@ The relative error caused by applying a perturbation to matrix $A$ has therefore
 \end{remark}
 
 
-
-To reduce the influence of numerical instabilities, in general a system of equations $Ax = b$ is not solved by using the inverse $A^{-1}$ for $x=A^{-1}b$ but by other methods. One of the most frequently used methods is that of QR decomposition.  
+To reduce the influence of numerical instabilities, a linear least square problem is generally solved not by inverting the matrix of the normal equations like in step e) and iv) in algorithm (\ref{alg:NNLS}) but by other numerical methods. A very frequently used method which avoids forming $A^TA$ and inverting it is the $QR$ decomposition.  
 
 \section{QR - decomposition}
 
+A $QR$ decomposition describes the decomposition of a matrix into a product of two matrices with special properties. This decomposition exists for every matrix and can be calculated with different algorithms where the best known are:
+
+\begin{itemize}
+	\item Gram–Schmidt
+	\item Householder transformation
+	\item Givens rotations
+\end{itemize}
+
+\begin{definition}
+	Let $A \in \R^{m \times n}$ with $m \geq n$ be a matrix. The decomposition of $A$ into a product $A = QR$ with an orthogonal matrix $Q \in \R^{m \times m}$ and an upper triangular matrix $R \in \R^{m \times n}$ is called a QR-decomposition. 
+\end{definition}
+
+\begin{remark} Let $Q \in R^{n \times n}$ be an orthogonal matrix an $x \in \R^n$ a vector, then the length of $x$ does not change when transformed by $Q$. 
+	\begin{align*}
+		\lVert Qx \rVert_2^2 = (Qx)^T (Qx) = x^T Q^T Q x = x^T I x = \lVert x \rVert_2^2 
+	\end{align*}
+\end{remark}
