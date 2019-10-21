@@ -320,11 +320,70 @@ A $QR$ decomposition describes the decomposition of a matrix into a product of t
 \end{itemize}
 
 \begin{definition}
-	Let $A \in \R^{m \times n}$ with $m \geq n$ be a matrix. The decomposition of $A$ into a product $A = QR$ with an orthogonal matrix $Q \in \R^{m \times m}$ and an upper triangular matrix $R \in \R^{m \times n}$ is called a QR-decomposition. 
+	Let $A \in \R^{m \times n}$ with $m \geq n$ be a matrix. The decomposition of $A$ into a product $A = QR$ with an orthogonal matrix $Q \in \R^{m \times m}$ and an upper triangular matrix $R \in \R^{m \times n}$ is called a $QR$-decomposition of $A$. 
 \end{definition}
 
-\begin{remark} Let $Q \in R^{n \times n}$ be an orthogonal matrix an $x \in \R^n$ a vector, then the length of $x$ does not change when transformed by $Q$. 
+Considering the fact that $m \geq n$ and the matrix R is always quadratic, it often makes sense to partition both $R$ and $Q$ in a way such that the special structure of the matrices can be used advantageously. Since $R$ is an upper triangular matrix, the last $m-n$ rows of the matrix $R$ consist only of zeros. Therefore it makes sense to split the matrix $Q$ into two parts $Q_1$ and $Q_2$ which have $n$ and $m-n$ columns respectively. The $QR$ decomposition is reduced by the use of the special characteristics described above to:
+\begin{equation}\label{equ:thin_QR}
+	\underbrace{A}_{m \times n} =  \underbrace{Q}_{m \times m} \underbrace{\begin{bmatrix} R_1 \\ 0 \end{bmatrix}}_{m \times n} = [\underbrace{Q_1}_{m \times n} \underbrace{Q_2}_{m \times (m-n)} ]  \underbrace{\begin{bmatrix} R_1 \\ 0 \end{bmatrix}}_{m \times n} = Q_1 R_1
+\end{equation}
+This notation is often referred to as reduced $QR$ decomposition of $A$ (\cite{trefethen1997numerical}).
+
+\begin{remark} The $QR$ - decomposition is unique if $rank(A) = n$ and the diagonal elements fo $R_1$ are required to be positive.
+\end{remark}
+
+\begin{remark} Let $Q \in R^{n \times n}$ be an orthogonal matrix and $x \in \R^n$ a vector, then the following properties can be derived:
+	\begin{itemize}
+		\item $\lVert Qx \rVert_2^2 = (Qx)^T (Qx) = x^T Q^T Q x = x^T I x = \lVert x \rVert_2^2$ \hfill (length-invariant)
+		\item $Q^\top Q = I$
+	\end{itemize}
+\end{remark}
+
+The $QR$-decomposition of matrix $A$ is now be used to reduce the numerical instabilities that can occur in algorithm (\ref{alg:NNLS}). 
+
+\begin{remark} Let $A^P$ be the restricted matrix from algorithm (\ref{alg:NNLS}) and $QR$ the corresponding decomposition such that $A^P = QR$. Then steps e) and iv. from algorithm (\ref{alg:NNLS}) can be written as:
+	\begin{equation}\label{equ:qr_in_NNLS}
+		\begin{aligned}
+			 s^P 	&= ((A^P)^\top A^P)^{-1} (A^P)^\top b \\
+			 		&= ((QR)^\top QR)^{-1} (QR)^\top b \\
+			 		&= (R^\top Q^\top Q R)^{-1} R^\top Q^\top b \\
+			 		&= R^{-1} (R^\top)^{-1} R^\top Q^\top b \\
+			 		&= R^{-1} Q^\top b
+		\end{aligned}
+	\end{equation}
+\end{remark}
+
+A multiplication of (\ref{equ:qr_in_NNLS}) from the left with $R$ results in a formula which is particularly easy for the calculation of the coefficients $s^P_i$.
+\begin{equation}
+	R s^P = Q^\top b
+\end{equation}
+
+Since $R$ is an upper triangular matrix, this system of equations can be solved very easily. Under the assumption that $s^P$ has dimension $n \times 1$ and $Q^\top b$ is denoted as $\tilde{b}$ the parameters can be calculated by backward substitution following the rule:
+\begin{align*}
+	s^P_n 	&= \frac{\tilde{b}}{r_{nn}} \\
+	s^P_i	&= \frac{1}{r_{ii}} \left( \tilde{b}_i - \sum_{j = i + 1}^{n} r_{ij} s^P_j\right) \quad \quad i = n-1, ... 1
+\end{align*}
+
+After showing how algorithm (\ref{alg:NNLS}) benefits by using the $QR$ decomposition, a way how such a decomposition can be calculated has to be presented. In the following, the Householder-transformation,  one of the most widespread methods is shown.
+
+\subsection{Householder Transformation}  
+
+\begin{remark}
+	Let $H$ be a Householder matrix. Then $H$ is symmetric and orthogonal. 
+	
+	\begin{equation*}
+		H^\top 	= (I - 2 \frac{v v^\top}{v^\top v})^\top 
+				= I^\top - \left( 2 \frac{v v^\top}{v^\top v} \right)^\top 
+				= I - 2 \frac{\left( v v^\top \right)^\top}{\left( v^\top v \right)^\top} 
+				= I - 2 \frac{v v^\top}{v^\top v} = H	
+	\end{equation*}
+	
 	\begin{align*}
-		\lVert Qx \rVert_2^2 = (Qx)^T (Qx) = x^T Q^T Q x = x^T I x = \lVert x \rVert_2^2 
+		H^\top H = H H 	
+		& = (I - 2 \frac{v v^\top}{v^\top v}) (I - 2 \frac{v v^\top}{v^\top v}) \\
+		& = I^2 - 2I \frac{v v^\top}{v^\top v} - 2I \frac{v v^\top}{v^\top v} + 4 \frac{v v^\top}{v^\top v} \frac{v v^\top}{v^\top v} \\
+		& = I - 4 \frac{v v^\top}{v^\top v} + 4 \frac{v v^\top v v^\top}{v^\top v v^\top v} \\
+		& = I - 4 \frac{v v^\top}{v^\top v} + 4 \frac{(v^\top v) v v^\top}{(v^\top v)^2} \\
+		& = I
 	\end{align*}
 \end{remark}
