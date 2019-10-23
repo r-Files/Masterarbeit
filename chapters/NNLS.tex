@@ -329,7 +329,7 @@ Considering the fact that $m \geq n$ and the matrix R is always quadratic, it of
 \end{equation}
 This notation is often referred to as reduced $QR$ decomposition of $A$ (\cite{trefethen1997numerical}).
 
-\begin{remark} The $QR$ - decomposition is unique if $rank(A) = n$ and the diagonal elements fo $R_1$ are required to be positive.
+\begin{remark} The $QR$ - decomposition is unique if $rank(A) = n$ and the diagonal elements of $R_1$ are required to be positive.
 \end{remark}
 
 \begin{remark} Let $Q \in R^{n \times n}$ be an orthogonal matrix and $x \in \R^n$ a vector, then the following properties can be derived:
@@ -358,15 +358,83 @@ A multiplication of (\ref{equ:qr_in_NNLS}) from the left with $R$ results in a f
 	R s^P = Q^\top b
 \end{equation}
 
-Since $R$ is an upper triangular matrix, this system of equations can be solved very easily. Under the assumption that $s^P$ has dimension $n \times 1$ and $Q^\top b$ is denoted as $\tilde{b}$ the parameters can be calculated by backward substitution following the rule:
+Since $R$ is an upper triangular matrix, this system of equations can be solved very easily. Under the assumption that $s^P$ has dimension $n \times 1$ and $Q^\top b$ is denoted as $\tilde{b}$, the parameters can be calculated by backward substitution following the rule:
 \begin{align*}
 	s^P_n 	&= \frac{\tilde{b}}{r_{nn}} \\
-	s^P_i	&= \frac{1}{r_{ii}} \left( \tilde{b}_i - \sum_{j = i + 1}^{n} r_{ij} s^P_j\right) \quad \quad i = n-1, ... 1
+	s^P_i	&= \frac{1}{r_{ii}} \left( \tilde{b}_i - \sum_{j = i + 1}^{n} r_{ij} s^P_j\right) \quad \quad i = n-1, ..., 1
 \end{align*}
 
-After showing how algorithm (\ref{alg:NNLS}) benefits by using the $QR$ decomposition, a way how such a decomposition can be calculated has to be presented. In the following, the Householder-transformation,  one of the most widespread methods is shown.
+After showing how algorithm (\ref{alg:NNLS}) benefits by using the $QR$ decomposition, a way how such a decomposition can be calculated will be presented. In the following, the Householder-transformation, one of the most widespread methods, is derived.
 
 \subsection{Householder Transformation}  
+
+The aim of the Householder transformation is to transform matrix $A$ into an upper triangular matrix $R$ by iterative multiplications of so-called Householder matrices $H_i$. 
+The procedure is schematically shown in example (\ref{ex:householder}): 
+
+\begin{example}\label{ex:householder} 
+	Let $A \in \R^{m \times n}$, $m \geq n$ be the matrix for which a $QR$ decomposition is to be performed and $H_1$ and $H_2$ special Householder matrices. Then the $QR$ decomposition is methodically calculated according to the following pattern. 
+	\begin{subequations}
+		\begin{align*}
+		A &= 
+		\begin{pmatrix}
+		a_{1,1} & a_{1,2} & \cdots & a_{1,n} \\
+		a_{2,1} & a_{2,2} & \cdots & a_{2,n} \\
+		a_{3,1} & a_{3,2} & \cdots & a_{3,n} \\
+		\vdots  & \vdots  & \ddots & \vdots  \\
+		a_{m,1} & a_{m,2} & \cdots & a_{m,n} 
+		\end{pmatrix} 
+		\\
+		H_1 A &= 
+		\begin{pmatrix}
+		a_{1,1} & a_{1,2} & \cdots & a_{1,n} \\
+		0		& a_{2,2} & \cdots & a_{2,n} \\
+		0		& a_{3,2} & \cdots & a_{3,n} \\
+		\vdots  & \vdots  & \ddots & \vdots  \\
+		0		& a_{m,2} & \cdots & a_{m,n} 
+		\end{pmatrix} 
+		&= 
+		\begin{pmatrix}
+		a_{1,1} & a_{1,2} & \cdots & a_{1,n} \\
+		0 		&  		  &		   &  \\
+		0 		&  		  &		   &  \\
+		0  		&   	  & \text{\huge$A_2$} &   \\
+		0		& 		  &  	   & 
+		\end{pmatrix}\\
+		H_2 H_1 A &= 
+		\begin{pmatrix}
+		a_{1,1} & a_{1,2} & \cdots & a_{1,n} \\
+		0		& a_{2,2} & \cdots & a_{2,n} \\
+		0		& 0		  & \cdots & a_{3,n} \\
+		\vdots  & \vdots  & \ddots & \vdots  \\
+		0		& 0		  & \cdots & a_{m,n} 
+		\end{pmatrix}
+		&= 
+		\begin{pmatrix}
+		a_{1,1} & a_{1,2} & \cdots & a_{1,n} \\
+		0 		& a_{2,2} &	\cdots & a_{2,n} \\
+		0 		& 0		  &		   &  \\
+		0  		& \vdots  & \text{\huge$A_3$} &   \\
+		0		& 0		  &  	   & 
+		\end{pmatrix}
+		\end{align*}
+	\end{subequations}
+\end{example}
+
+As shown in example (\ref{ex:householder}), by applying Householder matrix $H_1$ to matrix $A$, the first column of Matrix $A$ is transformed to a multiple of the first unit vector. This transformation is implemented by a mirroring which is derived in the following section. After the transformation of the first column only the submatrix $A_2$ of the matrix $H_1A$ is considered. This matrix consists of one row and one column less, but has a decisive advantage.
+Considering $A_2$ on its own, the first column can be mirrored to a multiple of the first unit vector as before and the same logic can be used iteratively. Altogether this means that the use of Householder matrices $H_i$ iteratively generates an upper triangular matrix.
+
+\begin{remark}
+	Since the sub matrices (i.e. $A_2$, $A_3$, ...) that are to be transformed become in each step one row and one column smaller, this is also the case for the Householder matrices $\tilde{H}_i$. In order to preserve the transformations already carried out in the previous steps, the matrices $\tilde{H}_i$ are therefore enlarged in a way such that:
+	\begin{equation*}
+		H_i := \left[
+		\begin{array}{cc}
+		I & 0 \\
+		0 & \tilde{H}_i
+		\end{array}
+		\right]
+	\end{equation*}
+\end{remark}
+
 
 \begin{remark}
 	Let $H$ be a Householder matrix. Then $H$ is symmetric and orthogonal. 
