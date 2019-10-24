@@ -420,8 +420,7 @@ The procedure is schematically shown in example (\ref{ex:householder}):
 	\end{subequations}
 \end{example}
 
-As shown in example (\ref{ex:householder}), by applying Householder matrix $H_1$ to matrix $A$, the first column of Matrix $A$ is transformed to a multiple of the first unit vector. This transformation is implemented by a mirroring which is derived in the following section. After the transformation of the first column only the submatrix $A_2$ of the matrix $H_1A$ is considered. This matrix consists of one row and one column less, but has a decisive advantage.
-Considering $A_2$ on its own, the first column can be mirrored to a multiple of the first unit vector as before and the same logic can be used iteratively. Altogether this means that the use of Householder matrices $H_i$ iteratively generates an upper triangular matrix.
+As shown in example (\ref{ex:householder}), by applying Householder matrix $H_1$ to matrix $A$, the first column of Matrix $A$ is transformed to a multiple of the first unit vector. This transformation is implemented by a mirroring which is derived in the following section. After the transformation of the first column only the submatrix $A_2$ of the matrix $H_1A$ is considered. This matrix consists of one row and one column less, but has a decisive advantage. Considering $A_2$ on its own, the first column can be mirrored to a multiple of the first unit vector as before and the same logic can be used iteratively. Altogether this means that the use of Householder matrices $H_i$ iteratively generates an upper triangular matrix.
 
 \begin{remark}
 	Since the sub matrices (i.e. $A_2$, $A_3$, ...) that are to be transformed become in each step one row and one column smaller, this is also the case for the Householder matrices $\tilde{H}_i$. In order to preserve the transformations already carried out in the previous steps, the matrices $\tilde{H}_i$ are therefore enlarged in a way such that:
@@ -435,6 +434,31 @@ Considering $A_2$ on its own, the first column can be mirrored to a multiple of 
 	\end{equation*}
 \end{remark}
 
+The task now is to find a matrix $H$ that represents the desired reflection. To achieve this, a step-by-step approach is chosen. In a first step the reflection of a vector at a hyperplane through the origin in Euclidean space is constructed. Once this general case has been derived, it can be used to construct a reflection such that the the first column of matrix $A$ is is transformed to a multiple of the first unit vector.
+
+\begin{equation*}
+	\lVert w \rVert 
+	= \lVert x \rVert \cos(\theta) 
+	= \lVert x \rVert \frac{\langle x, v \rangle}{\lVert -x \rVert  \lVert v \rVert} 
+	= \frac{-x^\top v}{\lVert v \rVert}
+\end{equation*}
+
+\begin{equation*}
+	w  
+	= \frac{-x^\top v}{\lVert v \rVert} \frac{v}{\lVert v \rVert}
+	= -v \frac{x^\top v}{v^\top v}
+\end{equation*}
+
+\begin{equation*}
+	Px   
+	= x + 2w
+	= x - 2v \frac{x^\top v}{v^\top v}
+	= x - 2 \frac{x v v^\top}{v^\top v}
+\end{equation*}
+
+\begin{equation*}
+P = I - 2 \frac{v v^\top}{v^\top v}
+\end{equation*}
 
 \begin{remark}
 	Let $H$ be a Householder matrix. Then $H$ is symmetric and orthogonal. 
