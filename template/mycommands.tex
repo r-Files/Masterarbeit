@@ -33,6 +33,12 @@
 \newtheorem{example}{Example}[chapter]
 \newtheorem{remark}{Remark}[chapter]
 
+% draw right angle with tikz
+\newcommand*{\rightangle}[3]{% #1 = point, #2 = start angle, #3 = radius
+	\draw[shift={(#2:#3)}] (#1) arc[start angle=#2, delta angle=90, radius = #3];
+	\fill[shift={(#2+45:#3/2)}] (#1) circle[radius=1.25\pgflinewidth];
+}
+
 % make the everything dependent --> 1 counter for all 
 	%\newtheorem{corollary}[definition]{Corollary}
 	%\newtheorem{lemma}[definition]{Lemma}
