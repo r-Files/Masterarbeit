@@ -323,7 +323,7 @@ A $QR$ decomposition describes the decomposition of a matrix into a product of t
 	Let $A \in \R^{m \times n}$ with $m \geq n$ be a matrix. The decomposition of $A$ into a product $A = QR$ with an orthogonal matrix $Q \in \R^{m \times m}$ and an upper triangular matrix $R \in \R^{m \times n}$ is called a $QR$-decomposition of $A$. 
 \end{definition}
 
-Considering the fact that $m \geq n$ and the matrix R is always quadratic, it often makes sense to partition both $R$ and $Q$ in a way such that the special structure of the matrices can be used advantageously. Since $R$ is an upper triangular matrix, the last $m-n$ rows of the matrix $R$ consist only of zeros. Therefore it makes sense to split the matrix $Q$ into two parts $Q_1$ and $Q_2$ which have $n$ and $m-n$ columns respectively. The $QR$ decomposition is reduced by the use of the special characteristics described above to:
+Considering the fact that $m \geq n$ and the matrix R is always quadratic, it often makes sense to partition both $R$ and $Q$ in a way such that the special structure of these matrices can be used advantageously. Since $R$ is an upper triangular matrix, the last $m-n$ rows of matrix $R$ consist only of zeros. Therefore it makes sense to split the matrix $Q$ into two parts $Q_1$ and $Q_2$ which have $n$ and $m-n$ columns respectively. The $QR$ decomposition is reduced by the use of the special characteristics described above to:
 \begin{equation}\label{equ:thin_QR}
 	\underbrace{A}_{m \times n} =  \underbrace{Q}_{m \times m} \underbrace{\begin{bmatrix} R_1 \\ 0 \end{bmatrix}}_{m \times n} = [\underbrace{Q_1}_{m \times n} \underbrace{Q_2}_{m \times (m-n)} ]  \underbrace{\begin{bmatrix} R_1 \\ 0 \end{bmatrix}}_{m \times n} = Q_1 R_1
 \end{equation}
@@ -339,7 +339,7 @@ This notation is often referred to as reduced $QR$ decomposition of $A$ (\cite{t
 	\end{itemize}
 \end{remark}
 
-The $QR$-decomposition of matrix $A$ is now be used to reduce the numerical instabilities that can occur in algorithm (\ref{alg:NNLS}). 
+The $QR$-decomposition of matrix $A$ can now be used to reduce the numerical instabilities that can occur in algorithm (\ref{alg:NNLS}). 
 
 \begin{remark} Let $A^P$ be the restricted matrix from algorithm (\ref{alg:NNLS}) and $QR$ the corresponding decomposition such that $A^P = QR$. Then steps e) and iv. from algorithm (\ref{alg:NNLS}) can be written as:
 	\begin{equation}\label{equ:qr_in_NNLS}
@@ -369,10 +369,10 @@ After showing how algorithm (\ref{alg:NNLS}) benefits by using the $QR$ decompos
 \subsection{Householder Transformation}  
 
 The aim of the Householder transformation is to transform matrix $A$ into an upper triangular matrix $R$ by iterative multiplications of so-called Householder matrices $H_i$. 
-The procedure is schematically shown in example (\ref{ex:householder}): 
+The procedure is schematically shown in the following example: 
 
 \begin{example}\label{ex:householder} 
-	Let $A \in \R^{m \times n}$, $m \geq n$ be the matrix for which a $QR$ decomposition is to be performed and $H_1$ and $H_2$ special Householder matrices. Then the $QR$ decomposition is methodically calculated according to the following pattern. 
+	Let $A \in \R^{m \times n}$, $m \geq n$ be the matrix for which a $QR$ decomposition is to be performed. Let $H_1$ and $H_2$ be special Householder matrices. Then the $QR$ decomposition is methodically calculated according to the following pattern. 
 	\begin{subequations}
 		\begin{align*}
 		A &= 
@@ -420,7 +420,7 @@ The procedure is schematically shown in example (\ref{ex:householder}):
 	\end{subequations}
 \end{example}
 
-As shown in example (\ref{ex:householder}), by applying Householder matrix $H_1$ to matrix $A$, the first column of Matrix $A$ is transformed to a multiple of the first unit vector. This transformation is implemented by a mirroring which is derived in the following section. After the transformation of the first column only the submatrix $A_2$ of the matrix $H_1A$ is considered. This matrix consists of one row and one column less, but has a decisive advantage. Considering $A_2$ on its own, the first column can be mirrored to a multiple of the first unit vector as before and the same logic can be used iteratively. Altogether this means that the use of Householder matrices $H_i$ iteratively generates an upper triangular matrix.
+As shown in example (\ref{ex:householder}), by applying the Householder matrix $H_1$ to matrix $A$, the first column of Matrix $A$ is transformed to a multiple of the first unit vector. This transformation is implemented by a mirroring which is derived in the following section. After the transformation of the first column only the submatrix $A_2$ of the matrix $H_1A$ is considered. This matrix consists of one row and one column less, but has a decisive advantage. Considering $A_2$ on its own, the first column can be mirrored to a multiple of the first unit vector as before and the same logic can be used iteratively. Altogether this means that the use of Householder matrices $H_i$ iteratively generates an upper triangular matrix.
 
 \begin{remark}
 	Since the sub matrices (i.e. $A_2$, $A_3$, ...) that are to be transformed become in each step one row and one column smaller, this is also the case for the Householder matrices $\tilde{H}_i$. In order to preserve the transformations already carried out in the previous steps, the matrices $\tilde{H}_i$ are therefore enlarged in a way such that:
@@ -475,7 +475,7 @@ The task now is to find a matrix $P$ that represents the desired reflection. To 
 %	\end{tikzpicture}
 %\end{figure}
 
-\begin{figure}\label{fig:mirror_housholder}
+\begin{figure}
 	\caption{Mirroring of $\vec{x}$ to $\vec{Px}$ through hyperplane $H$.}
 	\centering
 	\begin{tikzpicture}
@@ -509,22 +509,23 @@ The task now is to find a matrix $P$ that represents the desired reflection. To 
 	
 	\rightangle{4,0}{90}{.5} % user defined function
 	\end{tikzpicture}
+	\label{fig:householder}
 \end{figure}
 
-For the construction of the mirroring matrix $P$ the case shown in figure (\ref{fig:mirror_housholder}) is considered. Let $\vec{x}$ be a vector in an Euclidean space and $\vec{Px}$ the vector into which $\vec{x}$ is to be transferred by a mirroring. Furthermore, $H$ is the hyperplane at which the reflection should take place. $H$, that mirror-hyperplane which runs through the origin is defined by the normal vector $\vec{v}$, thus a vector which is orthogonal to the hyperplane. The difference between the vector $\vec{x}$ and the hyperplane $H$ is called $\vec{w}$. The angle enclosed by the vectors $\vec{-x}$ and $\vec{w}$ is called $\theta$. The goal is to identify a relation between $\vec{Px}$ and $\vec{x}$. In the sense of better readability and since there can be no misunderstandings in the following, the vector arrows are omitted from now on. The length of $\vec{w}$ is then given by: 
+For the construction of the mirroring matrix $P$ the case shown in figure (\ref{fig:householder}) is considered. Let $\vec{x}$ be a vector in an Euclidean space and $\vec{Px}$ the vector into which $\vec{x}$ is to be transferred by a mirroring. Furthermore, $H$ is the hyperplane at which the reflection should take place. $H$, that mirror-hyperplane which runs through the origin is defined by the normal vector $\vec{v}$, thus a vector which is orthogonal to the hyperplane. The difference between the vector $\vec{x}$ and the hyperplane $H$ is called $\vec{w}$. The angle enclosed by the vectors $\vec{-x}$ and $\vec{w}$ is called $\theta$. The goal is to identify a relation between $\vec{Px}$ and $\vec{x}$. In the sense of better readability and since there can be no misunderstandings in the following, the vector arrows are omitted from now on. The length of $\vec{w}$ is then given by: 
 \begin{equation*}
 	\lVert w \rVert 
 	= \lVert x \rVert \cos(\theta) 
 	= \lVert x \rVert \frac{\langle -x, v \rangle}{\lVert -x \rVert  \lVert v \rVert} 
 	= \frac{-x^\top v}{\lVert v \rVert}
 \end{equation*}
-Where in the second step the definition of the Dot product was used. The vector $w$ is then characterized by the length and the direction: 
+Where in the second step the definition of the dot product was used. The vector $w$ is then characterized by the length and the direction which leads to: 
 \begin{equation*}
 	w  
 	= \frac{-x^\top v}{\lVert v \rVert} \frac{v}{\lVert v \rVert}
 	= -v \frac{x^\top v}{v^\top v}
 \end{equation*}
-The mirrored vector $Px$ can now be defined as:
+By referencing to figure (\ref{fig:householder}), the mirrored vector $Px$ can now be defined as:
 \begin{equation*}
 	Px   
 	= x + 2w
@@ -532,12 +533,23 @@ The mirrored vector $Px$ can now be defined as:
 	= x - 2 \frac{v v^\top x}{v^\top v}
 	= \left(I -  2 \frac{v v^\top}{v^\top v} \right)x
 \end{equation*}
-The matrix constructed to achieve the linear mapping described above is called the Householder matrix  and is represented by the following matrix: 
+The matrix constructed, representing the linear mapping described above is called Householder matrix.  Householder matrices are  defined by a normal vector $v$, i.e. a vector that is orthogonal to the mirror hyperplane and are typically denoted by $H$.
 \begin{equation}\label{eq:Householder}
 H = I - 2 \frac{v v^\top}{v^\top v}
 \end{equation}
-Where $I$ in equation (\ref{eq:Householder}) is the identity matrix.
-
+Where $I$ in equation (\ref{eq:Householder}) is the identity matrix. In case that $v$ is normalized to length one (\ref{eq:Householder}) simplifies to:
+\begin{equation}
+H = I - 2 v v^\top
+\end{equation}
+The concept of Householder matrices can now be used to formalize the process described in example \ref{ex:householder}. Let $x$ be a vector which is to be mirrored to a multiple of the first unit vector $e_1$. This means that a vector $v$ is required, so that with the corresponding Householder-Matrix $H_v$ the following linear transformation can be achieved.
+\begin{equation*}
+	H_{v} x = c e_1
+\end{equation*}
+The required reflection vector $v$ now results from normalizing the difference vector and is given by:
+\begin{equation*}
+	v = \frac{x - ce_1}{\lVert x - ce_1\rVert}
+\end{equation*}
+A basic property that is important for the construction of a $QR$ decomposition is the fact that Householder matrices are orthogonal. 
 \begin{remark}
 	Let $H$ be a Householder matrix. Then $H$ is symmetric and orthogonal.	
 	\begin{equation*}
@@ -557,3 +569,14 @@ Where $I$ in equation (\ref{eq:Householder}) is the identity matrix.
 \end{remark}
 
 
+\begin{remark}
+	Let $H_1, H_2, ..., H_n$ be Householder matrices as stated in example \ref{ex:householder}. Then by using the properties proofed in the previous remark the $QR$ decomposition is given by:  
+	\begin{align*}
+							  & H_n H_{n-1} \cdot \ldots \cdot H_1   A = R   \\
+		\Leftrightarrow \quad & Q^\top A = R \\
+		\Leftrightarrow \quad & QQ^\top A = QR \\
+		\Leftrightarrow \quad & A = QR \\
+	\end{align*}
+\end{remark}
+
+After demonstrating how a QR decomposition can be performed using Householder transformations, the next section is dedicated to the question of performance. 
