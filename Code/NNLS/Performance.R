@@ -21,8 +21,9 @@ method_one <- function(A, b) {
   solve((t(A) %*% A)) %*% t(A) %*% b
 }
 
+
 method_two <- function(A, b) {
-  solve(t(A) %*% A, t(A) %*% b) 
+  solve(t(A) %*% A, t(A) %*% b)
 }
 
 method_three <- function(A, b) {
@@ -48,16 +49,17 @@ set.seed(100)
 m <- 5000
 # generate Ax = b
 # start with A being mxm and solve least square problem for
-# m x 50, m x 100, m x 150, m x 200, m x 250, ... 
+# m x 50, m x 100, m x 150, m x 200, m x 250, ...
 A <- matrix(runif(m * m, 0, 100000), nrow = m)
 x <- runif(m, 0, 1000)
 
 #cols <- lapply(c(10, 50, 100, 150, 200, 300, 400, 500, 750, 1000), seq_len)
-cols <- lapply(c(10, 50, 100, 150), seq_len)
+number_cols <- c(10, 50, 100, 150, 200, 300, 400, 500, 750, 1000)
+cols <- lapply(number_cols, seq_len)
 
 difference <- lapply(cols, function(c) {
   #cols <- 1:500
-  A_P <- A[,c]
+  A_P <- A[, c]
   x_P <- x[c]
   b_P <- A_P %*% x_P
   
@@ -89,28 +91,36 @@ difference <- lapply(cols, function(c) {
 
 
 micro <- lapply(cols, function(c) {
-  A_P <- A[,c]
+  A_P <- A[, c]
   x_P <- x[c]
   b_P <- A_P %*% x_P
   
-  microbenchmark(times = 25,
-                 method_one(A_P, b_P) ,
-                 method_two(A_P, b_P),
-                 method_three(A_P, b_P),
-                 method_four(A_P, b_P),
-                 method_five(A_P, b_P)
+  timing <- microbenchmark(
+    times = 25,
+    method_one(A_P, b_P) ,
+    method_two(A_P, b_P),
+    method_three(A_P, b_P),
+    method_four(A_P, b_P),
+    method_five(A_P, b_P)
   )
+  
+  tmp <- data.table(time = timing$time,
+                    form = timing$expr)
+  tmp[, .(avg = mean(time) / 1e9,
+          med = median(time) / 1e9),
+      by = .(form)][order(form)]
 })
 
-aaa <- data.table(micro[[4]]$time, micro[[4]]$expr)
-aaa[, mean(V1) / 1e9, by = .(V2)]
+names(micro) <- number_cols
 
-micro[[4]]
+micro <- rbindlist(micro, idcol = "col_cnt")
+micro$col_cnt <- as.numeric(micro$col_cnt)
 
 
-p<-ggplot(df2, aes(x=dose, y=len, group=supp)) +
-  geom_line(aes(color=supp))+
-  geom_point(aes(color=supp))
+
+p <- ggplot(micro, aes(x = col_cnt, y = avg, group = form)) + 
+  geom_line(aes(color=form))+
+  geom_point(aes(color=form))
 p
 
 
