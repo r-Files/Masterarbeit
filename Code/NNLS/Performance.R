@@ -1,12 +1,14 @@
 suppressWarnings(library("pacman"))
 pacman::p_load(data.table,
+               ggplot2,
                dplyr,
                nnls,
                matrixStats,
                microbenchmark,
                Rcpp,
                pracma, # for Householder
-               Rfast) #bit64
+               Rfast,
+               matlib) #bit64
 
 Hauptverzeichnis <- paste0(dirname(rstudioapi::getActiveDocumentContext()$path), "/")
 setwd (Hauptverzeichnis)
@@ -15,16 +17,206 @@ setwd (Hauptverzeichnis)
 # Test accuracy of QR-decomposition
 #
 
+method_one <- function(A, b) {
+  solve((t(A) %*% A)) %*% t(A) %*% b
+}
+
+method_two <- function(A, b) {
+  solve(t(A) %*% A, t(A) %*% b) 
+}
+
+method_three <- function(A, b) {
+  qr_lin <- qr(A, LAPACK = FALSE)
+  solve(qr.R(qr_lin)) %*% t(qr.Q(qr_lin)) %*% b
+}
+
+method_four <- function(A, b) {
+  qr_lin <- qr(A, LAPACK = FALSE)
+  solve(qr.R(qr_lin), t(qr.Q(qr_lin)) %*% b)
+}
+
+method_five <- function(A, b) {
+  qr_lin <- qr(A, LAPACK = FALSE)
+  backsolve(qr.R(qr_lin), t(qr.Q(qr_lin)) %*% b)
+}
+
+
+
 # make the results reproducable
 set.seed(100)
 
-n <- 100 # number of columns 
-m <- 500   # number of rows
+m <- 5000
+# generate Ax = b
+# start with A being mxm and solve least square problem for
+# m x 50, m x 100, m x 150, m x 200, m x 250, ... 
+A <- matrix(runif(m * m, 0, 100000), nrow = m)
+x <- runif(m, 0, 1000)
 
-# generate the matrix A, the vector x and the result b of Ax=b
-A <- matrix(runif(m * n,0,5000), nrow = m)
-x <- runif(n, 0, 1000)
+#cols <- lapply(c(10, 50, 100, 150, 200, 300, 400, 500, 750, 1000), seq_len)
+cols <- lapply(c(10, 50, 100, 150), seq_len)
+
+difference <- lapply(cols, function(c) {
+  #cols <- 1:500
+  A_P <- A[,c]
+  x_P <- x[c]
+  b_P <- A_P %*% x_P
+  
+  meth_one <- method_one(A_P, b_P)
+  meth_two <- method_two(A_P, b_P)
+  meth_thr <- method_three(A_P, b_P)
+  meth_fou <- method_four(A_P, b_P)
+  meth_fiv <- method_five(A_P, b_P)
+  
+  errors <- list(
+    "method_one"   = abs(x_P - meth_one) %>% sum(),
+    "method_two"   = abs(x_P - meth_two) %>% sum(),
+    "method_three" = abs(x_P - meth_thr) %>% sum(),
+    "method_four"  = abs(x_P - meth_fou) %>% sum(),
+    "method_five"  = abs(x_P - meth_fiv) %>% sum()
+  )
+  
+  residuals <- list(
+    "method_one"   = abs(A_P %*% meth_one - b_P) %>% sum(),
+    "method_two"   = abs(A_P %*% meth_two - b_P) %>% sum(),
+    "method_three" = abs(A_P %*% meth_thr - b_P) %>% sum(),
+    "method_four"  = abs(A_P %*% meth_fou - b_P) %>% sum(),
+    "method_five"  = abs(A_P %*% meth_fiv - b_P) %>% sum()
+  )
+  
+  list("err" = errors,
+       "res" = residuals)
+})
+
+
+micro <- lapply(cols, function(c) {
+  A_P <- A[,c]
+  x_P <- x[c]
+  b_P <- A_P %*% x_P
+  
+  microbenchmark(times = 25,
+                 method_one(A_P, b_P) ,
+                 method_two(A_P, b_P),
+                 method_three(A_P, b_P),
+                 method_four(A_P, b_P),
+                 method_five(A_P, b_P)
+  )
+})
+
+aaa <- data.table(micro[[4]]$time, micro[[4]]$expr)
+aaa[, mean(V1) / 1e9, by = .(V2)]
+
+micro[[4]]
+
+
+p<-ggplot(df2, aes(x=dose, y=len, group=supp)) +
+  geom_line(aes(color=supp))+
+  geom_point(aes(color=supp))
+p
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+inverse <- solve(A)
+test <- A %*% inverse
+str(test)
+min(test)
+max(test)
+hist(test)
+
+
+
+
+solve(A)
 b <- A %*% x + runif(m, 0, 0.5)
+
+
+
+A <- matrix(runif(N*v,0,100), nrow = v)
+x <- rep(0,N)
+PNeu <- passive <- sort(sample(1:N,n))
+i <- PNeu[n]
+P <- PNeu[-n]
+AP <- A[,P]
+x[passive] <- runif(n, 0, 100)
+b <- A %*% x
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+require(MASS)
+mat <- matrix(rnorm(1e6),nrow=1e3,ncol=1e3)
+
+t0 <- proc.time()
+inv0 <- ginv(mat)
+proc.time() - t0 
+
+t1 <- proc.time()
+inv1 <- solve(mat)
+proc.time() - t1 
+
+
+
+
+start.time <- Sys.time()
+a1 <- solve( t(A) %*% A, t(A) %*% b)
+end.time <- Sys.time()
+end.time - start.time
+
+start.time <- Sys.time()
+AA <- t(A) %*% A
+AB <- t(A) %*% b
+a2 <- solve( AA, AB)
+end.time <- Sys.time()
+end.time - start.time
+
+start.time <- Sys.time()
+a3 <- as.matrix(lsfit( A, b, intercept = FALSE)[[1]])
+end.time <- Sys.time()
+end.time - start.time
+
+start.time <- Sys.time()
+A_QR <- qr(A, tol=1e-15)
+Q <- qr.Q(A_QR)
+R <- qr.R(A_QR)
+a4 <- solve( R, t(Q) %*% b)
+end.time <- Sys.time()
+end.time - start.time
+
+
 
 # general with LINPACK 
 Q_lin <- qr.Q(qr(A, LAPACK = FALSE))
