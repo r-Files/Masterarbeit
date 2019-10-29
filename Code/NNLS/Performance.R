@@ -54,7 +54,7 @@ A <- matrix(runif(m * m, 0, 100000), nrow = m)
 x <- runif(m, 0, 1000)
 
 #cols <- lapply(c(10, 50, 100, 150, 200, 300, 400, 500, 750, 1000), seq_len)
-number_cols <- c(10, 50, 100, 150, 200, 300, 400, 500, 750, 1000)
+number_cols <- c(10, 50, 100, 150, 200, 300, 400, 500, 750, 1000, 1500, 2000, 2500, 3000)
 cols <- lapply(number_cols, seq_len)
 
 difference <- lapply(cols, function(c) {
@@ -124,9 +124,20 @@ p <- ggplot(micro, aes(x = col_cnt, y = avg, group = form)) +
 p
 
 
+save.image(file = "my_work_space.RData")
 
 
+number_cols <- c(10, 50, 100, 150, 200, 300, 400, 500, 750, 4000)
+cols <- lapply(number_cols, seq_len)
 
+A_P <- A[, cols[[10]]]
+x_P <- x[cols[[10]]]
+b_P <- A_P %*% x_P
+
+start <- system.time()
+method_three(A_P, b_P)
+end <- system.time()
+end - start
 
 
 
