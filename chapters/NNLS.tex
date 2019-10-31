@@ -583,6 +583,33 @@ After demonstrating how a QR decomposition can be performed using Householder tr
 
 \subsection{Performance}
 
+Since not only the numerical stability but also the computing time required to determine the grouping is of great interest in practice, the runtimes of different approaches for solving the least squares problem are compared in this section. Obviously, an implementation of a grouping algorithm which is numerically stable on the one hand and fast on the other hand with regard to the computing time is the preferred solution. Therefore seven different implementations will be compared using only functions that are available in \textbf{\textsf{R}} by default. Since these are standard functions in the area of linear algebra, it can be assumed that the functions used are optimized with regard to performance. In particular, some functions access implementations of LINPACK or LAPACK directly and therefore act only as wrappers. The two software libraries LINPACK and LAPACK are written in Fortran and enjoy great popularity in many areas of application due to their efficient implementations with respect to memory usage and computational speed. Of course, there are also a big number of packages available that offer different implementations for solving least square problems. Since a comprehensive analysis of these implementations is difficult due to the daily growing number of packages available the focus is on standard functions available in \textbf{\textsf{R}}. The notation used in algorithm \ref{alg:NNLS} e) and iv., respectively, is simplified for the following comparison to the degree that the restriction to set $P$ is not explicitly specified.
+
+\begin{enumerate}[label={\bfseries Method \arabic*:}, leftmargin=*, labelindent=1em, series = quest]
+	\item This method uses the direct calculation procedure given in algorithm \
+\end{enumerate}
+
+\begin{enumerate}[series = inform]
+	\item[] \begin{lstlisting}[otherkeywords={\%*\%}]
+				solve((t(A) %*% A)) %*% t(A) %*% b
+			\end{lstlisting}
+	
+	asdfasd asdfa sd asdf a sdf
+\end{enumerate}
+
+
+ would go beyond the scope of this work, it has been omitted. 
+
+
+
+solve: The default method is an interface to the LAPACK routines DGESV and ZGESV.
+
+qr: For qr, the LINPACK routine DQRDC (but modified to dqrdc2(*))
+
+Further LINPACK and LAPACK routines are used for qr.coef, qr.qy and qr.aty.
+
+backsolve: This is a wrapper for the level-3 BLAS routine dtrsm. (LAPACK)
+
 $(A^\top A)^{-1}a^\top b \rightarrow solve(A^\top A) A^\top b$
 
 By lapack \cite{lapack}
@@ -596,3 +623,42 @@ A = P * L * U,
 where P is a permutation matrix, L is unit lower triangular, and U is
 upper triangular.  The factored form of A is then used to solve the
 system of equations A * X = B.
+
+
+\begin{lstlisting}[otherkeywords={\%*\%}]
+	solve(t(A) %*% A, t(A) %*% b)
+\end{lstlisting}
+
+\begin{lstlisting}[otherkeywords={\%*\%, qr.R}]
+	deco <- qr(A, LAPACK = FALSE)
+	solve(qr.R(deco)) %*% t(qr.Q(deco)) %*% b
+\end{lstlisting}
+
+\begin{lstlisting}[otherkeywords={\%*\%, qr.R}]
+	deco <- qr(A, LAPACK = FALSE)
+	solve(qr.R(deco), t(qr.Q(deco)) %*% b)
+\end{lstlisting}
+
+\begin{lstlisting}[otherkeywords={\%*\%, qr.R}]
+	deco <- qr(A, LAPACK = FALSE)
+	backsolve(qr.R(deco), t(qr.Q(deco)) %*% b)
+\end{lstlisting}
+
+\begin{lstlisting}[otherkeywords={\%*\%}]
+	qr.solve(qr(A, LAPACK = FALSE), b)
+\end{lstlisting}
+
+\begin{lstlisting}[otherkeywords={\%*\%}]
+	solve(crossprod(A), crossprod(A,b)))
+\end{lstlisting}
+
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\textwidth]{figures/chapter_NNLS/computation_time}
+	\caption{Computation time for solving the least squares problem $Ax = b$ in seconds.}
+	\label{fig:comp_time}
+\end{figure}
+
+Intel$^{®}$ Core™ i7-6700 processor with 64GB of RAM. 
+
