@@ -583,74 +583,90 @@ After demonstrating how a QR decomposition can be performed using Householder tr
 
 \subsection{Performance}
 
-Since not only the numerical stability but also the computing time required to determine the grouping is of great interest in practice, the runtimes of different approaches for solving the least squares problem are compared in this section. Obviously, an implementation of a grouping algorithm which is numerically stable on the one hand and fast on the other hand with regard to the computing time is the preferred solution. Therefore seven different implementations will be compared using only functions that are available in \textbf{\textsf{R}} by default. Since these are standard functions in the area of linear algebra, it can be assumed that the functions used are optimized with regard to performance. In particular, some functions access implementations of LINPACK or LAPACK directly and therefore act only as wrappers. The two software libraries LINPACK and LAPACK are written in Fortran and enjoy great popularity in many areas of application due to their efficient implementations with respect to memory usage and computational speed. Of course, there are also a big number of packages available that offer different implementations for solving least square problems. Since a comprehensive analysis of these implementations is difficult due to the daily growing number of packages available the focus is on standard functions available in \textbf{\textsf{R}}. The notation used in algorithm \ref{alg:NNLS} e) and iv., respectively, is simplified for the following comparison to the degree that the restriction to set $P$ is not explicitly specified.
+Even if runtime analyses of algorithm \ref{alg:NNLS} have shown that a large part of the computing time had to be dedicated to the calculation of the gradients, the importance of least square calculations must not be underestimated and will therefore be analysed below. Since not only computing time but also the numerical stability of the grouping is of great interest in practice, the runtimes of different approaches for solving the least squares problem are compared in this section.  Obviously, an implementation of a grouping algorithm which is numerically stable on the one hand and fast on the other hand with regard to the computing time is the preferred solution. Therefore seven different implementations will be compared using only functions that are available in \textbf{\textsf{R}} by default. Since these are standard functions in the area of linear algebra, it can be assumed that the functions used are optimized with regard to performance. In particular, some functions access implementations of LINPACK or LAPACK directly and therefore act only as wrappers. Examples of such functions are \texttt{solve} and \texttt{qr} whose default methods are interfaces to the LAPACK routine \texttt{DGESV} and \texttt{ZGESV} as well as \texttt{DQRDC} from the LINPACK package. 
+
+\begin{itemize}
+	\item \texttt{DGESV} computes the solution to a real system of linear equations $A * X = B$, where $A$ is an N-by-N matrix and $X$ and $B$ are N-by-NRHS matrices \cite{lapack}.
+	\item \texttt{DQRDC} uses householder transformations to compute the qr factorization of an n by p matrix x.  column pivoting based on the 2-norms of the reduced columns may be performed at the users option \cite{linpack}.
+\end{itemize}
+
+The two software libraries LINPACK and LAPACK are written in Fortran and enjoy great popularity in many areas of application due to their efficient implementations with respect to memory usage and computational speed. Of course, there is also a big number of packages available on CRAN (Comprehensive R Archive Network) that offer different implementations for solving least square problems. Since a comprehensive analysis of these implementations is difficult due to the daily growing number of packages available, the focus is on standard functions available in \textbf{\textsf{R}}. The notation used in algorithm \ref{alg:NNLS} e) and iv., is simplified for the following comparison to the degree that the restriction to set $P$ is not explicitly specified, i.e. $A^P = A$.
 
 \begin{enumerate}[label={\bfseries Method \arabic*:}, leftmargin=*, labelindent=1em, series = quest]
-	\item This method uses the direct calculation procedure given in algorithm \
+	\item This method uses the direct calculation procedure given in algorithm \ref{alg:NNLS}.
 \end{enumerate}
 
 \begin{enumerate}[series = inform]
-	\item[] \begin{lstlisting}[otherkeywords={\%*\%}]
-				solve((t(A) %*% A)) %*% t(A) %*% b
+	\item[] \begin{lstlisting}[otherkeywords={\%*\%}, numbers=none]
+			solve((t(A) %*% A)) %*% t(A) %*% b
 			\end{lstlisting}
 	
 	asdfasd asdfa sd asdf a sdf
 \end{enumerate}
 
 
- would go beyond the scope of this work, it has been omitted. 
+\begin{enumerate}[resume*=quest]
+	\item This method uses the direct calculation procedure given in algorithm \ref{alg:NNLS}.
+\end{enumerate}
+\begin{enumerate}[resume*=inform]
+	\item[] \begin{lstlisting}[otherkeywords={\%*\%}, numbers=none]
+			solve(t(A) %*% A, t(A) %*% b)
+			\end{lstlisting}
+\end{enumerate}
 
 
-
-solve: The default method is an interface to the LAPACK routines DGESV and ZGESV.
-
-qr: For qr, the LINPACK routine DQRDC (but modified to dqrdc2(*))
-
-Further LINPACK and LAPACK routines are used for qr.coef, qr.qy and qr.aty.
-
-backsolve: This is a wrapper for the level-3 BLAS routine dtrsm. (LAPACK)
-
-$(A^\top A)^{-1}a^\top b \rightarrow solve(A^\top A) A^\top b$
-
-By lapack \cite{lapack}
-DGESV computes the solution to a real system of linear equations
-A * X = B,
-where A is an N-by-N matrix and X and B are N-by-NRHS matrices.
-
-The LU decomposition with partial pivoting and row interchanges is
-used to factor A as
-A = P * L * U,
-where P is a permutation matrix, L is unit lower triangular, and U is
-upper triangular.  The factored form of A is then used to solve the
-system of equations A * X = B.
+\begin{enumerate}[resume*=quest]
+	\item This method uses the direct calculation procedure given in algorithm \ref{alg:NNLS}.
+\end{enumerate}
+\begin{enumerate}[resume*=inform]
+	\item[] \begin{lstlisting}[otherkeywords={\%*\%, qr.R}, numbers=none]
+			deco <- qr(A, LAPACK = FALSE)
+			solve(qr.R(deco)) %*% t(qr.Q(deco)) %*% b
+			\end{lstlisting}
+\end{enumerate}
 
 
-\begin{lstlisting}[otherkeywords={\%*\%}]
-	solve(t(A) %*% A, t(A) %*% b)
-\end{lstlisting}
+\begin{enumerate}[resume*=quest]
+	\item This method uses the direct calculation procedure given in algorithm \ref{alg:NNLS}.
+\end{enumerate}
+\begin{enumerate}[resume*=inform]
+	\item[] \begin{lstlisting}[otherkeywords={\%*\%, qr.R}, numbers=none]
+			deco <- qr(A, LAPACK = FALSE)
+			solve(qr.R(deco), t(qr.Q(deco)) %*% b)
+			\end{lstlisting}
+\end{enumerate}
 
-\begin{lstlisting}[otherkeywords={\%*\%, qr.R}]
-	deco <- qr(A, LAPACK = FALSE)
-	solve(qr.R(deco)) %*% t(qr.Q(deco)) %*% b
-\end{lstlisting}
 
-\begin{lstlisting}[otherkeywords={\%*\%, qr.R}]
-	deco <- qr(A, LAPACK = FALSE)
-	solve(qr.R(deco), t(qr.Q(deco)) %*% b)
-\end{lstlisting}
+\begin{enumerate}[resume*=quest]
+	\item This method uses the direct calculation procedure given in algorithm \ref{alg:NNLS}.
+\end{enumerate}
+\begin{enumerate}[resume*=inform]
+	\item[] \begin{lstlisting}[otherkeywords={\%*\%, qr.R}, numbers=none]
+			deco <- qr(A, LAPACK = FALSE)
+			backsolve(qr.R(deco), t(qr.Q(deco)) %*% b)
+			\end{lstlisting}
+\end{enumerate}
 
-\begin{lstlisting}[otherkeywords={\%*\%, qr.R}]
-	deco <- qr(A, LAPACK = FALSE)
-	backsolve(qr.R(deco), t(qr.Q(deco)) %*% b)
-\end{lstlisting}
 
-\begin{lstlisting}[otherkeywords={\%*\%}]
-	qr.solve(qr(A, LAPACK = FALSE), b)
-\end{lstlisting}
+\begin{enumerate}[resume*=quest]
+	\item This method uses the direct calculation procedure given in algorithm \ref{alg:NNLS}.
+\end{enumerate}
+\begin{enumerate}[resume*=inform]
+	\item[] \begin{lstlisting}[otherkeywords={\%*\%, qr.R}, numbers=none]
+			qr.solve(qr(A, LAPACK = FALSE), b)
+			\end{lstlisting}
+\end{enumerate}
 
-\begin{lstlisting}[otherkeywords={\%*\%}]
-	solve(crossprod(A), crossprod(A,b)))
-\end{lstlisting}
+
+\begin{enumerate}[resume*=quest]
+	\item This method uses the direct calculation procedure given in algorithm \ref{alg:NNLS}.
+\end{enumerate}
+\begin{enumerate}[resume*=inform]
+	\item[] \begin{lstlisting}[otherkeywords={\%*\%, qr.R}, numbers=none]
+			solve(crossprod(A), crossprod(A,b)))
+			\end{lstlisting}
+\end{enumerate}
+
 
 
 \begin{figure}
