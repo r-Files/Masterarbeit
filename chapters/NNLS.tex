@@ -341,7 +341,8 @@ This notation is often referred to as reduced $QR$ decomposition of $A$ (\cite{t
 
 The $QR$-decomposition of matrix $A$ can now be used to reduce the numerical instabilities that can occur in algorithm (\ref{alg:NNLS}). 
 
-\begin{remark} Let $A^P$ be the restricted matrix from algorithm (\ref{alg:NNLS}) and $QR$ the corresponding decomposition such that $A^P = QR$. Then steps e) and iv. from algorithm (\ref{alg:NNLS}) can be written as:
+\begin{remark}\label{rem:qr_in_NNLS} 
+	Let $A^P$ be the restricted matrix from algorithm (\ref{alg:NNLS}) and $QR$ the corresponding decomposition such that $A^P = QR$. Then steps e) and iv. from algorithm (\ref{alg:NNLS}) can be written as:
 	\begin{equation}\label{equ:qr_in_NNLS}
 		\begin{aligned}
 			 s^P 	&= ((A^P)^\top A^P)^{-1} (A^P)^\top b \\
@@ -354,7 +355,7 @@ The $QR$-decomposition of matrix $A$ can now be used to reduce the numerical ins
 \end{remark}
 
 A multiplication of (\ref{equ:qr_in_NNLS}) from the left with $R$ results in a formula which is particularly easy for the calculation of the coefficients $s^P_i$.
-\begin{equation}
+\begin{equation}\label{equ:qr_in_NNLS_opt}
 	R s^P = Q^\top b
 \end{equation}
 
@@ -593,20 +594,18 @@ Even if runtime analyses of algorithm \ref{alg:NNLS} have shown that a large par
 The two software libraries LINPACK and LAPACK are written in Fortran and enjoy great popularity in many areas of application due to their efficient implementations with respect to memory usage and computational speed. Of course, there is also a big number of packages available on CRAN (Comprehensive R Archive Network) that offer different implementations for solving least square problems. Since a comprehensive analysis of these implementations is difficult due to the daily growing number of packages available, the focus is on standard functions available in \textbf{\textsf{R}}. The notation used in algorithm \ref{alg:NNLS} e) and iv., is simplified for the following comparison to the degree that the restriction to set $P$ is not explicitly specified, i.e. $A^P = A$.
 
 \begin{enumerate}[label={\bfseries Method \arabic*:}, leftmargin=*, labelindent=1em, series = quest]
-	\item This method uses the direct calculation procedure given in algorithm \ref{alg:NNLS}.
+	\item This method uses the calculation procedure for solving a least square problem given in algorithm \ref{alg:NNLS} which is defined as: $s = (A^\top A)^{-1} A^\top b$.
 \end{enumerate}
 
 \begin{enumerate}[series = inform]
 	\item[] \begin{lstlisting}[otherkeywords={\%*\%}, numbers=none]
 			solve((t(A) %*% A)) %*% t(A) %*% b
 			\end{lstlisting}
-	
-	asdfasd asdfa sd asdf a sdf
 \end{enumerate}
 
 
 \begin{enumerate}[resume*=quest]
-	\item This method uses the direct calculation procedure given in algorithm \ref{alg:NNLS}.
+	\item For this method, the initial approach, $s = (A^\top A)^{-1} A^\top b$, from the previous method is transformed into $A^\top A s = A^\top b$.  The difference is that no inverse has to be calculated any more. 
 \end{enumerate}
 \begin{enumerate}[resume*=inform]
 	\item[] \begin{lstlisting}[otherkeywords={\%*\%}, numbers=none]
@@ -616,7 +615,7 @@ The two software libraries LINPACK and LAPACK are written in Fortran and enjoy g
 
 
 \begin{enumerate}[resume*=quest]
-	\item This method uses the direct calculation procedure given in algorithm \ref{alg:NNLS}.
+	\item This approach uses a QR decomposition and directly implements formula (\ref{equ:qr_in_NNLS}) derived in remark \ref{rem:qr_in_NNNLS} for the solution of the least squares problem. So $s = R^{-1} Q^\top b$ is calculated. 
 \end{enumerate}
 \begin{enumerate}[resume*=inform]
 	\item[] \begin{lstlisting}[otherkeywords={\%*\%, qr.R}, numbers=none]
@@ -627,7 +626,7 @@ The two software libraries LINPACK and LAPACK are written in Fortran and enjoy g
 
 
 \begin{enumerate}[resume*=quest]
-	\item This method uses the direct calculation procedure given in algorithm \ref{alg:NNLS}.
+	\item This approach again uses a QR decomposition and applies formula (\ref{equ:qr_in_NNLS_opt}), which is a transformation of formula (\ref{equ:qr_in_NNLS}). Therefore no inverse has to be calculated to solve the least squares problem by using $Rs = Q^\top b$.
 \end{enumerate}
 \begin{enumerate}[resume*=inform]
 	\item[] \begin{lstlisting}[otherkeywords={\%*\%, qr.R}, numbers=none]
@@ -638,7 +637,7 @@ The two software libraries LINPACK and LAPACK are written in Fortran and enjoy g
 
 
 \begin{enumerate}[resume*=quest]
-	\item This method uses the direct calculation procedure given in algorithm \ref{alg:NNLS}.
+	\item This method again uses a QR decomposition, but also makes use of the special form of the decomposition.	The function \texttt{backsolve} solves a system of linear equations where the coefficient matrix is upper triangular \cite{R}.
 \end{enumerate}
 \begin{enumerate}[resume*=inform]
 	\item[] \begin{lstlisting}[otherkeywords={\%*\%, qr.R}, numbers=none]
@@ -649,7 +648,7 @@ The two software libraries LINPACK and LAPACK are written in Fortran and enjoy g
 
 
 \begin{enumerate}[resume*=quest]
-	\item This method uses the direct calculation procedure given in algorithm \ref{alg:NNLS}.
+	\item The second last method again uses a QR decomposition. The result of the QR decomposition is not saved in a temporary variable as before, but is passed directly to the \texttt{qr.solve} method. 
 \end{enumerate}
 \begin{enumerate}[resume*=inform]
 	\item[] \begin{lstlisting}[otherkeywords={\%*\%, qr.R}, numbers=none]
@@ -659,7 +658,7 @@ The two software libraries LINPACK and LAPACK are written in Fortran and enjoy g
 
 
 \begin{enumerate}[resume*=quest]
-	\item This method uses the direct calculation procedure given in algorithm \ref{alg:NNLS}.
+	\item The last approach solves the least square problem again without QR decomposition but instead using the \texttt{crossprod} function. This function calculates the cross product and according to the documentation should be slightly faster than a direct calculation via the transposed matrix. 
 \end{enumerate}
 \begin{enumerate}[resume*=inform]
 	\item[] \begin{lstlisting}[otherkeywords={\%*\%, qr.R}, numbers=none]
