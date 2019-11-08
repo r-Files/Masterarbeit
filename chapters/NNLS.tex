@@ -584,17 +584,21 @@ After demonstrating how a QR decomposition can be performed using Householder tr
 
 \subsection{Performance}
 
-Even if runtime analyses of algorithm \ref{alg:NNLS} have shown that a large part of the computing time had to be dedicated to the calculation of the gradients, the importance of least square calculations must not be underestimated and will therefore be analysed below. Since not only computing time but also the numerical stability of the grouping is of great interest in practice, the runtimes of different approaches for solving the least squares problem are compared in this section.  Obviously, an implementation of a grouping algorithm which is numerically stable on the one hand and fast on the other hand with regard to the computing time is the preferred solution. Therefore seven different implementations will be compared using only functions that are available in \textbf{\textsf{R}} by default. Since these are standard functions in the area of linear algebra, it can be assumed that the functions used are optimized with regard to performance. In particular, some functions access implementations of LINPACK or LAPACK directly and therefore act only as wrappers. Examples of such functions are \texttt{solve} and \texttt{qr} whose default methods are interfaces to the LAPACK routine \texttt{DGESV} and \texttt{ZGESV} as well as \texttt{DQRDC} from the LINPACK package. 
+Even if runtime analyses of algorithm \ref{alg:NNLS} have shown that a large part of the computing time had to be dedicated to the calculation of the gradients, the importance of finding the solution for the least square problems must not be underestimated and will therefore be analyzed as well. Since not only computing time but also the numerical stability of the grouping process is of great interest in practice, the runtimes and accuracies of different approaches for solving the least squares problem are compared in this section.  Obviously, an implementation of a grouping algorithm which is numerically stable on the one hand and fast on the other hand with regard to the computing time is the preferred solution. Therefore seven different implementations will be compared using only functions that are available in \textsf{R} by default. Since these are standard functions in the area of linear algebra, it can be assumed that the functions used are optimized with regard to performance. In particular, some functions access implementations of the software packages LINPACK and LAPACK directly and therefore act only as wrappers. Examples of such \textsf{R}-functions are \texttt{solve} and \texttt{qr} whose default methods are interfaces to the LAPACK routine \texttt{DGESV} and \texttt{ZGESV} as well as \texttt{DQRDC} from the LINPACK package. 
 
 \begin{itemize}
 	\item \texttt{DGESV} computes the solution to a real system of linear equations $A * X = B$, where $A$ is an N-by-N matrix and $X$ and $B$ are N-by-NRHS matrices \cite{lapack}.
 	\item \texttt{DQRDC} uses householder transformations to compute the qr factorization of an n by p matrix x.  column pivoting based on the 2-norms of the reduced columns may be performed at the users option \cite{linpack}.
 \end{itemize}
 
-The two software libraries LINPACK and LAPACK are written in Fortran and enjoy great popularity in many areas of application due to their efficient implementations with respect to memory usage and computational speed. Of course, there is also a big number of packages available on CRAN (Comprehensive R Archive Network) that offer different implementations for solving least square problems. Since a comprehensive analysis of these implementations is difficult due to the daily growing number of packages available, the focus is on standard functions available in \textbf{\textsf{R}}. The notation used in algorithm \ref{alg:NNLS} e) and iv., is simplified for the following comparison to the degree that the restriction to set $P$ is not explicitly specified, i.e. $A^P = A$.
+The two software libraries LINPACK and LAPACK are written in Fortran and enjoy great popularity in many areas of application due to their efficient implementations with respect to memory usage and computational speed. Of course, there is also a big number of packages available on CRAN (Comprehensive R Archive Network) that offer different implementations for solving least square problems. Since a comprehensive analysis of these implementations is not possible due to the daily growing number of packages available, the focus is on standard functions available in \textsf{R}. The \textsf{R}-functions used to perform the comparison are \texttt{solve}, \texttt{backsolve}, \texttt{qr.solve}, \texttt{qr} and \texttt{t}. The notation used in algorithm \ref{alg:NNLS} steps e) and iv. is simplified for the following comparison to the degree that the restriction to set $P$ is not explicitly specified, i.e. $A^P = A$. The first three approaches pursue a solution without the calculation of a $QR$ decomposition whereas the last four approaches are based on a $QR$ decomposition. 
+
 
 \begin{enumerate}[label={\bfseries Method \arabic*:}, leftmargin=*, labelindent=1em, series = quest]
-	\item This method uses the calculation procedure for solving a least square problem given in algorithm \ref{alg:NNLS} which is defined as: $s = (A^\top A)^{-1} A^\top b$.
+	\item This method uses the calculation procedure for solving a least square problem given in algorithm \ref{alg:NNLS} which is defined as: 
+	\begin{align*}
+		s = (A^\top A)^{-1} A^\top b
+	\end{align*}
 \end{enumerate}
 
 \begin{enumerate}[series = inform]
@@ -605,7 +609,10 @@ The two software libraries LINPACK and LAPACK are written in Fortran and enjoy g
 
 
 \begin{enumerate}[resume*=quest]
-	\item For this method, the initial approach, $s = (A^\top A)^{-1} A^\top b$, from the previous method is transformed into $A^\top A s = A^\top b$.  The difference is that no inverse has to be calculated any more. 
+	\item For this method, the initial approach from the previous method is transformed in such a way that no inverse has to be calculated any more. The least squares problem is then given by:  
+	\begin{align*}
+		(A^\top A)s =  A^\top b
+	\end{align*}
 \end{enumerate}
 \begin{enumerate}[resume*=inform]
 	\item[] \begin{lstlisting}[otherkeywords={\%*\%}, numbers=none]
@@ -615,7 +622,23 @@ The two software libraries LINPACK and LAPACK are written in Fortran and enjoy g
 
 
 \begin{enumerate}[resume*=quest]
-	\item This approach uses a QR decomposition and directly implements formula (\ref{equ:qr_in_NNLS}) derived in remark \ref{rem:qr_in_NNNLS} for the solution of the least squares problem. So $s = R^{-1} Q^\top b$ is calculated. 
+	\item The last approach using no $QR$ decomposition solves the least squares problem using the \texttt{crossprod} function. This function calculates the cross product and according to the documentation should be slightly faster than a direct calculation via the transposed matrix. The approach is therefore identical to the one from method 2 except that a different implementation is used.
+	\begin{align*}
+		(A^\top A)s =  A^\top b
+	\end{align*}
+\end{enumerate}
+\begin{enumerate}[resume*=inform]
+	\item[] \begin{lstlisting}[otherkeywords={\%*\%, qr.R}, numbers=none]
+	solve(crossprod(A), crossprod(A,b)))
+	\end{lstlisting}
+\end{enumerate}
+
+
+\begin{enumerate}[resume*=quest]
+	\item This approach uses a $QR$ decomposition and directly implements formula (\ref{equ:qr_in_NNLS}) derived in remark \ref{rem:qr_in_NNNLS} for the solution of the least squares problem. 
+	\begin{align*}
+		s = R^{-1} Q^\top b
+	\end{align*}
 \end{enumerate}
 \begin{enumerate}[resume*=inform]
 	\item[] \begin{lstlisting}[otherkeywords={\%*\%, qr.R}, numbers=none]
@@ -626,7 +649,10 @@ The two software libraries LINPACK and LAPACK are written in Fortran and enjoy g
 
 
 \begin{enumerate}[resume*=quest]
-	\item This approach again uses a QR decomposition and applies formula (\ref{equ:qr_in_NNLS_opt}), which is a transformation of formula (\ref{equ:qr_in_NNLS}). Therefore no inverse has to be calculated to solve the least squares problem by using $Rs = Q^\top b$.
+	\item This approach again uses a $QR$ decomposition and applies formula (\ref{equ:qr_in_NNLS_opt}), which is a transformation of formula (\ref{equ:qr_in_NNLS}). Therefore no inverse has to be calculated to solve the least squares problem
+	\begin{align*}
+		Rs = Q^\top b
+	\end{align*}
 \end{enumerate}
 \begin{enumerate}[resume*=inform]
 	\item[] \begin{lstlisting}[otherkeywords={\%*\%, qr.R}, numbers=none]
@@ -637,7 +663,10 @@ The two software libraries LINPACK and LAPACK are written in Fortran and enjoy g
 
 
 \begin{enumerate}[resume*=quest]
-	\item This method again uses a QR decomposition, but also makes use of the special form of the decomposition.	The function \texttt{backsolve} solves a system of linear equations where the coefficient matrix is upper triangular \cite{R}.
+	\item This method again uses a $QR$ decomposition, but also makes use of the special form of the decomposition where $R$ is an upper triangular matrix. The function \texttt{backsolve} solves a system of linear equations where the coefficient matrix is upper triangular \cite{R}.
+	\begin{align*}
+		Rs = Q^\top b
+	\end{align*}
 \end{enumerate}
 \begin{enumerate}[resume*=inform]
 	\item[] \begin{lstlisting}[otherkeywords={\%*\%, qr.R}, numbers=none]
@@ -648,21 +677,14 @@ The two software libraries LINPACK and LAPACK are written in Fortran and enjoy g
 
 
 \begin{enumerate}[resume*=quest]
-	\item The second last method again uses a QR decomposition. The result of the QR decomposition is not saved in a temporary variable as before, but is passed directly to the \texttt{qr.solve} method. 
+	\item The last method uses a $QR$ decomposition as well. The result of the $QR$ decomposition is not saved in a temporary variable as before, but is passed directly to the \texttt{qr.solve} method. 	
+	\begin{align*}
+		QRs = b
+	\end{align*}
 \end{enumerate}
 \begin{enumerate}[resume*=inform]
 	\item[] \begin{lstlisting}[otherkeywords={\%*\%, qr.R}, numbers=none]
 			qr.solve(qr(A, LAPACK = FALSE), b)
-			\end{lstlisting}
-\end{enumerate}
-
-
-\begin{enumerate}[resume*=quest]
-	\item The last approach solves the least square problem again without QR decomposition but instead using the \texttt{crossprod} function. This function calculates the cross product and according to the documentation should be slightly faster than a direct calculation via the transposed matrix. 
-\end{enumerate}
-\begin{enumerate}[resume*=inform]
-	\item[] \begin{lstlisting}[otherkeywords={\%*\%, qr.R}, numbers=none]
-			solve(crossprod(A), crossprod(A,b)))
 			\end{lstlisting}
 \end{enumerate}
 

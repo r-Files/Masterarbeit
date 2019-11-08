@@ -26,27 +26,29 @@ method_two <- function(A, b) {
 }
 
 method_three <- function(A, b) {
-  qr_lin <- qr(A, LAPACK = FALSE)
-  solve(qr.R(qr_lin)) %*% t(qr.Q(qr_lin)) %*% b
+  solve(crossprod(A), crossprod(A,b))
 }
 
 method_four <- function(A, b) {
-  qr_lin <- qr(A, LAPACK = FALSE)
-  solve(qr.R(qr_lin), t(qr.Q(qr_lin)) %*% b)
+  deco <- qr(A, LAPACK = FALSE)
+  solve(qr.R(deco)) %*% t(qr.Q(deco)) %*% b
 }
 
 method_five <- function(A, b) {
-  qr_lin <- qr(A, LAPACK = FALSE)
-  backsolve(qr.R(qr_lin), t(qr.Q(qr_lin)) %*% b)
+  deco <- qr(A, LAPACK = FALSE)
+  solve(qr.R(deco), t(qr.Q(deco)) %*% b)
 }
 
 method_six <- function(A, b) {
-  qr.solve(qr(A, LAPACK = FALSE), b)
+  deco <- qr(A, LAPACK = FALSE)
+  backsolve(qr.R(deco), t(qr.Q(deco)) %*% b)
 }
 
 method_seven <- function(A, b) {
-  solve(crossprod(A), crossprod(A,b))
+  qr.solve(qr(A, LAPACK = FALSE), b)
 }
+
+
 
 
 
@@ -103,8 +105,6 @@ difference <- lapply(cols, function(c) {
 })
 
 
-difference %>% str()
-
 
 
 micro <- lapply(cols, function(c) {
@@ -144,6 +144,17 @@ levels(micro$form)[levels(micro$form) == "method_six(A_P, b_P)"] <- "method six"
 levels(micro$form)[levels(micro$form) == "method_seven(A_P, b_P)"] <- "method seven"
 
 
+gg_color_hue <- function(n) {
+  hues = seq(15, 375, length = n + 1)
+  hcl(h = hues, l = 65, c = 100)[1:n]
+}
+
+color_lty_cross <- expand.grid(
+  ltypes = 1:6,
+  colors = gg_color_hue(10)
+  ,stringsAsFactors = F)
+
+
 p <- ggplot(micro, aes(x = col_cnt, y = avg, group = form)) + 
   geom_line(aes(color  = form)) +
   geom_point(aes(color = form)) +
@@ -155,3 +166,8 @@ p
 
 saveRDS(micro, "micro.rds")
 saveRDS(difference, "difference.rds")
+
+
+
+micro <- readRDS("micro.rds")
+difference <- readRDS("difference.rds")
