@@ -157,7 +157,8 @@ color_lty_cross <- expand.grid(
 
 p <- ggplot(micro, aes(x = col_cnt, y = avg, group = form)) + 
   geom_line(aes(color  = form)) +
-  geom_point(aes(color = form)) +
+  geom_point(aes(shape = form)) +
+  facet_grid(. ~ QR) +
   labs(x = "Number of columns",
        y = "Average computation time in seconds",
        title = "Computational time least squares problem",
@@ -171,3 +172,17 @@ saveRDS(difference, "difference.rds")
 
 micro <- readRDS("micro.rds")
 difference <- readRDS("difference.rds")
+
+# define a column to distinguish between methods which use QR and not
+micro[, QR := "QR used"]
+# methods one to three don't use QR decomposition
+micro[form %in% c("method one", "method two", "method three"), QR := "QR not used"]
+
+
+
+
+
+ggplot(df2, aes(x=time, y=bill, group=sex)) +
+  geom_line(aes(linetype=sex, color=sex))+
+  geom_point(aes(color=sex))+
+  theme(legend.position="top")
