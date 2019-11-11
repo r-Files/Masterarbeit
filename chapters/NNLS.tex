@@ -688,9 +688,21 @@ The two software libraries LINPACK and LAPACK are written in Fortran and enjoy g
 			\end{lstlisting}
 \end{enumerate}
 
-In order to determine how the number of columns of matrix $A$ affects the run time, the following setup was chosen. Matrix $A$ was defined as a square matrix with $n = 5000$, where the entries of $A$ is uniformly distributed between $0$ and $100000$, i.e. $A \in R^{n \times n}$. The values of vector $x$ are uniformly distributed between $0$ and $1000$. By defining matrix $A$ and vector $x$, the result vector $b$ is determined as well. For each of the seven methods, the number of columns used from matrix $A$ was successively increased and then the least squares problem was solved. Figure (\ref{fig:comp_time}) shows how the time needed to solve the least squares problem increases with the number of columns.  
+In order to determine how the number of columns of matrix $A$ affects the run time, the following setup was chosen. Matrix $A$ was defined as a square matrix with $n = 5000$, where the entries of $A$ is uniformly distributed between $0$ and $100000$, i.e. $A \in R^{n \times n}$. The values of vector $x$ are uniformly distributed between $0$ and $1000$. By defining matrix $A$ and vector $x$, the result vector $b$ is determined as well. For each of the seven methods, the number of columns used from matrix $A$ was successively increased and then the least squares problem was solved. The results obtained in the test runs were produced with the following configuration: 
 
+\begin{itemize}
+	\item Processor: Intel$^{®}$ Core™ i7-6700
+	\item RAM: 64GB
+	\item \textsf{R}-version: 3.5.0
+\end{itemize}
 
+In order to obtain reliable results, all calculations were repeated ten times and the individual results averaged. Figure (\ref{fig:comp_time}) shows how the time needed to solve the least squares problem increases with the number of columns used. It is important to note that due to illustration purposes the methods are presented separately based on their underlying approach, but both panels use the same scaling. The left part of the graph shows the results of methods one to three, i.e. all those methods that do not use a $QR$ decomposition to solve the least squares problem. Even if it is difficult to recognize in the left panel of figure (\ref{fig:comp_time}) due to the scaling, the data shows that method one generally has significantly longer runtimes. Starting from a column number of about 1000, it is clearly visible that the runtime for method one increases significantly faster than for the other two methods. This can be attributed to the fact that method one requires the calculation of an inverse matrix. There are no significant differences between method two and method three, although method two generally has slightly shorter runtimes. The usually existing speed advantage given in the help of the \texttt{crossprod} function could not be verified. In the right part of figure (\ref{fig:comp_time}), the results of methods four to seven are shown, i.e. all those methods that use a $QR$ decomposition. In general, it can be seen that, with the exception of method seven, all methods are considerably slower than those without $QR$ decomposition. Method four shows significantly longer running times than all other methods, which is due to the fact that both, a $QR$ decomposition and a matrix inversion must be performed. Methods five and six behave very similarly for the most part, with a small runtime advantage for method six being observed as the number of columns increases. Since the two methods are basically identical and method six uses only the special structure of the upper triangular matrix, it can be assumed that this advantage is only effective for larger systems of equations. The method that distinguishes significantly from the others in terms of runtime is method seven. Over the entire range, it's computational time is significantly shorter than that of the other methods. Since method seven is the only method that does not temporarily save the result of the QR decomposition but directly processes it, it seems reasonable to conclude that this already results in a significant performance advantage. Considering the results regardless of whether a $QR$ decomposition was used or not, the following summary results:
+
+\begin{itemize}
+	\item Methods two, three and seven are to be classified as equivalent in terms of runtime and are also the fastest altogether.
+	\item Methods one, five and six have similar runtimes, with method one always performing best.
+	\item The slowest method by far is method four. 
+\end{itemize}
 \begin{figure}
 	\centering
 	\includegraphics[width=\textwidth]{figures/chapter_NNLS/computation_time}
@@ -698,5 +710,5 @@ In order to determine how the number of columns of matrix $A$ affects the run ti
 	\label{fig:comp_time}
 \end{figure}
 
-Intel$^{®}$ Core™ i7-6700 processor with 64GB of RAM. 
+
 

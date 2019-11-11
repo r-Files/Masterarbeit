@@ -104,6 +104,7 @@ difference <- lapply(cols, function(c) {
        "res" = residuals)
 })
 
+names(difference) <- number_cols
 
 
 
@@ -143,27 +144,24 @@ levels(micro$form)[levels(micro$form) == "method_five(A_P, b_P)"] <- "method fiv
 levels(micro$form)[levels(micro$form) == "method_six(A_P, b_P)"] <- "method six"
 levels(micro$form)[levels(micro$form) == "method_seven(A_P, b_P)"] <- "method seven"
 
-
-gg_color_hue <- function(n) {
-  hues = seq(15, 375, length = n + 1)
-  hcl(h = hues, l = 65, c = 100)[1:n]
-}
-
-color_lty_cross <- expand.grid(
-  ltypes = 1:6,
-  colors = gg_color_hue(10)
-  ,stringsAsFactors = F)
+# define a column to distinguish between methods which use QR and not
+micro[, QR := "QR used"]
+# methods one to three don't use QR decomposition
+micro[form %in% c("method one", "method two", "method three"), QR := "QR not used"]
 
 
-p <- ggplot(micro, aes(x = col_cnt, y = avg, group = form)) + 
-  geom_line(aes(color  = form)) +
-  geom_point(aes(shape = form)) +
+p <- ggplot(micro, aes(x = col_cnt, y = avg, group = form, shape = form, color = form)) + 
+  geom_line() +
+  geom_point() +
+  scale_shape_manual(values = 1:7) + 
   facet_grid(. ~ QR) +
   labs(x = "Number of columns",
        y = "Average computation time in seconds",
-       title = "Computational time least squares problem",
-       color = "Implementation")
+       title = "Computational time least squares problem") +
+  theme(legend.title = element_blank(),
+        legend.position = "bottom")
 p
+
 
 saveRDS(micro, "micro.rds")
 saveRDS(difference, "difference.rds")
@@ -173,16 +171,8 @@ saveRDS(difference, "difference.rds")
 micro <- readRDS("micro.rds")
 difference <- readRDS("difference.rds")
 
-# define a column to distinguish between methods which use QR and not
-micro[, QR := "QR used"]
-# methods one to three don't use QR decomposition
-micro[form %in% c("method one", "method two", "method three"), QR := "QR not used"]
 
 
-
-
-
-ggplot(df2, aes(x=time, y=bill, group=sex)) +
-  geom_line(aes(linetype=sex, color=sex))+
-  geom_point(aes(color=sex))+
-  theme(legend.position="top")
+errors_for_plotting <- sapply(difference, function(x){
+  x$err
+}) %>% as.data.table(keep.rownames = "method")
