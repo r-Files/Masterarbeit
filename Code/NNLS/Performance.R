@@ -150,29 +150,105 @@ micro[, QR := "QR used"]
 micro[form %in% c("method one", "method two", "method three"), QR := "QR not used"]
 
 
-p <- ggplot(micro, aes(x = col_cnt, y = avg, group = form, shape = form, color = form)) + 
+p_runtime <-
+  ggplot(micro,
+         aes(
+           x = col_cnt,
+           y = avg,
+           group = form,
+           shape = form,
+           color = form
+         )) +
   geom_line() +
   geom_point() +
-  scale_shape_manual(values = 1:7) + 
+  scale_shape_manual(values = 1:7) +
   facet_grid(. ~ QR) +
   labs(x = "Number of columns",
        y = "Average computation time in seconds",
        title = "Computational time least squares problem") +
   theme(legend.title = element_blank(),
         legend.position = "bottom")
-p
+p_runtime
 
 
 saveRDS(micro, "micro.rds")
 saveRDS(difference, "difference.rds")
 
 
-
 micro <- readRDS("micro.rds")
 difference <- readRDS("difference.rds")
 
+###############
+## errors
+###############
+
+# extract the errors from the list and melt it into a long format
+errors_for_plotting <- sapply(difference, function(x) {
+  x$err %>% unlist()
+}) %>% as.data.table(keep.rownames = "method") %>%
+  melt(id.vars = "method",
+       variable.name = "col_cnt",
+       value.name = "error")
+
+# make sure that the levels are ordered in a way we want it to
+errors_for_plotting[, method := factor(
+  method,
+  levels = c(
+    "method_one",
+    "method_two",
+    "method_three",
+    "method_four",
+    "method_five",
+    "method_six",
+    "method_seven"
+  )
+)]
+
+# plot the errors for each number of columns
+p_error <-
+  ggplot(errors_for_plotting[!(col_cnt %like% "^(10|50)"), ], # kick out what's like 10.. or 50..
+         aes(x = method,y = error)) +
+  geom_point() +
+  facet_wrap(~ col_cnt, scales = "free_y") +
+  labs(title = "Average errors per column count and method") +
+  ylab(expression(paste("Average absolute error between ", s[true], " and ", s[LS]))) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        axis.title.x = element_blank())
+p_error
 
 
-errors_for_plotting <- sapply(difference, function(x){
-  x$err
-}) %>% as.data.table(keep.rownames = "method")
+###############
+## residuals
+###############
+
+residuals_for_plotting <- sapply(difference, function(x) {
+  x$res %>% unlist()
+}) %>% as.data.table(keep.rownames = "method") %>%
+  melt(id.vars = "method",
+       variable.name = "col_cnt",
+       value.name = "residuals")
+
+# make sure that the levels are ordered in a way we want it to
+residuals_for_plotting[, method := factor(
+  method,
+  levels = c(
+    "method_one",
+    "method_two",
+    "method_three",
+    "method_four",
+    "method_five",
+    "method_six",
+    "method_seven"
+  )
+)]
+
+p_resid <-
+  ggplot(residuals_for_plotting[!(col_cnt %like% "^(10|50)"), ], # kick out what's like 10.. or 50..
+         aes(x = method,y = residuals)) +
+  geom_point() +
+  facet_wrap(~ col_cnt, scales = "free_y") +
+  labs(title = "Sum of residuals per column count and method") +
+  ylab(expression(paste("Sum of absolute residuals: ", A * s[LS] - b))) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        axis.title.x = element_blank())
+p_resid
