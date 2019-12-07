@@ -1,0 +1,39 @@
+%% ========================================================================
+%%							NNLS
+%% ========================================================================
+
+
+\chapter{Neural Networks (NN)}
+\label{cha:NN}
+
+In the last chapter of this thesis, a mathematical concept is discussed that has attracted much attention in the recent past, namely neural networks. 
+
+\cite{Gartner2017}
+\cite{Gartner2018}
+\cite{Gartner2019}
+\cite{Allaire2018}
+Another way to find a grouped portfolio that minimizes the deviation defined in formula (\ref{eq:objective_function}) is to solve the problem using mathematical optimization methods. The goal is to find a subset of the portfolio and scale it in way so that the square deviation becomes minimal. Of course, this approach must ensure that scaling is only possible in the positive direction. This means that it makes no sense to have a negative policy in the grouped portfolio, because it cannot be defined, not to mention explained logically. 
+
+\begin{definition}[Non-negative least squares]\label{def:NNLS}
+	Let $P \subset \V$ be a portfolio, $A \in \R^{m \times n}$ the matrix with the corresponding cashflows and $b \in \R^m$ the vector with the summed cashflows. Then $x \in \R^n$, the vector of scaling, should be optimized such that:  
+	\begin{equation}\label{eq:NNLS}
+		\begin{aligned}
+			\argmin_x \lVert Ax -b \rVert_2^2 \\
+			\text{subject to } x \geq 0
+		\end{aligned}
+	\end{equation}
+\end{definition}
+
+\begin{remark}
+	\leavevmode % needed for items to start in new line after remark.
+	\makeatletter
+	\@nobreaktrue
+	\makeatother
+	\begin{itemize}
+		\item 	The entries of the vector $x$ are the so-called scaling values for the cashflows in matrix $A$. Each entry $x_i, i \in \{1,...n\}$ that is greater than zero scales to the $i$-th column of matrix $A$ where column $i$ represents the cashflows of the $i$-th policy of the portfolio.
+		\item 	It should be noted that this approach optimizes cashflows, not policies. Since there is a one-to-one relationship between cashflows and policies, the scaling factors cannot only be used to scale the cashflows but also to scale the policies in order to create a grouped portfolio. 
+		\item 	Scaling policies can also involve risks, as a policy that is scaled by a factor of 2 will not necessarily produce cash flows that are also increased by a factor of 2. This can be attributed to the fact that, for example, non-linearities occur due to discount effects for higher premiums in the tariff.
+	\end{itemize}
+\end{remark}
+
+
