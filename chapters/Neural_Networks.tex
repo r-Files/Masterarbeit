@@ -26,11 +26,39 @@ After a brief classification of the terms, the next section describes the basic 
 
 \section{Fundamentals of Neural Networks}
 
-In the previous section the functionality of neuronal networks was already described in a rather abstract way as a multi-stage information distillation process. After this high level explanation, the focus is now on pointing out which individual components make up a simple neural network. Figure (\ref{fig:NN_overview}) shows a schematic representation of the individual components required to build a basic neural network. The starting point for the training of any neural network is the input data \texttt{Input X} and the associated outputs \texttt{True targets Y}. These two exogenous quantities must have a standardized numeric form so that the neural network can process them. For example, images of animals can serve as input data and the corresponding target values would then be names of the animals recognizable from the image. Thus, every image which is represented as a number matrix for further processing in the neuronal network is assigned to an animal. In the initial step, the input data is transferred to the first layer. This layer executes a data transformation based on some weights. After the first layer, the transformed output from the current layer servers as input for the next layer which then performs another data transformation based on the weights belonging to this new layer. After the data has passed through the last layer of the model, the transformed data can be used to generate \texttt{Predictions Y'} of the output values. After the first output values have been predicted from the input values, it is necessary to evaluate how well those values match with the actual outputs. For this purpose the true as well as the predicted outputs are fed into a so-called loss function. This function now compares the deviations of the two outputs using a mathematical procedure and returns a loss score.  This loss score is now a measure of how strong the the predicted values \texttt{Y'} deviate from the true values \texttt{Y}. A greater loss score therefore means that there is still a significant deviance between the true and the predicted outputs. 
+In the previous section the functionality of neuronal networks was already described in a rather abstract way as a multi-stage information distillation process. After this high level explanation, the focus is now on pointing out which individual components make up a simple neural network and how they interact. Figure (\ref{fig:NN_overview}) shows a simplified representation of the individual components required to build one of the most basic neural networks possible. Starting point for explaining the learning process of a neural network is a data set consisting of both the input and the associated output data. If the cash flows of insurance policies are to be simulated, the individual policy parameters can be used as input data and the associated cash flows as output data. These two exogenous quantities are then processed in several steps.
 
 \begin{figure}
 	\centering
 	\includegraphics[width=0.65\textwidth]{figures/chapter_NN/NN_overview}
-	\caption{Schematic representation of a neural network based on \cite{Allaire2018}}
+	\caption{Simplified representation of a neural network based on \cite{Allaire2018}}
 	\label{fig:NN_overview}
 \end{figure}
+
+\begin{enumerate}[label=Step \arabic*:]
+	\item The process is initiated by transferring the input data \texttt{Input X} in a suitably format to the first layer. 	
+	\item This first layer then performs a data transformation based on some weights associated with that specific layer. In the first cycle those weights are randomly initialized.
+	\item The transformed output from the first layer is then passed to the next layer and serves as its input. This layer also performs a data transformation based on weights which are again initialized randomly for the first cycle.
+	\item After the data has passed through the last data transformation layer of the model the transformed output values are used as \texttt{Predictions Y'}.
+	\item A predefined function, called the \texttt{Loss function}, measures the quality of the network’s output by comparing the \texttt{Predictions Y'} and the \texttt{True targets Y}. The result is the \texttt{loss score}, which is used as a feedback signal to adjust the \texttt{weights} associated with the layers.
+	\item The job of the \texttt{optimizer} is then to take the \texttt{loss score} as an input and update the \texttt{weights} in such a way that the \texttt{loss score} is lowered.
+\end{enumerate}
+
+The above steps describe a single learning cycle for a neural net. Of course, passing the input data through the net once is not sufficient to learn abstraction forms that would lead to good prediction results at all. Learning now means to find a set of values for all weights such that the input is mapped correctly to the output for as many training samples as possible. Since, depending on the design of the network, there can be millions of weights that need to be learned, this is by far the most computing intensive part. Due to the fact that the learning process of the weights consists of a large number of matrix operations, it is possible to use highly parallelized algorithms.
+
+\begin{remark}
+	The choice of the correct loss function is of great importance. If the loss function does not correctly reflect an improvement of the model, the neural net will inevitably drift in the wrong direction.
+\end{remark}
+\begin{remark}
+	As already explained in the previous chapters, in the specific case of cash flow matching the sum of the squared residuals would be suitable as a loss score.
+\end{remark}
+\begin{remark}
+	Graphics cards with their massively parallel architecture are predestined for the solution of such training tasks and can therefore massively reduce training times compared to a pure CPU system.
+\end{remark}
+
+After providing an overview of all components used in a neural net, the next section focuses on how a single layer is organized. 
+
+\subsection{One neuron}
+
+
+
