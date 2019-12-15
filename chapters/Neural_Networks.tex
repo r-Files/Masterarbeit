@@ -44,27 +44,30 @@ In the previous section the functionality of neuronal networks was already descr
 	\item The task of the \texttt{Optimizer} is to take the \texttt{loss score} as an input and update the \texttt{weights} in such a way that the \texttt{loss score} is lowered.
 \end{enumerate}
 
-The above steps describe a single learning cycle for a neural network. Of course, passing the input data through the net once is not sufficient to find combinations of weights that would lead to good prediction results at all. So what learning means, is to find a set of values for all weights such that the input is mapped correctly to the output for as many different input combinations as possible. This learning is achieved by grouping the input data into so-called batches and repeatedly passing them through the network. The batch size is then the number of training samples sent through the neural network before the weights are adjusted by the optimizer.  
-
-\begin{remark}
-	adf
-\end{remark}
-
-The batch size is a hyperparameter of gradient descent that controls the number of training samples to work through before the model’s internal parameters are updated.
-
-Since, depending on the design of the network, there can be millions of weights that need to be learned, this is by far the most computing intensive part. Due to the fact that the learning process of the weights consists of a large number of matrix operations, it is possible to use highly parallelized algorithms.
-
 \begin{remark}
 	The choice of the correct loss function is of great importance. If the loss function does not correctly reflect an improvement of the model, the neural net will inevitably drift in the wrong direction.
 \end{remark}
 \begin{remark}
 	As already explained in the previous chapters, in the specific case of cash flow matching the sum of the squared residuals would be suitable as a loss score.
 \end{remark}
+
+The above steps describe a single learning cycle for a neural network. Of course, passing the input data through the net once is not sufficient to find combinations of weights that would lead to good prediction results at all. So what learning means, is to find a set of values for all weights such that the input is mapped correctly to the output for as many different input combinations as possible. This learning is achieved by grouping the input data into so-called batches and repeatedly passing those batches through the network. Associated with a batch is the batch size which defines the number of training samples sent through the neural network before the weights are adjusted by the optimizer.  
 \begin{remark}
-	Graphics cards with their massively parallel architecture are predestined for the solution of such training tasks and can therefore massively reduce training times compared to a pure CPU system.
+	Three different batch size approaches can be used to learn the weights in a network.
+	\begin{itemize}
+		\item Batch Gradient Descent: Batch size is equal to the size of the training samples.
+		\item Stochastic Gradient Descent: Batch size is equal to one.
+		\item Mini-Batch Gradient Descent: Batch size is bigger than one but less than the size of the training samples.
+	\end{itemize} 
 \end{remark}
 
-After providing an overview of all components used in a neural net, the next section focuses on how a single layer is organized. 
+Depending on the design of the network there can be millions of weights that need to be learned. Adjusting those millions of weights based on the feedback signal is by far the most computing intensive part of training a network. Due to the fact that the learning process is based on a large number of similar matrix operations it is possible to use highly parallelized algorithms. The availability of relatively affordable hardware that can efficiently handle such parallelizable tasks is besides the existence of large amount of data another  major reason why neural networks took off in recent years.  
+
+\begin{remark}
+	 Compared to a pure CPU system, graphics cards with their massively parallel architecture are predestined for handling such training tasks and can therefore massively reduce the time needed to train a network.
+\end{remark}
+
+After providing an overview of all components used in a neural network and presenting the idea how a network learns, the next section focuses on how a single layer is organized.
 
 \subsection{One neuron}
 
