@@ -31,20 +31,28 @@ In the previous section the functionality of neuronal networks was already descr
 \begin{figure}
 	\centering
 	\includegraphics[width=0.65\textwidth]{figures/chapter_NN/NN_overview}
-	\caption{Simplified representation of a neural network based on \cite{Allaire2018}}
+	\caption{Simplified representation of a neural network from \cite{Allaire2018}}
 	\label{fig:NN_overview}
 \end{figure}
 
 \begin{enumerate}[label=Step \arabic*:]
-	\item The process is initiated by transferring the input data \texttt{Input X} in a suitably format to the first layer. 	
+	\item The process is initiated by providing the input data \texttt{Input X} in a suitably format to the first layer. 	
 	\item This first layer then performs a data transformation based on some weights associated with that specific layer. In the first cycle those weights are randomly initialized.
 	\item The transformed output from the first layer is then passed to the next layer and serves as its input. This layer also performs a data transformation based on weights which are again initialized randomly for the first cycle.
 	\item After the data has passed through the last data transformation layer of the model the transformed output values are used as \texttt{Predictions Y'}.
 	\item A predefined function, called the \texttt{Loss function}, measures the quality of the network’s output by comparing the \texttt{Predictions Y'} and the \texttt{True targets Y}. The result is the \texttt{loss score}, which is used as a feedback signal to adjust the \texttt{weights} associated with the layers.
-	\item The job of the \texttt{optimizer} is then to take the \texttt{loss score} as an input and update the \texttt{weights} in such a way that the \texttt{loss score} is lowered.
+	\item The task of the \texttt{Optimizer} is to take the \texttt{loss score} as an input and update the \texttt{weights} in such a way that the \texttt{loss score} is lowered.
 \end{enumerate}
 
-The above steps describe a single learning cycle for a neural net. Of course, passing the input data through the net once is not sufficient to learn abstraction forms that would lead to good prediction results at all. Learning now means to find a set of values for all weights such that the input is mapped correctly to the output for as many training samples as possible. Since, depending on the design of the network, there can be millions of weights that need to be learned, this is by far the most computing intensive part. Due to the fact that the learning process of the weights consists of a large number of matrix operations, it is possible to use highly parallelized algorithms.
+The above steps describe a single learning cycle for a neural network. Of course, passing the input data through the net once is not sufficient to find combinations of weights that would lead to good prediction results at all. So what learning means, is to find a set of values for all weights such that the input is mapped correctly to the output for as many different input combinations as possible. This learning is achieved by grouping the input data into so-called batches and repeatedly passing them through the network. The batch size is then the number of training samples sent through the neural network before the weights are adjusted by the optimizer.  
+
+\begin{remark}
+	adf
+\end{remark}
+
+The batch size is a hyperparameter of gradient descent that controls the number of training samples to work through before the model’s internal parameters are updated.
+
+Since, depending on the design of the network, there can be millions of weights that need to be learned, this is by far the most computing intensive part. Due to the fact that the learning process of the weights consists of a large number of matrix operations, it is possible to use highly parallelized algorithms.
 
 \begin{remark}
 	The choice of the correct loss function is of great importance. If the loss function does not correctly reflect an improvement of the model, the neural net will inevitably drift in the wrong direction.
