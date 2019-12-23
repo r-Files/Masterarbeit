@@ -67,9 +67,72 @@ Depending on the design of the network there can be millions of weights that nee
 	 Compared to a pure CPU system, graphics cards with their massively parallel architecture are predestined for handling such training tasks and can therefore massively reduce the time needed to train a network.
 \end{remark}
 
-After providing an overview of all components used in a neural network and presenting the idea how a network learns, the next section focuses on how a single layer is organized.
+After providing an brief overview of all components used in a neural network and presenting the idea of how a network learns, the next section focuses on the internals of a single layer.
 
-\subsection{One neuron}
+\subsection{Single neuron}
 
+The so called neurons form the basis of every neural network and are the elements which carry out the data transformations. Each layer of a neural network consists of one or more neurons which are connected differently depending on the structure of the underlying network. The task of a neuron is to take a predefined number of input values and map them to an one dimensional output. Figure (\ref{fig:simple_neuron}) shows a single neuron with all its associated components needed to perform the data transformation given by:
+
+\begin{figure}
+	\centering
+	\begin{tikzpicture}[>=latex]
+	\path
+	(0,0)     node[circle,draw,scale=2,inner sep=2pt] (S) {$\Sigma$}
+	+(90:2.5) node[circle,draw,inner sep=2.5pt] (b) {}
+	node[above=1mm] {$b$}
+	+(-3.5,1.5)  	node[circle, draw=black]  	(x1) 	{$x_1$}
+	+(-3.5,0)    	node[circle, draw=black]  	(x2) 	{$x_2$}
+	+(-3.5,-1.5) 	node[circle, draw=black]  	(x3) 	{$x_3$}
+	(2,0)    		node[draw] 					(g) 	{$g$} node[above=3mm]{Activation}
+	+(0:3)  		node[circle, draw=black]  	(y1) 	{$\hat{y}$};
+	\draw[->] (S)--(g);
+	\draw[->] (b)--(S);
+	\draw[->] (g)--(y1);
+	\draw[->] (x1)--(S) node[pos=.4,above]{$\omega_{1}$};
+	\draw[->] (x2)--(S) node[pos=.4,above]{$\omega_{2}$};
+	\draw[->] (x3)--(S) node[pos=.4,above]{$\omega_{3}$};
+	\draw[black] (1,0) circle(2);
+	\end{tikzpicture}
+
+\caption{Components of a single neuron.}
+\label{fig:simple_neuron}
+\end{figure}
+
+\begin{equation} \label{eq:simple_neuron}
+\begin{split}
+	\hat{y}		& = g\bigg( \sum_{i=1}^{3} \omega_i x_i + b \bigg) \\
+				& = g(w^\top x + b) \\
+				& = g(z)
+\end{split}
+\end{equation}
+The neuron takes the three input values $x_1, x_2 \text{ and } x_3$ and calculates the weighted sum based on the weights $w_1, w_2 \text{ and } w_3$. A bias $b$ is first added to this weighted sum and then the activation function $g$ is applied which finally gives the output of the neuron. The purpose of the activation function can be seen as a gate. Since the values of $z$ can lie in the interval (-$\infty$, $\infty$) after the linear transformation, a way must be found to determine whether the next neuron should be activated or not. For this reason neural networks use non-linear activation functions. Those activation functions can limit the value range and also enable the network to learn complex data structures. Some of the most commonly used activation functions in neural networks are: 
+
+\begin{itemize}
+	\item Sigmoid function: 
+		\begin{equation}
+		\begin{split}
+			g: \R 	& \mapsto (0,1) \\
+			g(x) 	& = \frac{1}{1+e^{-x}} 
+		\end{split}
+		\end{equation}
+	\item Hyperbolic tangent function: 
+		\begin{equation}
+		\begin{split}
+			g: \R 	& \mapsto (-1,1) \\
+			g(x) 	& = \frac{e^x - e^{-x}}{e^x + e^{-x}} 
+		\end{split}
+		\end{equation}	
+	\item Softplus function: 
+		\begin{equation}
+		\begin{split}
+			g: \R 	& \mapsto (0,\infty) \\
+			g(x) 	& = ln(1 + e^x) 
+		\end{split}
+		\end{equation}	
+\end{itemize}
+
+
+
+In this example, the output value of the neuron is already the prediction $\hat{y}$ but it is also possible that the output of one neuron serves as input for another neuron.
 
 
