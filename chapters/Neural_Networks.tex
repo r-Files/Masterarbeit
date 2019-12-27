@@ -155,3 +155,121 @@ In the example shown in figure (\ref{fig:simple_neuron}) the neuron takes the th
 In the example given in figure (\ref{fig:simple_neuron}), the output value of the neuron is already the prediction $\hat{y}$, but in almost every case the output of one neuron serves as an input for another neuron. The next section is therefore dedicated to the interaction of multiple neurons in multiple layers and also introduces a general notation that allows to describe the mathematical concept of a neural network including an optimization algorithm.
 
 
+\subsection{Multiple neurons}
+
+
+\begin{figure}
+	\centering
+	\begin{tikzpicture}[>=latex]
+	\path
+	(0,0)     		node[circle,draw,scale=2,inner sep=2pt] (S) {$\Sigma$}
+	+(90:2.5) 		node[circle,draw,inner sep=2.5pt] 		(b) {}
+	node[above=1mm] {$b_j^{(i)}$}
+	+(-90:2.5) 		node[circle,draw,inner sep=2.5pt] 		(W) {}
+	node[below=1mm] {$W_j^{(i)}$}
+	+(-3.5,2) 	 	node[circle,draw,inner sep=2.5pt] 		(a1) 	{}
+	node[left=1mm]  {$a_1^{(i)}$}
+	+(-3.5,0)    	node[circle,draw,inner sep=2.5pt]		(a2) 	{}
+	node[left=1mm]  {$a_2^{(i)}$}
+	+(-3.5,-2) 		node[circle,draw,inner sep=2.5pt]		(ai) 	{}
+	node[left=1mm]  {$a_{n_i}^{(i)}$}
+	(2,0)    		node[draw] 								(g) 	{$g$} node[above=3mm]{Activation}
+	+(0:3)  		node[circle,draw,inner sep=2.5pt]  		(y1) 	{}
+	node[right=1mm]  {$a_{j}^{(i+1)}$};
+	\draw[->] (S)--(g) node[pos=.4,below]{$z_j^{(i+1)}$};
+	\draw[->] (b)--(S);
+	\draw[->] (W)--(S);
+	\draw[->] (g)--(y1);
+	\draw[->] (a1)--(S);
+	\draw[->] (a2)--(S);
+	\draw[->] (ai)--(S);
+	\draw[black] (1,0) circle(2);
+	
+	\path (a2) -- (ai) node [font=\Huge, midway, sloped] {$\dots$};
+	\end{tikzpicture}
+	
+%	\node (B) at (3,0) {$\cos(x)$};
+
+	
+	\caption{Components of a single neuron.}
+	\label{fig:simple_neuron}
+\end{figure}
+
+
+
+\tikzset{%
+	every neuron/.style={
+		circle,
+		draw,
+		minimum size=1.25cm
+	},
+	neuron missing/.style={
+		draw=none, 
+		scale=4,
+		text height=0.333cm,
+		execute at begin node=\color{black}$\vdots$
+	},
+}
+
+\begin{tikzpicture}[x=1.5cm, y=1.5cm, >=stealth]
+
+\foreach \m/\l [count=\y] in {1,2,3,missing,4}
+\node [every neuron/.try, neuron \m/.try] (input-\m) at (0,2.5-\y) {};
+
+\foreach \m [count=\y] in {1,missing,2}
+\node [every neuron/.try, neuron \m/.try ] (hidden1-\m) at (2,2-\y*1.25) {};
+
+\foreach \m [count=\y] in {1,missing,2}
+\node [every neuron/.try, neuron \m/.try ] (hidden1-\m) at (2,2-\y*1.25) {};
+
+\foreach \m [count=\y] in {1,missing,2}
+\node [every neuron/.try, neuron \m/.try ] (hidden2-\m) at (5,2-\y*1.25) {};
+
+\foreach \m [count=\y] in {1,missing,2}
+\node [every neuron/.try, neuron \m/.try ] (output-\m) at (7,1.5-\y) {};
+
+%\foreach \l [count=\i] in {1,2,3,n}
+%\draw [<-] (input-\i) -- ++(-1,0)
+%node [above, midway] {$I_\l$};
+
+
+\node at (input-1) {$x_1$};
+\node at (input-2) {$x_2$};
+\node at (input-3) {$x_3$};
+\node at (input-4) {$x_n$};
+
+
+\node at (hidden1-1) {$s_1^{(1)}$};
+\node at (hidden1-2) {$s_{n_1}^{(1)}$};
+
+\node at (hidden2-1) {$s_1^{(N)}$};
+\node at (hidden2-2) {$s_{n_N}^{(N)}$};
+
+\node at (output-1) {$s_1^{(N+1)}$};
+\node at (output-2) {$s_{n_{N+1}}^{(N+1)}$};
+
+
+\foreach \l [count=\i] in {1,m}
+\draw [->] (output-\i) -- ++(1,0)
+node [above, midway] {$\hat{y}_\l$};
+
+\foreach \i in {1,...,4}
+\foreach \j in {1,...,2}
+\draw [->] (input-\i) -- (hidden1-\j);
+
+\foreach \i in {1,...,2}
+\foreach \j in {1,...,2}
+\draw [->] (hidden1-\i) -- (hidden2-\j);
+
+\foreach \i in {1,...,2}
+\foreach \j in {1,...,2}
+\draw [->] (hidden2-\i) -- (output-\j);
+
+\node [align=center, above] at (0,2) {Input\\layer};
+\node [align=center, above] at (2,2) {Hidden \\layer 1};
+\node [align=center, above] at (5,2) {Hidden \\layer N};
+\node [align=center, above] at (7,2) {Output \\layer};
+
+\node[fill=white,scale=4,inner xsep=0pt,inner ysep=5mm] at ($(hidden1-1)!.5!(hidden2-2)$) {$\dots$};
+
+\end{tikzpicture}		
