@@ -140,7 +140,7 @@ In the example shown in figure (\ref{fig:simple_neuron}) the neuron takes the th
 			g(x) 	& = max(0,x) 
 		\end{split}
 		\end{equation}
-		One of the most successful and widely-used activation functions is the Rectified Linear Unit (ReLU). All values greater than zero activate the next neuron and all negative input values result in the next neuron not being activated by setting the output to zero. Because of the maximization the ReLu-function has only an order of continuity of $C^0$. Although it is not differentiable, this function is popular because of it's simplicity and reliability as a gate function. \cite{searchingActivation}, \cite{nair2010rectified}
+		One of the most successful and widely-used activation functions is the Rectified Linear Unit (ReLU). All values greater than zero activate the next neuron and all negative input values result in the next neuron not being activated by setting the output to zero. Because of the maximization the ReLu-function has only an order of continuity of $C^0$. Although it is non-differentiable, this function is popular because of it's simplicity and reliability as a gate function. \cite{searchingActivation}, \cite{nair2010rectified}
 			
 	\item Softplus function: 
 		\begin{equation}
@@ -149,11 +149,9 @@ In the example shown in figure (\ref{fig:simple_neuron}) the neuron takes the th
 			g(x) 	& = ln(1 + e^x) 
 		\end{split}
 		\end{equation}	
-		 Since ReLu is non-differentiable at zero a smooth version of it, which also has an order of continuity of $C^{\infty}$, is given by the softplus function. It can be used as a replacement for the ReLu function, as various analyses have shown that its performance is comparable to that of the Relu function. \cite{searchingActivation}
+		 Since ReLu is non-differentiable at zero a smooth version of it, which also has an order of continuity of $C^{\infty}$, is given by the softplus function. It can be used as a replacement for the ReLu function. As various analyses have shown the performance between of softplus as activation function is comparable to that of the Relu function. \cite{searchingActivation}
 \end{itemize}
 
-
-
-In this example, the output value of the neuron is already the prediction $\hat{y}$ but it is also possible that the output of one neuron serves as input for another neuron.
+In the example given in figure (\ref{fig:simple_neuron}), the output value of the neuron is already the prediction $\hat{y}$, but in almost every case the output of one neuron serves as an input for another neuron. The next section is therefore dedicated to the interaction of multiple neurons in multiple layers and introduces a general notation that allows to describe the mathematical model of a neural network including an optimization algorithm.
 
 
