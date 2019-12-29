@@ -152,11 +152,18 @@ In the example shown in figure (\ref{fig:simple_neuron}) the neuron takes the th
 		 Since ReLu is non-differentiable at zero a smooth version of it, which also has an order of continuity of $C^{\infty}$, is given by the softplus function. It can be used as a replacement for the ReLu function. As various analyses have shown the performance between the softplus fuction and the Relu function is negligible in most cases. \cite{searchingActivation}
 \end{itemize}
 
-In the example given in figure (\ref{fig:simple_neuron}), the output value of the neuron is already the prediction $\hat{y}$, but in almost every case the output of one neuron serves as an input for another neuron. The next section is therefore dedicated to the interaction of multiple neurons in multiple layers and also introduces a general notation that allows to describe the mathematical concept of a neural network including an optimization algorithm.
+In the example given in figure (\ref{fig:simple_neuron}), the output value of the neuron is already the prediction $\hat{y}$, but in almost every case the output of one neuron serves as an input for another neuron. The next section is therefore dedicated to the interaction of multiple neurons in multiple layers and also introduces a general notation based on \cite{Mar_Pri}, that allows to describe the mathematical concept of a neural network including an optimization algorithm.
 
 
 \subsection{Multiple neurons}
 
+Having described the basic function of a single neuron in the previous section, the focus is now on how multiple neurons interact to form a neural network. Figure (\ref{fig:neuron_notation}) shows the same single neuron as figure (\ref{fig:simple_neuron}) but with a slightly adapted notation. While in figure (\ref{fig:simple_neuron}) the weights $\omega_i$ are directly assigned to the individual inputs $x_i$, in figure (\ref{fig:neuron_notation}) these weights are represented by a weight vector $W_j^{(i)}$. To be able to refer to a single neuron in a neural network with a large number of neurons, the neurons are referred to in the form $s_j^{(i)}$. Where $s$ stands for single neuron, $i$ for the layer in which the neuron is used and $j$ for a consecutive number over all neurons in this layer $i$. The notation of the inputs and the output of a neuron have also changed, so that the notation $a_j^{(i)}$ is now used in both cases. The $a$ refers to activation and the two indices $i$ and $j$ refer to the layer and respectively the neuron that generated the activation value. The value $a_1^{(i)}$ from figure (\ref{fig:neuron_notation}) therefore identifies both, the output of the first neuron in the i-th layer and the input for the j-th neuron in the i+1-th layer. Depending on which and how many layers, and how the individual neurons in the individual layers or between the individual layers are connected to each other, different types of neural networks result. So-called feedforward nets, for example, are characterized by the fact that neurons from one layer are only connected to neurons from the next higher layer. The information flow therefore takes place only in one direction. On the other hand there are so-called recurrent nets where feedback between different layers is also allowed. There are three different categories depending on the type of feedback:
+
+\begin{itemize}
+	\item Direct feedback: The own output of a neuron is used as an additional input for the neuron.
+	\item Indirect feedback: The output of a neuron serves as an input to a neuron of a previous layers.
+	\item Lateral feedback: The output of a neuron servers as an input to a neuron from the same layer.
+\end{itemize}
 
 \begin{figure}
 	\centering
@@ -210,62 +217,74 @@ In the example given in figure (\ref{fig:simple_neuron}), the output value of th
 	},
 }
 
-\begin{tikzpicture}[x=1.5cm, y=1.5cm, >=stealth]
+\begin{figure}
+	\centering
+	\begin{tikzpicture}[x=1.5cm, y=1.5cm, >=stealth]
 
-\foreach \m/\l [count=\y] in {1,2,3,missing,4}
-\node [every neuron/.try, neuron \m/.try] (input-\m) at (0,2.5-\y) {};
+	\foreach \m/\l [count=\y] in {1,2,3,missing,4}
+	\node [every neuron/.try, neuron \m/.try] (input-\m) at (0,2.5-\y) {};
+	
+	\foreach \m [count=\y] in {1,missing,2}
+	\node [every neuron/.try, neuron \m/.try ] (hidden1-\m) at (2,2-\y*1.25) {};
+	
+	\foreach \m [count=\y] in {1,missing,2}
+	\node [every neuron/.try, neuron \m/.try ] (hidden1-\m) at (2,2-\y*1.25) {};
+	
+	\foreach \m [count=\y] in {1,missing,2}
+	\node [every neuron/.try, neuron \m/.try ] (hidden2-\m) at (5,2-\y*1.25) {};
+	
+	\foreach \m [count=\y] in {1,missing,2}
+	\node [every neuron/.try, neuron \m/.try ] (output-\m) at (7,1.5-\y) {};
+	
+	
+	\node at (input-1) {$x_1$};
+	\node at (input-2) {$x_2$};
+	\node at (input-3) {$x_3$};
+	\node at (input-4) {$x_n$};
+	
+	\node at (hidden1-1) {$s_1^{(1)}$};
+	\node at (hidden1-2) {$s_{n_1}^{(1)}$};
+	
+	\node at (hidden2-1) {$s_1^{(N)}$};
+	\node at (hidden2-2) {$s_{n_N}^{(N)}$};
+	
+	\node at (output-1) {$s_1^{(N+1)}$};
+	\node at (output-2) {$s_{n_{N+1}}^{(N+1)}$};
+	
+	
+	\foreach \l [count=\i] in {1,m}
+	\draw [->] (output-\i) -- ++(1,0)
+	node [above, midway] {$\hat{y}_\l$};
+	
+	\foreach \i in {1,...,4}
+	\foreach \j in {1,...,2}
+	\draw [->] (input-\i) -- (hidden1-\j);
+	
+	\foreach \i in {1,...,2}
+	\foreach \j in {1,...,2}
+	\draw [->] (hidden1-\i) -- (hidden2-\j);
+	
+	\foreach \i in {1,...,2}
+	\foreach \j in {1,...,2}
+	\draw [->] (hidden2-\i) -- (output-\j);
+	
+	\node [align=center, above] at (0,2) {Input\\layer};
+	\node [align=center, above] at (2,2) {Hidden \\layer 1};
+	\node [align=center, above] at (5,2) {Hidden \\layer N};
+	\node [align=center, above] at (7,2) {Output \\layer};
+	
+	\node[fill=white,scale=4,inner xsep=0pt,inner ysep=5mm] at ($(hidden1-1)!.5!(hidden2-2)$) {$\dots$};
 
-\foreach \m [count=\y] in {1,missing,2}
-\node [every neuron/.try, neuron \m/.try ] (hidden1-\m) at (2,2-\y*1.25) {};
+	\end{tikzpicture}
+	\caption{Illustration of fully connected feedforward neural network with $N$ hidden layers.}
+	\label{fig:feedforward_network}
+\end{figure}	
 
-\foreach \m [count=\y] in {1,missing,2}
-\node [every neuron/.try, neuron \m/.try ] (hidden1-\m) at (2,2-\y*1.25) {};
+Since the possibilities of how the different neurons are connected in a neural network are almost unlimited, the following section describes one of the most common forms. It is a fully connected feedforward network as shown in figure (\ref{fig:feedforward_network}). The most important properties of such a network are therefore:
 
-\foreach \m [count=\y] in {1,missing,2}
-\node [every neuron/.try, neuron \m/.try ] (hidden2-\m) at (5,2-\y*1.25) {};
-
-\foreach \m [count=\y] in {1,missing,2}
-\node [every neuron/.try, neuron \m/.try ] (output-\m) at (7,1.5-\y) {};
-
-
-\node at (input-1) {$x_1$};
-\node at (input-2) {$x_2$};
-\node at (input-3) {$x_3$};
-\node at (input-4) {$x_n$};
-
-\node at (hidden1-1) {$s_1^{(1)}$};
-\node at (hidden1-2) {$s_{n_1}^{(1)}$};
-
-\node at (hidden2-1) {$s_1^{(N)}$};
-\node at (hidden2-2) {$s_{n_N}^{(N)}$};
-
-\node at (output-1) {$s_1^{(N+1)}$};
-\node at (output-2) {$s_{n_{N+1}}^{(N+1)}$};
-
-
-\foreach \l [count=\i] in {1,m}
-\draw [->] (output-\i) -- ++(1,0)
-node [above, midway] {$\hat{y}_\l$};
-
-\foreach \i in {1,...,4}
-\foreach \j in {1,...,2}
-\draw [->] (input-\i) -- (hidden1-\j);
-
-\foreach \i in {1,...,2}
-\foreach \j in {1,...,2}
-\draw [->] (hidden1-\i) -- (hidden2-\j);
-
-\foreach \i in {1,...,2}
-\foreach \j in {1,...,2}
-\draw [->] (hidden2-\i) -- (output-\j);
-
-\node [align=center, above] at (0,2) {Input\\layer};
-\node [align=center, above] at (2,2) {Hidden \\layer 1};
-\node [align=center, above] at (5,2) {Hidden \\layer N};
-\node [align=center, above] at (7,2) {Output \\layer};
-
-\node[fill=white,scale=4,inner xsep=0pt,inner ysep=5mm] at ($(hidden1-1)!.5!(hidden2-2)$) {$\dots$};
-
-\end{tikzpicture}		
+\begin{itemize}
+	\item Fully connected: All outputs from the neurons of layer $i$ serve as inputs for all neurons in layer $i+1$.
+	\item Feedforward: The information flows only from one layer to the next higher layer. 
+\end{itemize}
 
  \cite{Mar_Pri}
