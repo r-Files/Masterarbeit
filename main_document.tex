@@ -67,10 +67,10 @@
 
 \begin{document}
 
-\frontmatter                    				%% KOMA: roman page numbers and such; only available in scrbook
-\input{chapters/title_page}            		%% include title page
+\frontmatter                    	%% KOMA: roman page numbers and such; only available in scrbook
+\input{chapters/title_page}         %% include title page
 \cleardoublepage					%% starts next text on an odd page 
-\input{chapters/affidavit}				%% include the affidavit
+\input{chapters/affidavit}			%% include the affidavit
 \cleardoublepage					%% starts next text on an odd page 
 %% include the abstract without chapter number but include it on table of contents:
 \addcontentsline{toc}{chapter}{Abstract}	
@@ -83,7 +83,7 @@
 
 \listoftodos						%% include the list of to-dos
 	
-\mainmatter                     %% KOMA: marks main part using arabic page numbers and such; only available in scrbook
+\mainmatter                     	%% KOMA: marks main part using arabic page numbers and such; only available in scrbook
 
 \include{chapters/introduction}					%% inlcude introduction
 \include{chapters/Sensitivities}				%% inlcude Sensitivities
@@ -94,26 +94,6 @@
 \appendix
 \include{chapters/appendix_tables}				%% inlcude appendix
 \include{chapters/appendix_code}				%% inlcude appendix
-
-The todo text 
-is the text that will be shown in the todonote and in the
-list of todos. The optional argument options, allows the user to customize the
-appearance of the inserted todonotes. For a description of all the options see
-\todo{Make a cake \ldots}
-sadf
-The todo text is the text that will be shown in the todonote and in the
-list of todos. The optional argument options, allows the user to customize the
-appearance of the inserted todonotes. For a description of all the options see
-The todo text is the text that will be shown in the todonote and in the
-list of todos. The optional argument options, allows the user to customize the
-appearance of the inserted todonotes. For a description of all the options see
-The todo text is the text that will be shown in the todonote and in the
-list of todos. The optional argument options, allows the user to customize the
-appearance of the inserted todonotes. For a description of all the options see
-fasd
-fadsf
-asdf
-\missingfigure{Make a sketch of the structure of a trebuchet.}
 
 \printbibliography  %% remove, if using BibTeX instead of biblatex
 \end{document}
