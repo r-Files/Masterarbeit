@@ -165,7 +165,7 @@ In the example given in figure (\ref{fig:simple_neuron}), the output value of th
 	+(90:2.5) 		node[circle,draw,inner sep=2.5pt] 		(b) {}
 	node[above=1mm] {$b_j^{(i)}$}
 	+(-90:2.5) 		node[circle,draw,inner sep=2.5pt] 		(W) {}
-	node[below=1mm] {$W_j^{(i)}$}
+	node[below=1mm] {$W_{j.}^{(i)}$}
 	+(-3.5,2) 	 	node[circle,draw,inner sep=2.5pt] 		(a1) 	{}
 	node[left=1mm]  {$a_1^{(i)}$}
 	+(-3.5,0)    	node[circle,draw,inner sep=2.5pt]		(a2) 	{}
@@ -194,11 +194,11 @@ In the example given in figure (\ref{fig:simple_neuron}), the output value of th
 \end{figure}
 
 
-Having described the basic function of a single neuron in the previous section, the focus is now on how multiple neurons interact to form a neural network. Figure (\ref{fig:neuron_notation}) shows the same single neuron as figure (\ref{fig:simple_neuron}) but with a slightly adapted notation. While in figure (\ref{fig:simple_neuron}) the weights $\omega_i$ are directly assigned to the individual inputs $x_i$, in figure (\ref{fig:neuron_notation}) these weights are represented by a weight vector $W_j^{(i)}$. To be able to refer to a single neuron in a neural network with a large number of neurons, the neurons are referred to in the form $s_j^{(i)}$. Where $s$ stands for single neuron, $i$ for the layer in which the neuron is used and $j$ for a consecutive number over all neurons in this layer $i$. The notation of the inputs and the output of a neuron have also changed, so that the notation $a_j^{(i)}$ is now used in both cases. The $a$ refers to activation and the two indices $i$ and $j$ refer to the layer and respectively the neuron that generated the activation value. The value $a_1^{(i)}$ from figure (\ref{fig:neuron_notation}) therefore identifies both, the output of the first neuron in the i-th layer and the input for the j-th neuron in the i+1-th layer. Depending on which and how many layers, and how the individual neurons in the individual layers or between the individual layers are connected to each other, different types of neural networks result. So-called feedforward nets, for example, are characterized by the fact that neurons from one layer are only connected to neurons from the next higher layer. The information flow therefore takes place only in one direction. On the other hand there are so-called recurrent nets where feedback between different layers is also allowed. There are three different categories of recurrent neural networks. Depending on the type of feedback they are given as: 
+Having described the basic function of a single neuron in the previous section, the focus is now on how multiple neurons interact in order to form a neural network. Figure (\ref{fig:neuron_notation}) shows the same single neuron as figure (\ref{fig:simple_neuron}) but with a slightly adapted and extended notation. While in figure (\ref{fig:simple_neuron}) the weights $\omega_i$ are directly assigned to the individual inputs $x_i$, in figure (\ref{fig:neuron_notation}) these weights are represented by a weight vector $W_{j.}^{(i)}$. To be able to refer to a single neuron in a neural network with a large number of neurons, a single neuron is referred to in the form of $s_j^{(i)}$. Where $s$ stands for single neuron, $i$ for the layer in which the neuron is used and $j$ for a consecutive number over all neurons in this layer $i$. The notation of the inputs and the output of a neuron have also changed, so that the notation $a_j^{(i)}$ is now used in both cases. The $a$ refers to activation and the two indices $i$ and $j$ refer to the layer and respectively the neuron that generated the activation value. The value $a_1^{(i)}$ from figure (\ref{fig:neuron_notation}) therefore identifies both, the output of the first neuron in the i-th layer and the input for the j-th neuron in the i+1-th layer. Depending on which and how many layers, and how the individual neurons in the individual layers or between the individual layers are connected to each other, different types of neural networks result. So-called feedforward networks, for example, are characterized by the fact that neurons from one layer are only connected to neurons from the next higher layer. The information flow therefore takes place only in one direction, namely from the input side to the output side. On the other hand there are so-called recurrent nets where feedback between different layers is also allowed. There are three different categories of recurrent neural networks which can be distinguished depending on how they use their feedback signals \cite{rek_net}: 
 
 \begin{itemize}
 	\item Direct feedback: The own output of a neuron is used as an additional input for the neuron.
-	\item Indirect feedback: The output of a neuron serves as an input to a neuron of a previous layers.
+	\item Indirect feedback: The output of a neuron serves as an input to a neuron of a previous layer.
 	\item Lateral feedback: The output of a neuron servers as an input to a neuron from the same layer.
 \end{itemize}
 
@@ -225,16 +225,13 @@ Having described the basic function of a single neuron in the previous section, 
 	\node [every neuron/.try, neuron \m/.try] (input-\m) at (0,2.5-\y) {};
 	
 	\foreach \m [count=\y] in {1,missing,2}
-	\node [every neuron/.try, neuron \m/.try ] (hidden1-\m) at (2,2-\y*1.25) {};
+	\node [every neuron/.try, neuron \m/.try ] (hidden1-\m) at (1.75,2-\y*1.25) {};
 	
 	\foreach \m [count=\y] in {1,missing,2}
-	\node [every neuron/.try, neuron \m/.try ] (hidden1-\m) at (2,2-\y*1.25) {};
+	\node [every neuron/.try, neuron \m/.try ] (hidden2-\m) at (4.75,2-\y*1.25) {};
 	
 	\foreach \m [count=\y] in {1,missing,2}
-	\node [every neuron/.try, neuron \m/.try ] (hidden2-\m) at (5,2-\y*1.25) {};
-	
-	\foreach \m [count=\y] in {1,missing,2}
-	\node [every neuron/.try, neuron \m/.try ] (output-\m) at (7,1.5-\y) {};
+	\node [every neuron/.try, neuron \m/.try ] (output-\m) at (6,1.5-\y) {};
 	
 	
 	\node at (input-1) {$x_1$};
@@ -251,10 +248,8 @@ Having described the basic function of a single neuron in the previous section, 
 	\node at (output-1) {$s_1^{(N+1)}$};
 	\node at (output-2) {$s_{n_{N+1}}^{(N+1)}$};
 	
-	
-	\foreach \l [count=\i] in {1,m}
-	\draw [->] (output-\i) -- ++(1,0)
-	node [above, midway] {$\hat{y}_\l$};
+	\draw [->] (output-1) -- ++(1,0) node [above, midway] {$\hat{y}_1$};
+	\draw [->] (output-2) -- ++(1,0) node [above, midway] {$\hat{y}_{n_{N+1}}$};
 	
 	\foreach \i in {1,...,4}
 	\foreach \j in {1,...,2}
@@ -269,9 +264,9 @@ Having described the basic function of a single neuron in the previous section, 
 	\draw [->] (hidden2-\i) -- (output-\j);
 	
 	\node [align=center, above] at (0,2) {Input\\layer};
-	\node [align=center, above] at (2,2) {Hidden \\layer 1};
-	\node [align=center, above] at (5,2) {Hidden \\layer N};
-	\node [align=center, above] at (7,2) {Output \\layer};
+	\node [align=center, above] at (1.75,2) {Hidden \\layer 1};
+	\node [align=center, above] at (4.75,2) {Hidden \\layer N};
+	\node [align=center, above] at (6,2) {Output \\layer};
 	
 	\node[fill=white,scale=4,inner xsep=0pt,inner ysep=5mm] at ($(hidden1-1)!.5!(hidden2-2)$) {$\dots$};
 
@@ -280,17 +275,17 @@ Having described the basic function of a single neuron in the previous section, 
 	\label{fig:feedforward_network}
 \end{figure}	
 
-Since the possibilities of how the different neurons are connected in a neural network are almost unlimited, the following section describes one of the most common forms. It is a fully connected feedforward network as shown in figure (\ref{fig:feedforward_network}). The most important properties of such a network are:
+Since the possibilities of how the different neurons are connected in a neural network are almost unlimited, the following section describes one of the most common forms \cite{kriesel}. It is a fully connected feedforward network as shown in figure (\ref{fig:feedforward_network}). The most important properties of such a network are:
 
 \begin{itemize}
 	\item Fully connected: All outputs from the neurons of layer $i$ serve as inputs for all neurons in layer $i+1$.
 	\item Feedforward: The information flows only from one layer to the next higher layer. 
 \end{itemize}
 
-For the calculation and analysis of such a neural network the following notation, which is based on  \cite{Mar_Pri}, is used in accordance with figure (\ref{fig:neuron_notation}) and (\ref{fig:feedforward_network}). Let
+For the calculation and analysis of such a neural network the following notation, which is taken from \cite{Mar_Pri}, is used in accordance with figure (\ref{fig:neuron_notation}) and (\ref{fig:feedforward_network}). Let
 
 \begin{itemize}
-	\item $N \in \N$ be the number of hidden Layers in the neural network.
+	\item $N \in \N$ be the number of hidden layers in the neural network.
 	
 	\item $N + 2$ be the total number of layers in the network since the hidden layers are wrapped between an input and an output layer. 
 	
@@ -298,11 +293,11 @@ For the calculation and analysis of such a neural network the following notation
 	
 	\item $s_j^{(i)}$ denote the $j$-th neuron of the $i$-th layer. 
 	
-	\item $a^{(i)} \in \R^{n_i}$, $a^{(i)} = (a_1^{(i)}, a_2^{(i)}, ..., a_{n_i}^{(i)})$ be the vector of activation values produced by the neurons of the $i$-th layer.
+	\item $a^{(i)} \in \R^{n_i}$, $a^{(i)} = (a_1^{(i)}, a_2^{(i)}, ..., a_{n_i}^{(i)})^\top$ be the vector of activation values produced by the neurons of the $i$-th layer.
 	
-	\item $b^{(i)} \in \R^{n_{i+1}}$, $b^{(i)} = (b_1^{(i)}, b_2^{(i)}, ..., b_{n_{i+1}}^{(i)})$ be the bias vector for the linear transformation performed in all neurons of layer $i+1$.
+	\item $b^{(i)} \in \R^{n_{i+1}}$, $b^{(i)} = (b_1^{(i)}, b_2^{(i)}, ..., b_{n_{i+1}}^{(i)})^\top$ be the bias vector for the linear transformation performed in all neurons of layer $i+1$.
 
-	\item $W_j^{(i)} \in \R^{1 \times n_i}$, $W_j^{(i)} = (W_{j1}^{(i)}, W_{j2}^{(i)}, ..., W_{jn_i}^{(i)})^\top$ be the weight vector for the linear transformation performed in the $j$-th neuron of the $i+1$-th layer. Combining all weights used in the $i+1$-th layer into a matrix $W^{(i)} \in \R^{n_{i+1} \times n_i}$ results in:	
+	\item $W_{j.}^{(i)} \in \R^{1 \times n_i}$, $W_{j.}^{(i)} = (W_{j1}^{(i)}, W_{j2}^{(i)}, ..., W_{jn_i}^{(i)})$ be the weight vector for the linear transformation performed in the $j$-th neuron of the $i+1$-th layer. Combining all weights used in the $i+1$-th layer into a matrix $W^{(i)} \in \R^{n_{i+1} \times n_i}$ results in:	
 		\begin{align*}
 		W^{(i)} = 
 		\begin{pmatrix}
@@ -319,30 +314,62 @@ For the calculation and analysis of such a neural network the following notation
 		W_{n_{i+1}.}^{(i)} 
 		\end{pmatrix},
 		\end{align*}		
-	with $W_{1.}^{(i)}$ being the first row of $W^{(i)}$.
+	with $W_{j.}^{(i)}$ being the $j$-th row of $W^{(i)}$.
 	
-	\item $z^{(i)} \in \R^{n_i}$, $z^{(i)} = (z_1^{(i)}, z_2^{(i)}, ..., z_{n_i}^{(i)})$ be the result vector after the linear transformation performed in all neurons of layer $i$.
+	\item $z^{(i)} \in \R^{n_i}$, $z^{(i)} = (z_1^{(i)}, z_2^{(i)}, ..., z_{n_i}^{(i)})^\top$ be the result vector after the linear transformation performed in all neurons of layer $i$.
 	
 	\item $g: \R \mapsto \R$ be any activation function which is applied to the result of the linear transformation. 
 	
-	\item $x \in \R^{n_0}$, $x = (x_1, x_2, ..., x_{n_0})$ be a vector of input data to train the model. 
+	\item $x \in \R^{n_0}$, $x = (x_1, x_2, ..., x_{n_0})^\top$ be a vector of input data to train the model. 
 	
-	\item $y \in \R^{n_{N+1}}$, $x = (x_1, x_2, ..., x_{n_{N+1}})$ be a vector of output data to train the model. 
+	\item $y \in \R^{n_{N+1}}$, $y = (y_1, y_2, ..., y_{n_{N+1}})^\top$ be a vector of output data to train the model. 
 	
-	\item $\hat{y} \in \R^{n_{N+1}}$, $\hat{y} = (\hat{y}_1, \hat{y}_2, ..., \hat{y}_{n_{N+1}})$ be a vector of estimated output data obtained from the neural network. 
+	\item $\hat{y} \in \R^{n_{N+1}}$, $\hat{y} = (\hat{y}_1, \hat{y}_2, ..., \hat{y}_{n_{N+1}})^\top$ be a vector of estimated output values obtained from the neural network by sending an input vector $x$ through the network. 
 \end{itemize}
 
 \begin{remark}
-	Since the input layer has $n_0$ neurons, the input must be a vector of size $\R^{n_0}$. Accordingly, the output of the neural network is a vector of size $\R^{n_{N+2}}$.
+	Since the input layer has $n_0$ neurons, the input vector $x$ must be an element of $\R^{n_0}$. Similarly, the estimated output $\hat{y}$ of the neural network is a vector which is an element of $\R^{n_{N+1}}$.
 \end{remark}
 
 \begin{remark}
-	Since $a^{(i)}$ denotes the values that are transferred between neurons, it is both the output values of the neurons of layer $i$ and the input values of the neurons of layer $i+1$. 
+	Since $a^{(i)}$ denotes the values that are transferred between neurons, it is both the output values of the neurons from layer $i$ and the input values of the neurons from layer $i+1$. 
 \end{remark}
 
 \begin{remark}
-	For the training of a neural network many different sets of input and associated output data are needed.	If a specific set of data is to be referenced, this is done by adding a superscript, e.g. $x^{(k)}$ and $y^{(k)}$. The corresponding estimated values are also referred to as $\hat{y}^{(k)}$. 
+	The input values $x$ for the neuronal network correspond to the first activation values $a^{(0)}$, e.g. $x = a^{(0)}$. Similarly, the estimated output $\hat{y}$ of the neural network corresponds to the last activation values $a^{(N+1)}$, e.g. $\hat{y} = a^{(N+1)}$.
+\end{remark}
+
+\begin{remark}
+	For the training of a neural network many different sets of input and associated output vectors are needed.	If a specific set of input or output data is to be referenced, this is done by adding a superscript, e.g. $x^{(k)}$ and $y^{(k)}$. The corresponding estimated values are also referred to as $\hat{y}^{(k)}$. 
 \end{remark}
 \begin{remark}
-	The weight defined as $w_{jk}^{(i)}$ connects the activation value from the $k$-th neuron in layer $i$ with the $j$-th neuron from layer $i + 1$.
+	The weight defined as $W_{jk}^{(i)}$ connects the activation value from the $k$-th neuron in layer $i$ with the $j$-th neuron from layer $i + 1$.
+\end{remark}
+
+After a notation for the analysis of the neural network has been defined, the next section is devoted to the question of how data can flow through a network and how the network can learn. 
+
+\section{Train a model}
+
+Figure (\ref{fig:simple_neuron}) together with formula (\ref{eq:simple_neuron}) already illustrated in the previous section how a single neuron is constructed and how it processes the inputs. Since the notation has been generalized in the previous section also formula (\ref{eq:simple_neuron}) could be generalized. 
+
+\begin{remark}
+	Let $a^{(i)} \in \R^{n_i}$ be the activation values from layer $i$, $b_j^{(i)} \in \R$ the bias term for the $j$-th neuron in layer $i+1$, $W_{j.}^{(i)}$ the weights and $g: \R \mapsto \R$ any activation function. Then the linear transformation performed by the $j$-th neuron of layer $i+1$ called $s_j^{(i+1)}$ is given by:
+	\begin{equation}
+		z_j^{(i+1)} = \sum_{k=1}^{n_i} W_{jk}^{(i)} a_k^{(i)} + b_j^{(i)}
+	\end{equation}
+	Using vector notation gives:
+	\begin{equation}
+		z_j^{(i+1)} = W_{j.}^{(i)} a^{(i)} + b_j^{(i)}
+	\end{equation}	
+\end{remark}
+
+\begin{remark}
+	Based on the previous remark, the activation value $a_j^{(i+1)}$ generated by neuron $s_j^{(i+1)}$ is given by: 
+	\begin{equation}
+		a_j^{(i+1)} = f(z_j^{(i+1)}) = f \bigg( \sum_{k=1}^{n_i} W_{jk}^{(i)} a_k^{(i)} + b_j^{(i)} \bigg) \\
+	\end{equation}
+	Using vector notation gives:
+	\begin{equation}
+		a_j^{(i+1)} = f(z_j^{(i+1)}) = f( W_{j.}^{(i)} a^{(i)} + b_j^{(i)} )
+	\end{equation}	
 \end{remark}
