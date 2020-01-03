@@ -397,14 +397,24 @@ With the help of the previous remark it is now possible to represent the flow of
 \end{aligned}
 \end{equation}
 
-This step, where the neural network takes an input vector and transforms it to a prediction is the first step to train the network and is called forward propagation \cite{Propagation}. The process shown in the figure (\ref{fig:NN_overview}) shows that after the generation of the predictions $\hat{y}$ the deviation of these to the real outputs $y$ must be measured. 
+This step, where the neural network takes an input vector and transforms it to a prediction is the first step to train the network and is called forward propagation \cite{Propagation}. The process shown in the figure (\ref{fig:NN_overview}) illustrates that after the generation of the predictions $\hat{y}$ the deviation between these and the real outputs $y$ must be measured. A way of measuring the deviation between actual and estimated values is the $L^2$ norm.
 
-\begin{remark}
-	Let $x^{(i)}$ and $y^{(i)}$ be the vector of the input and the real output values respectively. Let $W$ be the matrix of weights and $b$ the vector of biases used for the forward propagation. If $\hat{y}_{W,b}^{(i)}$ denotes the estimated outputs from the network then the loss score is given by:
+\begin{definition}
+	Let $x^{(i)}$ and $y^{(i)}$ be the vector of the input and the corresponding output values, respectively. Let $W$ be the matrices of weights and $b$ the vectors of biases used in the entire network for a single forward propagation. If $\hat{y}_{W,b,x^{(i)}}^{(i)}$ denotes the estimated outputs from the network then the loss score is given by:
 	
-	\begin{equation}
-		L(b, W, x^{(i)}, y^{(i)}) = \frac{1}{2} \norm{\hat{y}_{W,b}^{(i)} - y^{(i)}}^2_2
+	\begin{equation}\label{eq:single_loss}
+		L(b, W, x^{(i)}, y^{(i)}) := \frac{1}{2} \norm{\hat{y}_{W,b,x^{(i)}}^{(i)} - y^{(i)}}^2_2
 	\end{equation}
-\end{remark}
+\end{definition}
+
+By using the notation given in equation (\ref{eq:single_loss}) it is explicitly stated, that the loss of a single forward pass depends on the four parameters $b, W, x^{(i)}, y^{(i)}$. In order to increase the readability in the following paragraphs from now on it is not longer explicitly stated that the estimated output depends on the three parameters $W$, $b$ and $x^{(i)}$, e.g. $\hat{y}_{W,b,x^{(i)}}^{(i)} = \hat{y}$. Since in most cases not only a single pair of input and output data is used for the calculation of the loss function but several, the loss must also be defined for a sample of multiple input and output vectors.
+
+\begin{definition}
+	Let $\{(x^{(1)}, y^{(1)}), (x^{(2)}, y^{(2)}), ..., (x^{(m)}, y^{(m)})\}$ be a sample of input and the corresponding output vectors. Let $W$ be the matrices of weights and $b$ the vectors of biases used in the entire network for a single forward propagation. If $\hat{y}_{W,b,x^{(i)}}^{(i)}$ denotes the estimated outputs from the network then the loss score is given by:
+	
+	\begin{equation}\label{eq:single_loss}
+	L(b, W, x^{(i)}, y^{(i)}) := \frac{1}{2} \norm{\hat{y}_{W,b,x^{(i)}}^{(i)} - y^{(i)}}^2_2
+	\end{equation}
+\end{definition}
 
 
