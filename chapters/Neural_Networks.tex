@@ -400,21 +400,35 @@ With the help of the previous remark it is now possible to represent the flow of
 This step, where the neural network takes an input vector and transforms it to a prediction is the first step to train the network and is called forward propagation \cite{Propagation}. The process shown in the figure (\ref{fig:NN_overview}) illustrates that after the generation of the predictions $\hat{y}$ the deviation between these and the real outputs $y$ must be measured. A way of measuring the deviation between actual and estimated values is the $L^2$ norm.
 
 \begin{definition}
-	Let $x^{(i)}$ and $y^{(i)}$ be the vector of the input and the corresponding output values, respectively. Let $W$ be the matrices of weights and $b$ the vectors of biases used in the entire network for a single forward propagation. If $\hat{y}_{W,b,x^{(i)}}^{(i)}$ denotes the estimated outputs from the network then the loss score is given by:
-	
+	Let $x^{(i)}$ and $y^{(i)}$ be the vector of the input and the corresponding output values, respectively. Let $W$ be the matrices of weights and $b$ the vectors of biases used in the entire network for a single forward propagation. If $\hat{y}_{W,b,x^{(i)}}^{(i)}$ denotes the estimated outputs from the network then the loss score is given by:	
 	\begin{equation}\label{eq:single_loss}
 		L(b, W, x^{(i)}, y^{(i)}) := \frac{1}{2} \norm{\hat{y}_{W,b,x^{(i)}}^{(i)} - y^{(i)}}^2_2
 	\end{equation}
 \end{definition}
 
-By using the notation given in equation (\ref{eq:single_loss}) it is explicitly stated, that the loss of a single forward pass depends on the four parameters $b, W, x^{(i)}, y^{(i)}$. In order to increase the readability in the following paragraphs from now on it is not longer explicitly stated that the estimated output depends on the three parameters $W$, $b$ and $x^{(i)}$, e.g. $\hat{y}_{W,b,x^{(i)}}^{(i)} = \hat{y}$. Since in most cases not only a single pair of input and output data is used for the calculation of the loss function but several, the loss must also be defined for a sample of multiple input and output vectors.
+By using the notation given in equation (\ref{eq:single_loss}) it is explicitly stated, that the loss of a single forward pass depends on the four parameters $b, W, x^{(i)}$ and $y^{(i)}$. In order to increase the readability in the following paragraphs from now on it is not longer explicitly stated that the estimated output depends on the three parameters $W$, $b$ and $x^{(i)}$, e.g. $\hat{y}_{W,b,x^{(i)}}^{(i)} = \hat{y}$. Since in most cases not only a single pair of input and output data is used for the calculation of the loss function but several, the loss must also be defined for a sample of multiple input and output vectors. In the field of machine learning such a sample of multiple input and output vectors is called a batch. The batch size is one of the so-called hyperparameters of a neural network and specifies how many samples must be sent through the network before the model parameters are updated.
 
 \begin{definition}
-	Let $\{(x^{(1)}, y^{(1)}), (x^{(2)}, y^{(2)}), ..., (x^{(m)}, y^{(m)})\}$ be a sample of input and the corresponding output vectors. Let $W$ be the matrices of weights and $b$ the vectors of biases used in the entire network for a single forward propagation. If $\hat{y}_{W,b,x^{(i)}}^{(i)}$ denotes the estimated outputs from the network then the loss score is given by:
-	
-	\begin{equation}\label{eq:single_loss}
-	L(b, W, x^{(i)}, y^{(i)}) := \frac{1}{2} \norm{\hat{y}_{W,b,x^{(i)}}^{(i)} - y^{(i)}}^2_2
+	Let $\{(x^{(1)}, y^{(1)}), (x^{(2)}, y^{(2)}), ..., (x^{(m)}, y^{(m)})\}$ be a sample of $m$ input and the corresponding output vectors, e.g. the batch size is $m$. Then the loss is given by:	
+	\begin{equation}\label{eq:multiple_loss}
+	\begin{aligned}
+	L(b, W) &= \frac{1}{m} \sum_i^m \frac{1}{2} \norm{\hat{y}^{(i)} - y^{(i)}}^2_2 \\
+			&= \frac{1}{m} \sum_i^m L(b, W, x^{(i)}, y^{(i)})
+	\end{aligned}
 	\end{equation}
 \end{definition}
 
+\begin{remark}
+	In order to reduce the complexity of the model by using smaller weights and to reduce overfitting to some extend, a regularization term can be used in equation (\ref{eq:multiple_loss}).
+	\begin{equation}\label{eq:multiple_loss_regularization}
+	\begin{aligned}
+	L(b, W) &= \frac{1}{m} \sum_i^m \frac{1}{2} \norm{\hat{y}^{(i)} - y^{(i)}}^2_2 + \frac{\lambda}{2} \sum_{i=0}^{N} \norm{W^{(i)}}_F^2\\
+	&= \frac{1}{m} \sum_i^m L(b, W, x^{(i)}, y^{(i)}) + \lambda R(W)
+	\end{aligned}
+	\end{equation}
+\end{remark}
+
+If a regularization term is used in a neural network, the choice of the regularization parameter $\lambda$ plays an important role. When the regularization term $\lambda$ is too high the weight matrices $W$ are close to zero and this can lead to simple networks and underfitting. However, if the parameter is set too low and therefore the matrices are not penalized enough, regularization has no effect at all.
+
+Now that a loss score has been defined, this information can be used to manage the optimization step, as shown in figure (\ref{fig:NN_overview}).The task of minimizing $L(b, W)$ with respect to the weights $b$ and $W$ can be solved by using the gradient descent method.  
 
