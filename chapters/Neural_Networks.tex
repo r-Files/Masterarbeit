@@ -408,7 +408,7 @@ This step, where the neural network takes an input vector and transforms it to a
 
 By using the notation given in equation (\ref{eq:single_loss}) it is explicitly stated, that the loss of a single forward pass depends on the four parameters $b, W, x^{(i)}$ and $y^{(i)}$. In order to increase the readability in the following paragraphs from now on it is not longer explicitly stated that the estimated output depends on the three parameters $W$, $b$ and $x^{(i)}$, e.g. $\hat{y}_{W,b,x^{(i)}}^{(i)} = \hat{y}$. Since in most cases not only a single pair of input and output data is used for the calculation of the loss function but several, the loss must also be defined for a sample of multiple input and output vectors. In the field of machine learning such a sample of multiple input and output vectors is called a batch. The batch size is one of the so-called hyperparameters of a neural network and specifies how many samples must be sent through the network before the model parameters are updated.
 
-\begin{definition}
+\begin{definition}\label{def:batch_loss}
 	Let $\{(x^{(1)}, y^{(1)}), (x^{(2)}, y^{(2)}), ..., (x^{(m)}, y^{(m)})\}$ be a sample of $m$ input and the corresponding output vectors, e.g. the batch size is $m$. Then the loss is given by:	
 	\begin{equation}\label{eq:multiple_loss}
 	\begin{aligned}
@@ -428,7 +428,22 @@ By using the notation given in equation (\ref{eq:single_loss}) it is explicitly 
 	\end{equation}
 \end{remark}
 
-If a regularization term is used in a neural network, the choice of the regularization parameter $\lambda$ plays an important role. When the regularization term $\lambda$ is too high the weight matrices $W$ are close to zero and this can lead to simple networks and underfitting. However, if the parameter is set too low and therefore the matrices are not penalized enough, regularization has no effect at all.
+If a regularization term is used in a neural network, the choice of the regularization parameter $\lambda$ plays an important role. When the regularization term $\lambda$ is too high the weight matrices $W$ are close to zero and this can lead to simple networks and underfitting. However, if the parameter is set too low and therefore higher weights of the matrices are not penalized enough, regularization has no effect at all.
 
-Now that a loss score has been defined, this information can be used to manage the optimization step, as shown in figure (\ref{fig:NN_overview}).The task of minimizing $L(b, W)$ with respect to the weights $b$ and $W$ can be solved by using the gradient descent method.  
+Once a loss function is defined, the information of the loss score can be used to take the next step as shown in the figure (\ref{fig:NN_overview}). The job of the optimizer is to evaluate how the weights of $W$ and $b$ have to be adjusted so that the loss score becomes smaller in the next forward pass. A reduction of the loss score indicates that the deviation between predicted output values and actual outputs is reduced. This iterative improvement of the loss score based on the insights given by the optimizer is the so called learning procedure of a neural network. The task of minimizing $L(b, W)$ with respect to the weights $b$ and $W$ can be solved by using the gradient descent method which is an  first-order iterative optimization algorithm for finding the local minimum of a function \cite{gradient_desc}. Within each step of the iterative procedure the weights of the network are then gradually adjusted with a constant learning rate of $\alpha$. 
+
+\begin{remark}
+	Let $W^{(i)}$ and $b^{(i)}$, $i = 0, 1, ..., N$ be the weights used in the $i+1$-th layer and $\alpha \in  \R_+$ the user defined learning rate. Then the weights are updated in every optimization step such that:
+	\begin{align}
+	b_j^{(i)} 		&= b_j^{(i)} - \alpha \frac{\partial}{\partial b_j^{(i)}} L(b, W)\\
+	W_{jk}^{(i)} 	&= W_{jk}^{(i)} - \alpha \frac{\partial}{\partial W_{jk}^{(i)}} L(b, W)
+	\end{align}	
+\end{remark}
+
+By using definition \ref{def:batch_loss} the update process is given as:
+
+
+
+The only unknowns in the formulas a and b are now the partial derivatives for a given learning rate alpha.
+backpropagation strictly refers only to the algorithm for computing the gradient,
 
