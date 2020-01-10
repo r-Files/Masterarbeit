@@ -430,7 +430,7 @@ By using the notation given in equation (\ref{eq:single_loss}) it is explicitly 
 
 If a regularization term is used in a neural network, the choice of the regularization parameter $\lambda$ plays an important role. When the regularization term $\lambda$ is too high the weight matrices $W$ are close to zero and this can lead to simple networks and underfitting. However, if the parameter is set too low and therefore higher weights of the matrices are not penalized enough, regularization has no effect at all.
 
-Once a loss function is defined, the information of the loss score can be used to take the next step as shown in figure (\ref{fig:NN_overview}). The job of the optimizer is to evaluate how the weights of $W$ and $b$ have to be adjusted so that the loss score becomes smaller in the next forward pass. A reduction of the loss score indicates that the deviation between predicted output values and actual outputs is reduced. This iterative improvement of the loss score based on the insights given by the optimizer is the so called learning procedure of a neural network. The task of minimizing $L(b, W)$ with respect to the weights $b$ and $W$ can be solved by using the gradient descent method which is an  first-order iterative optimization algorithm for finding the local minimum of a function \cite{gradient_desc}. This method calculates, using the gradients, for each weight of the network what effect a change would have on the loss score. The algorithm used to calculate the gradients is called backpropagation.  Once all gradients have been calculated after a forward pass, the weights of the neural network are adjusted with a constant learning rate of $\alpha$. 
+Once a loss function is defined, the information of the loss score can be used to take the next step as shown in figure (\ref{fig:NN_overview}). The job of the optimizer is to evaluate how the weights of $W$ and $b$ have to be adjusted so that the loss score becomes smaller in the next forward pass. A reduction of the loss score indicates that the deviation between predicted output values and actual outputs is reduced. This iterative improvement of the loss score based on the insights given by the optimizer is the so called learning procedure of a neural network. The task of minimizing $L(b, W)$ with respect to the weights $b$ and $W$ can be solved by using the gradient descent method which is an  first-order iterative optimization algorithm for finding the local minimum of a function \cite{gradient_desc}. This method calculates, using the gradients, for each weight of the network what effect a change would have on the loss score. The algorithm used to calculate the gradients is called backpropagation. Once all gradients have been calculated after a forward pass, one way to update the weights of the neural network is to adjusted them by a constant learning rate of $\alpha$. 
 
 
 \begin{remark}\label{rem:update}
@@ -443,7 +443,7 @@ Once a loss function is defined, the information of the loss score can be used t
 
 Since the learning rate $\alpha$ is a hyperparameter that can be chosen freely, the only parts that need to be analyzed are the partial derivatives. By using definition \ref{def:batch_loss} those can be written as:
 \begin{align}
-	\frac{\partial}{\partial b_j^{(i)}} L(b, W) 	&= \frac{1}{m} \sum_{i = 1}^m \frac{\partial}{\partial b_j^{(i)}} L(b, W, x^{(i)}, y^{(i)}) \\
+	\frac{\partial}{\partial b_j^{(i)}} L(b, W) 	&= \frac{1}{m} \sum_{i = 1}^m \frac{\partial}{\partial b_j^{(i)}} L(b, W, x^{(i)}, y^{(i)}) \label{eq:partial_deriv_without_regular_one} \\ 
 	\frac{\partial}{\partial W_{jk}^{(i)}} L(b, W)	&= \frac{1}{m} \sum_{i = 1}^m \frac{\partial}{\partial W_{jk}^{(i)}} L(b, W, x^{(i)}, y^{(i)}) \label{eq:partial_deriv_without_regular}
 \end{align}
 
@@ -528,9 +528,131 @@ If the regularization term is used, just an additive expression of the form $\la
 			&= g'\big( z_j^{(N)}\big) \sum_{l = 1}^{n_{N+1}} \delta_l^{(N+1)} W_{lk}^{(N)} 
 		\end{align*}		
 \end{remark}
-Those results derived in the last section can be used for any number of hidden layers so that the update process described in remark \ref{rem:update} can be applied. After the basic concepts have been explained, the last section of this chapter is dedicated to the question how well cash flows can be replicated with neural networks. 
+Those results derived in the last section can be used for any number of hidden layers so that the update process described in remark \ref{rem:update} can be slightly adopted and summarized in algorithm \ref{alg:SGD}. 
 
-\cite{goodfellow2016deep}
+\begin{algorithm}
+	\caption{Stochastic gradient descent (SGD) with mini batches \cite{goodfellow2016deep}}\label{alg:SGD}
+	\begin{algorithmic}
+		\\
+		\begin{enumerate}
+			\item Define learning rates $\alpha_1, \alpha_2, ...$
+			\item Initialize weight parameters $W$ and $b$ pooled in $\theta$.
+			\item Set a counter: $k = 1$
+			\item While stopping criterion is not met
+			\begin{enumerate}[label=\emph{\alph*})]
+				\item Sample a minibatch of $m$ examples from the training set with corresponding output values
+				$\{(x^{(1)}, y^{(1)}), (x^{(2)}, y^{(2)}), ..., (x^{(m)}, y^{(m)})\}$
+				\item Compute gradient estimate: $g = \frac{1}{m} \nabla_\theta \sum_i L(f(x^{(i)};\theta), y^{(i)})$
+				\item Apply update: $\theta = \theta - \alpha_k g$.
+				\item Increase counter: $k = k + 1$
+			\end{enumerate}
+		\end{enumerate}
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{remark}
+	The notation for the computed gradient $\frac{1}{m} \nabla_\theta \sum_i L(f(x^{(i)};\theta), y^{(i)})$ in algorithm \ref{alg:SGD} is just a short form of formulas (\ref{eq:partial_deriv_without_regular_one}) and (\ref{eq:partial_deriv_without_regular}).
+\end{remark}
+
+\begin{remark}
+	By setting all learning rates equal (e.g. $\alpha = \alpha_1 = \alpha_2 = ... = \alpha_k$), exactly the update process described in remark \ref{rem:update} is obtained.
+\end{remark}
+
+\begin{remark}
+	In practice, the learning rates are often chosen in such a way that a linear decrease takes place up to a certain number of iterations and then the learning rates are kept constant.
+	
+	\begin{equation*}
+		\alpha_k = 
+		\begin{cases}
+			\big(1 - \frac{k}{\tau} \big) \alpha_0 + \frac{k}{\tau} \alpha_\tau 	& \text{$k < \tau$}\\
+			\alpha_\tau 															& \text{$k \geq \tau$}
+		\end{cases}
+	\end{equation*}
+	With $\alpha_0, \alpha_\tau \text{ and } \tau$ set such that:
+	\begin{itemize}
+		\item $\alpha_\tau$ is roughly 1 percent of the initial learning rate $\alpha_0$.
+		\item $\tau$ set to the number of iterations required to pass the whole training set a few hundred times through the neural network.
+		\item $\alpha_0$ does not make the learning process of the model oscillate too much by setting it too high. Gentle oscillations are okay, but setting $\alpha_0$ properly is part of a hyperparameter tuning.
+	\end{itemize}
+	
+\end{remark}
+
+\begin{remark}[\cite{goodfellow2016deep}]	
+A sufficient condition to guarantee that the stochastic gradient descent algorithm converges is that:
+	\begin{equation*}
+	\sum_{k=1}^\infty \alpha_k = \infty \quad \quad \text{and} \quad \quad \sum_{k=1}^\infty \alpha_k^2 < \infty
+	\end{equation*}
+\end{remark}
+
+Based on SGD, the algorithm can be optimized in terms of time consumption. By adding a momentum the learning process can be accelerated and the undesired case that the algorithm runs into a local minimum is partly counteracted.
+
+\begin{algorithm}
+	\caption{Stochastic gradient descent (SGD) with momentum \cite{goodfellow2016deep}}\label{alg:momentum}
+	\begin{algorithmic}
+		\\
+		\begin{enumerate}
+			\item Initialize learning rate $\alpha$ and momentum parameter $\gamma$
+			\item Initialize weight parameter $\theta$ and velocity $v$.
+			\item Set a counter: $k = 1$
+			\item While stopping criterion is not met
+			\begin{enumerate}[label=\emph{\alph*})]
+				\item Sample a minibatch of $m$ examples from the training set with corresponding output values
+				$\{(x^{(1)}, y^{(1)}), (x^{(2)}, y^{(2)}), ..., (x^{(m)}, y^{(m)})\}$
+				\item Compute gradient estimate: $\hat{g} = \frac{1}{m} \nabla_\theta \sum_i L(f(x^{(i)};\theta), y^{(i)})$
+				\item Compute velocity update: $v = \gamma v - \alpha g$
+				\item Apply update: $\theta = \theta + v$.
+				\item Increase counter: $k = k + 1$
+			\end{enumerate}
+		\end{enumerate}
+	\end{algorithmic}
+\end{algorithm}
+
+\begin{remark}
+	The more consecutive gradients point in the same direction, the greater the updates of the weights become. 
+\end{remark}
+
+\begin{remark}
+	Usually the momentum parameter $\gamma$ is initialized with values like 0.5, 0.9 or 0.99. Adopting $\gamma$ over time is possible but typically less important than the linear decay of $\alpha$ shown previously. 
+\end{remark}
+
+
+
+
+\begin{algorithm}
+	\caption{Adam algorithm \cite{goodfellow2016deep}}\label{alg:adam}
+	\begin{algorithmic}
+		\\
+		\begin{enumerate}
+			\item Initialize learning rate $\alpha$. (Suggested default: 0.001)
+			\item Initialize exponential decay rates for moment estimates, $\rho_1$ and $\rho_2$ in $[0,1)$.
+			(Suggested defaults: 0.9 and 0.999 respectively)		
+			\item Initialize Small constant $\delta$ used for numerical stabilization. (Suggested default: $10^{-8}$)
+			\item Initialize weight parameter $\theta$.
+			\item Initialize 1st and 2nd moment variables $s = 0$, $r = 0$.
+			\item Initialize time step $t = 0$.
+			\item While stopping criterion is not met
+			\begin{enumerate}[label=\emph{\alph*})]
+				\item Sample a minibatch of $m$ examples from the training set with corresponding output values
+				$\{(x^{(1)}, y^{(1)}), (x^{(2)}, y^{(2)}), ..., (x^{(m)}, y^{(m)})\}$
+				\item Compute gradient estimate: $\hat{g} = \frac{1}{m} \nabla_\theta \sum_i L(f(x^{(i)};\theta), y^{(i)})$
+				\item Increase time step: $t = t + 1$
+				\item Update biased first moment estimate: $s = \rho_1 s + (1-\rho_1) g$
+				\item Update biased second moment estimate: $r = \rho_2 r + (1-\rho_2) g \odot g$
+				\item Correct bias in first moment: $\hat{s} = \frac{s}{1 - \rho_1^t}$
+				\item Correct bias in second moment: $\hat{r} = \frac{r}{1 - \rho_2^t}$
+				\item Compute update: $\Delta \theta = - \alpha \frac{\hat{s} }{\sqrt{\hat{r}} + \delta}$
+				\item Apply update: $\theta = \theta + \Delta \theta$. (operations applied element-wise)
+				\item Increase counter: $k = k + 1$
+			\end{enumerate}
+		\end{enumerate}
+	\end{algorithmic}
+\end{algorithm}
+
+
+
+
+After the basic concepts have been explained, the last section of this chapter is dedicated to the question how well cash flows can be replicated with neural networks. 
+
 
 \section{Cash flow replication}
 
