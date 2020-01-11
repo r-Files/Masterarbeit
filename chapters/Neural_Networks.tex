@@ -558,7 +558,7 @@ Those results derived in the last section can be used for any number of hidden l
 	By setting all learning rates equal (e.g. $\alpha = \alpha_1 = \alpha_2 = ... = \alpha_k$), exactly the update process described in remark \ref{rem:update} is obtained.
 \end{remark}
 
-\begin{remark}
+\begin{remark}\label{rem:fall_lernRate}
 	In practice, the learning rates are often chosen in such a way that a linear decrease takes place up to a certain number of iterations and then the learning rates are kept constant.
 	
 	\begin{equation*}
@@ -584,7 +584,7 @@ A sufficient condition to guarantee that the stochastic gradient descent algorit
 	\end{equation*}
 \end{remark}
 
-Based on SGD, the algorithm can be optimized in terms of time consumption. By adding a momentum the learning process can be accelerated and the undesired case that the algorithm runs into a local minimum is partly counteracted.
+Based on SGD, the algorithm can be optimized in terms of time consumption. By adding a momentum, the learning process can be accelerated and the undesired case that the algorithm runs into a local minimum is partly counteracted.
 
 \begin{algorithm}
 	\caption{Stochastic gradient descent (SGD) with momentum \cite{goodfellow2016deep}}\label{alg:momentum}
@@ -614,6 +614,37 @@ Based on SGD, the algorithm can be optimized in terms of time consumption. By ad
 \begin{remark}
 	Usually the momentum parameter $\gamma$ is initialized with values like 0.5, 0.9 or 0.99. Adopting $\gamma$ over time is possible but typically less important than the linear decay of $\alpha$ shown previously. 
 \end{remark}
+
+In the two algorithms \ref{alg:SGD} and \ref{alg:momentum} presented so far, the learning rate $\alpha$ is specified globally. As mentioned in remark \ref{rem:fall_lernRate} a sequence of learning rates $\alpha_i$ can be defined so that the learning rate is decreasing over time and is then kept constant after a certain number of iterations. If the idea of globally falling learning rates $\alpha_i$ is taken a step further, a group of algorithms can be presented which individually adapts the learning rates of every single model parameter.
+
+The parameters with the largest partial derivative of the loss have a
+correspondingly rapid decrease in their learning rate, while parameters with small
+partial derivatives have a relatively small decrease in their learning rate.
+
+
+
+
+\begin{algorithm}
+	\caption{Adaptive Gradients (AdaGrad)  \cite{goodfellow2016deep}}\label{alg:adaGrad}
+	\begin{algorithmic}
+		\\
+		\begin{enumerate}
+			\item Initialize learning rate $\alpha$.		
+			\item Initialize Small constant $\delta$ used for numerical stabilization. (Suggested default: $10^{-8}$)
+			\item Initialize weight parameter $\theta$.
+			\item Initialize gradient accumulation variable: $r = 0$.
+			\item While stopping criterion is not met
+			\begin{enumerate}[label=\emph{\alph*})]
+				\item Sample a minibatch of $m$ examples from the training set with corresponding output values
+				$\{(x^{(1)}, y^{(1)}), (x^{(2)}, y^{(2)}), ..., (x^{(m)}, y^{(m)})\}$
+				\item Compute gradient estimate: $\hat{g} = \frac{1}{m} \nabla_\theta \sum_i L(f(x^{(i)};\theta), y^{(i)})$
+				\item Accumulate squared gradient: $r = r + g \odot g$
+				\item Compute update: $\Delta \theta = - \frac{\alpha}{\sqrt{r} + \delta} \odot g$ (Division and square root applied element-wise)
+				\item Apply update: $\theta = \theta + \Delta \theta$.
+			\end{enumerate}
+		\end{enumerate}
+	\end{algorithmic}
+\end{algorithm}
 
 
 
