@@ -571,7 +571,7 @@ Those results derived in the last section can be used for any number of hidden l
 	With $\alpha_0, \alpha_\tau \text{ and } \tau$ set such that:
 	\begin{itemize}
 		\item $\alpha_\tau$ is roughly 1 percent of the initial learning rate $\alpha_0$.
-		\item $\tau$ set to the number of iterations required to pass the whole training set a few hundred times through the neural network.
+		\item $\tau$ is set to the number of iterations required to pass the whole training set a few hundred times through the neural network.
 		\item $\alpha_0$ does not make the learning process of the model oscillate too much by setting it too high. Gentle oscillations are okay, but setting $\alpha_0$ properly is part of a hyperparameter tuning.
 	\end{itemize}
 	
@@ -615,22 +615,13 @@ Based on SGD, the algorithm can be optimized in terms of time consumption. By ad
 	Usually the momentum parameter $\gamma$ is initialized with values like 0.5, 0.9 or 0.99. Adopting $\gamma$ over time is possible but typically less important than the linear decay of $\alpha$ shown previously. 
 \end{remark}
 
-In the two algorithms \ref{alg:SGD} and \ref{alg:momentum} presented so far, the learning rate $\alpha$ is specified globally. As mentioned in remark \ref{rem:fall_lernRate} a sequence of learning rates $\alpha_i$ can be defined so that the learning rate is decreasing over time and is then kept constant after a certain number of iterations. If the idea of globally falling learning rates $\alpha_i$ is taken a step further, a group of algorithms can be presented which individually adapts the learning rates of every single model parameter.
-
-The parameters with the largest partial derivative of the loss have a
-correspondingly rapid decrease in their learning rate, while parameters with small
-partial derivatives have a relatively small decrease in their learning rate.
-
-
-
-
 \begin{algorithm}
 	\caption{Adaptive Gradients (AdaGrad)  \cite{goodfellow2016deep}}\label{alg:adaGrad}
 	\begin{algorithmic}
 		\\
 		\begin{enumerate}
 			\item Initialize learning rate $\alpha$.		
-			\item Initialize Small constant $\delta$ used for numerical stabilization. (Suggested default: $10^{-8}$)
+			\item Initialize Small constant $\delta$ used for numerical stabilization. (Suggested default: $10^{-7}$)
 			\item Initialize weight parameter $\theta$.
 			\item Initialize gradient accumulation variable: $r = 0$.
 			\item While stopping criterion is not met
@@ -646,11 +637,47 @@ partial derivatives have a relatively small decrease in their learning rate.
 	\end{algorithmic}
 \end{algorithm}
 
+\begin{algorithm}
+	\caption{Root mean square propagation (RMSProp)  \cite{goodfellow2016deep}}\label{alg:RMSProp}
+	\begin{algorithmic}
+		\\
+		\begin{enumerate}
+			\item Initialize learning rate $\alpha$ and decay parameter $\rho$.		
+			\item Initialize Small constant $\delta$ used for numerical stabilization. (Suggested default: $10^{-6}$)
+			\item Initialize weight parameter $\theta$.
+			\item Initialize gradient accumulation variable: $r = 0$.
+			\item While stopping criterion is not met
+			\begin{enumerate}[label=\emph{\alph*})]
+				\item Sample a minibatch of $m$ examples from the training set with corresponding output values
+				$\{(x^{(1)}, y^{(1)}), (x^{(2)}, y^{(2)}), ..., (x^{(m)}, y^{(m)})\}$
+				\item Compute gradient estimate: $\hat{g} = \frac{1}{m} \nabla_\theta \sum_i L(f(x^{(i)};\theta), y^{(i)})$
+				\item Accumulate squared gradient: $r = \rho r + (1 - \rho)g \odot g$
+				\item Compute update: $\Delta \theta = - \frac{\alpha}{\sqrt{r + \delta}} \odot g$ ( $\frac{1}{\sqrt{r + \delta}}$ applied element-wise)
+				\item Apply update: $\theta = \theta + \Delta \theta$.
+			\end{enumerate}
+		\end{enumerate}
+	\end{algorithmic}
+\end{algorithm}
 
+In the two algorithms \ref{alg:SGD} and \ref{alg:momentum} presented so far, the learning rate $\alpha$ is specified globally. As mentioned in remark \ref{rem:fall_lernRate} a sequence of learning rates $\alpha_i$ can be defined so that the learning rate is decreasing over time and is then kept constant after a certain number of iterations. If the idea of globally falling learning rates $\alpha_i$ is taken a step further, a group of algorithms can be presented which individually adapts the learning rates of every single model parameter. This then leads to a rapid drop in the individual learning rate for parameters with large partial derivatives. In contrast, the learning rates of parameters with comparatively small partial derivatives are changed only slightly. This approach therefore allows an individual adjustment of the learning rate for each individual parameter depending on how the corresponding gradient behaves. Algorithms \ref{alg:adaGrad} and \ref{alg:RMSProp} show possible implementations of such adaptive learning approaches.
 
+\begin{remark}
+	Algorithm \ref{alg:adaGrad} implements an adoptive learning rate for each individual model parameter by summing all previous squared gradients. As the sum increases with each iteration, this means that the learning rate decreases monotonically.
+\end{remark}
+
+The strength of algorithm \ref{alg:adaGrad} lies in the fast convergence for convex functions. Since the entire history of the gradients is always used for the adjustment of the learning rates through summation, there may be cases in which the algorithm is trapped in convex sinks. This may be due to the fact that when such a sink occurs, the individual learning rate has already been reduced so much that this local minimum cannot be left. 
+Algorithm \ref{alg:RMSProp} addresses this problem by making the adoptive learning rate more flexible.
+
+\begin{remark}	
+	Algorithm \ref{alg:RMSProp} uses an exponentially weighted moving average to adjust the individual learning rates. The decay of the moving average is then controlled by a new hyperparameter called $\rho$, with small values increasing the magnitude of decay.
+\end{remark}
+
+By using the exponentially weighted moving average, previous gradients are considered less for the adaptive learning rate the further back in time they appeared. This means that, in contrast to the AdaGrad method, the individual learning rate does not have to fall monotonously but can develop more flexible. 
+
+The last algorithm presented here can be seen as a combination of RMSProp (algorithm \ref{alg:RMSProp}) and SGD with momentum (algorithm \ref{alg:momentum}). This algorithm, called Adam, shown in algorithm \ref{alg:adam} is fairly new in the field of neural networks and uses momentum and adaptive learning rates to converge faster and more robust \cite{kingma2014adam}. 
 
 \begin{algorithm}
-	\caption{Adam algorithm \cite{goodfellow2016deep}}\label{alg:adam}
+	\caption{Adaptive Moments (Adam) \cite{goodfellow2016deep}}\label{alg:adam}
 	\begin{algorithmic}
 		\\
 		\begin{enumerate}
@@ -679,10 +706,23 @@ partial derivatives have a relatively small decrease in their learning rate.
 	\end{algorithmic}
 \end{algorithm}
 
+\begin{remark}\label{rem:unbiased}
+	Since the update process of the biased first moment estimate in step d) of algorithm \ref{alg:adam} can be expressed as $s_t = (1 - \rho_1) \sum_{i = 1}^t \rho_1^{t-i} g_i$ the correction term can be derived by:
+	
+	\begin{align*}
+		\E[s_t] &= \E \bigg[ (1 - \rho_1) \sum_{i = 1}^t \rho_1^{t-i} g_i \bigg] \\
+				&= \E[g_t] (1 - \rho_1)  \sum_{i = 1}^t \rho_1^{t-i} + \zeta \\
+				&= \E[g_t] (1 - \rho_1^t) + \zeta
+	\end{align*}
+	
+	Where $\zeta = 0 $ if the true first moment is stationary and otherwise $\zeta$ can be kept small because of the exponential decay \cite{kingma2014adam}.
+\end{remark}
 
+\begin{remark}
+	Similarly to remark \ref{rem:unbiased} the correction term for the biased second moment can be derived.
+\end{remark}
 
-
-After the basic concepts have been explained, the last section of this chapter is dedicated to the question how well cash flows can be replicated with neural networks. 
+After the basic concepts have been explained, the last section of this chapter is dedicated to the question how well cash flows can be replicated with neural networks using different optimizer and layer structures. 
 
 
 \section{Cash flow replication}
