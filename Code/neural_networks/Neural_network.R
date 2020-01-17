@@ -3,10 +3,10 @@
 #Loading libraries
 if (!require("pacman")) install.packages("pacman")
 pacman::p_load(rstudioapi, data.table, tidyverse, caret, ggplot2,
-               viridis, gridExtra, pROC, descr, )
+               viridis, gridExtra, pROC, descr, keras, mltools)
 
 
-############## Read and prepare the raw-data ##############
+############## Set up the workspace for reproduceability ##############
 
 # set the seed to get similar results for the random-parts
 set.seed(100) 
@@ -14,10 +14,147 @@ set.seed(100)
 # set the working directory to the path of the script
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
-# read the header of the data
-DT.header <- fread("XXX/XXX.txt", header = FALSE)
-# read the raw-data
-DT.rawData <- fread("XXX/XXX.txt", sep = ",", header = FALSE)
+############## Read and prepare the input-data ##############
+# read the modelpoints
+raw_input <- fread("EB/DMWV__.txt", header = TRUE, skip = "!")
+
+# preselct those columns which could be important 
+input_selCol <- raw_input[, .(DGO_SPCODE_I,
+                              AGE_AT_ENTRY_I, B2_PRAEMIE_I, BIL_RES_I,
+                              DURATIONIF_M_I, INIT_ACC_BON_I, INIT_POLSTAT_I,
+                              POL_TERM_Y_I, PREM_FREQ_I, PREM_PAYBL_Y_I,
+                              RABATT_KZ_I, SEX_I, STAMM_SEG_I, SUM_ASSURED_I,
+                              VERTRIEB_I, ZUGANG_ART_I, ZV_PRAEMIE1_I)]
+
+# one hot encoding for SEX_I
+oneHot_SEX_I <- input_selCol[, .(DGO_SPCODE_I, SEX_I)]
+oneHot_SEX_I[, SEX_I := as.character(SEX_I)]
+oneHot_SEX_I[SEX_I == "0", SEX_I := "male"]
+oneHot_SEX_I[SEX_I == "1", SEX_I := "female"]
+oneHot_SEX_I_final <- dcast(data = oneHot_SEX_I,
+                            DGO_SPCODE_I ~ SEX_I,
+                            fun = length)
+
+# one hot encoding for STAMM_SEG_I
+oneHot_STAMM_SEG_I <- input_selCol[, .(DGO_SPCODE_I, STAMM_SEG_I)]
+oneHot_STAMM_SEG_I[, STAMM_SEG_I := as.character(STAMM_SEG_I)]
+oneHot_STAMM_SEG_I[STAMM_SEG_I == "0", STAMM_SEG_I := "NoStammSeg"]
+oneHot_STAMM_SEG_I[STAMM_SEG_I == "1", STAMM_SEG_I := "StammSeg"]
+oneHot_STAMM_SEG_I_final <- dcast(data = oneHot_STAMM_SEG_I,
+                                  DGO_SPCODE_I ~ STAMM_SEG_I,
+                                  fun = length)
+
+
+
+# one hot encoding for INIT_POLSTAT
+oneHot_INIT_POLSTAT_I <- input_selCol[, .(DGO_SPCODE_I, INIT_POLSTAT_I)]
+oneHot_INIT_POLSTAT_I <- oneHot_INIT_POLSTAT_I[, INIT_POLSTAT_I := as.character(INIT_POLSTAT_I)]
+oneHot_INIT_POLSTAT_I[INIT_POLSTAT_I == "1",  INIT_POLSTAT_I := "Polpämpfl"]
+oneHot_INIT_POLSTAT_I[INIT_POLSTAT_I == "3",  INIT_POLSTAT_I := "Polpämfr"]
+oneHot_INIT_POLSTAT_I[INIT_POLSTAT_I == "4",  INIT_POLSTAT_I := "Polpämfr2"]
+
+oneHot_INIT_POLSTAT_I_final <- dcast(data = oneHot_INIT_POLSTAT_I,
+                                     DGO_SPCODE_I ~ INIT_POLSTAT_I,
+                                     fun = length)
+
+# one hot encoding for PREM_FREQ_I --> nur Jahreszahler? 
+oneHot_PREM_FREQ_I <- input_selCol[, .(DGO_SPCODE_I, PREM_FREQ_I)]
+oneHot_PREM_FREQ_I <- oneHot_PREM_FREQ_I[, PREM_FREQ_I := as.character(PREM_FREQ_I)]
+oneHot_PREM_FREQ_I[PREM_FREQ_I == "1",  PREM_FREQ_I := "jährlich"]
+oneHot_PREM_FREQ_I[PREM_FREQ_I == "12", PREM_FREQ_I := "mtl"]
+oneHot_PREM_FREQ_I[PREM_FREQ_I == "2",  PREM_FREQ_I := "halbjäh"]
+oneHot_PREM_FREQ_I[PREM_FREQ_I == "4",  PREM_FREQ_I := "quartä"]
+
+oneHot_PREM_FREQ_I_final <- dcast(data = oneHot_PREM_FREQ_I,
+                                  DGO_SPCODE_I ~ PREM_FREQ_I,
+                                  fun = length)
+
+# one hot encoding for RABATT_KZ_I --> nur Fälle mit "N" nehmen! --> kein Encoding
+input[, .N, by = .(RABATT_KZ_I)]
+
+# one hot encoding for VERTRIEB_I --> Nur MAKLER
+oneHot_VERTRIEB_I <- input_selCol[, .(DGO_SPCODE_I, VERTRIEB_I)]
+
+oneHot_VERTRIEB_I_final <- dcast(data = oneHot_VERTRIEB_I,
+                                  DGO_SPCODE_I ~ VERTRIEB_I,
+                                  fun = length)
+
+# one hot encoding for ZUGANG_ART_I --> in Prophet alles gleich behandelt solange
+#                                       K oder P
+input_selCol[, .N, by = .(ZUGANG_ART_I)]
+
+#" 0" = Neuzugang
+#" 1" = Anpassungsbrief (S) / Dynamisierung (D)
+#" 2" = Ersatz (mit Rückdatierung)
+#" 4" = Reduktion
+#" 5" = Reaktivierung
+#" 8" = Indexklauselerhöhung bei Großleben Anpassung bei Kollektiv (S)
+#" 9" = Interner Zugang (infolge Ablauf der Prämienzahlung)
+#" K" = Konvertierung (S) / Ersatz bei prämienfreier Summe (D)
+#" N" = Nachtrag, Aufstockung, Indexbrief
+#" P" = Prämienfreie Einrechnung (S)
+#" S" = Prolongation (nur Großleben) (S) / Verlängerung (D)
+#" T" = Versorgertod
+#" W" = Switch ohne Tarifänderung ( FLV )
+#" Y" = Switch mit Tarifänderung ( FLV )
+#" Z" = Summenabfall wegen Zwischenauszahlung
+#"  " bei Änderungsarten, die keinen Zugang inkludieren
+
+
+#input_selCol[, .N,
+#      by = .(INIT_POLSTAT_I, PREM_FREQ_I, RABATT_KZ_I, VERTRIEB_I, ZUGANG_ART_I)] %>% fwrite("analyse.csv") 
+
+input_tmp <- cbind(input_selCol,
+                   oneHot_SEX_I_final[, .(female, male)],
+                   oneHot_STAMM_SEG_I_final[, .(NoStammSeg, StammSeg)])
+
+
+# take a sample which fits our needs and doesnt need one hot encoding except for sex and STAMM_SEG_I
+input_tmp <- input_tmp[INIT_POLSTAT_I == 1
+                       & PREM_FREQ_I    == 12
+                       & RABATT_KZ_I    == "N"
+                       & VERTRIEB_I     == "MAKLER"
+                       & ZUGANG_ART_I %in% c("N", "0"),]
+
+input <- input_tmp[, .(DGO_SPCODE_I,
+                       AGE_AT_ENTRY_I,
+                       B2_PRAEMIE_I,
+                       BIL_RES_I,
+                       DURATIONIF_M_I,
+                       INIT_ACC_BON_I,
+                       POL_TERM_Y_I,
+                       PREM_PAYBL_Y_I,
+                       male,        # one hot from SEX_I
+                       female,      # one hot from SEX_I
+                       StammSeg,    # one hot from STAMM_SEG_I
+                       NoStammSeg,  # one hot from STAMM_SEG_I
+                       SUM_ASSURED_I,
+                       ZV_PRAEMIE1_I)]
+
+
+
+lapply(input, summary)
+
+
+
+
+
+
+############## Read and prepare the output-data ##############
+# read the raw-data output data
+DT.output <- fread("RUN_986/D__RIS~ACT_W_EB_D__RIS~Base.gro",
+                   sep = ",",
+                   header = TRUE,
+                   skip = "DGO_SPCODE_I")
+
+# select and MATH_RES_IF as output and DGO_SPCODE_I as policy identifier
+DT.output_sel <- DT.output[, .(DGO_SPCODE_I, MATH_RES_IF)]
+# select only those rows corresponding to the input
+DT.output_sel <- DT.output_sel[DGO_SPCODE_I %in% input$DGO_SPCODE_I, ]
+# add increasing Jahr-column per DGO_SPCODE 
+DT.output_sel[, Jahr := 0:.N, by = .(DGO_SPCODE_I)]
+# output-matrix
+DT.output_mat <- dcast(DT.output_sel, DGO_SPCODE_I ~ Jahr , value.var = "MATH_RES_IF", fill = 0)
 
 
 
