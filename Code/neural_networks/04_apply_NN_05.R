@@ -1,7 +1,7 @@
 
 ############## Set up neural network and test the results  ##############
 
-learnNN_01 <- function(data, ...){
+learnNN_05 <- function(data, ...){
   
   # extract the train information
   x_train <- data$train$input
@@ -49,15 +49,6 @@ learnNN_01 <- function(data, ...){
     # Dropout to prevent overfitting
     layer_dropout(rate = 0.1) %>%
     
-    # Third hidden layer
-    layer_dense(
-      units              = 8, 
-      kernel_initializer = "uniform", 
-      activation         = "relu") %>% 
-    
-    # Dropout to prevent overfitting
-    layer_dropout(rate = 0.1) %>%
-    
     # Output layer
     layer_dense(
       units              = ncol(y_train), 
@@ -81,9 +72,9 @@ learnNN_01 <- function(data, ...){
   
   # print info of model
   # model_keras
-
-  result <- predict(object = model_keras, as.matrix(x_test))
   
+  result <- predict(object = model_keras, as.matrix(x_test))
+
   data.table(
     Year = 0:(length(colSums(result)) - 1),
     predicted = colSums(result),
