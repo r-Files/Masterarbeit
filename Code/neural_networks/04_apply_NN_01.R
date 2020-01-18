@@ -75,13 +75,5 @@ learnNN <- function(data, ...){
 
   result <- predict(object = model_keras, as.matrix(x_test))
   
-  a_one <- colSums(result)
-  a_two <- colSums(y_test)
-  
-  erg %>% fwrite("predictions.csv")
-
-  
-  error <- sum(erg_class == (as.numeric(DT.test$Resample1$XXX) - 1)) / length(erg_class)
-  
-  return(list("Error Rate" = error, "roc" = roc_model))
+  return(list("predicted" = colSums(result), "true" = colSums(y_test)))
 }
