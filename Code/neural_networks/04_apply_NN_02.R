@@ -11,6 +11,7 @@ learnNN_02 <- function(data, ...){
   x_test <- data$test$input
   y_test <- data$test$output
 
+  set.seed(120)
   
   cols <- c("male","female","StammSeg","NoStammSeg")
 

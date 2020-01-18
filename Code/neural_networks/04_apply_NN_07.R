@@ -2,6 +2,8 @@
 ############## Set up neural network and test the results  ##############
 
 learnNN_07 <- function(data, ...){
+
+  set.seed(120)
   
   # extract the train information
   x_train <- data$train$input
