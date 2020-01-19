@@ -1,7 +1,7 @@
 
 ############## Set up neural network and test the results  ##############
 
-learnNN_02 <- function(data, ...){
+learnNN_02 <- function(data, noNodes, optimizerName){
   
   # extract the train information
   x_train <- data$train$input
@@ -33,7 +33,7 @@ learnNN_02 <- function(data, ...){
   model_keras %>% 
     # First hidden layer
     layer_dense(
-      units              = 20, 
+      units              = noNodes, 
       kernel_initializer = "uniform", 
       activation         = "relu", 
       input_shape        = ncol(x_train)) %>% 
@@ -43,20 +43,11 @@ learnNN_02 <- function(data, ...){
     
     # Second hidden layer
     layer_dense(
-      units              = 20, 
+      units              = noNodes, 
       kernel_initializer = "uniform", 
       activation         = "relu") %>% 
     
     # Dropout to prevent overfitting
-    layer_dropout(rate = 0.1) %>%
-    
-    # third hidden layer
-    layer_dense(
-      units              = 20, 
-      kernel_initializer = "uniform", 
-      activation         = "relu") %>% 
-    
-    # Dropout to prevent overfitting   
     layer_dropout(rate = 0.1) %>%
     
     # Output layer
@@ -67,7 +58,7 @@ learnNN_02 <- function(data, ...){
     
     # Compile ANN
     compile(
-      optimizer = 'adam',
+      optimizer = optimizerName,
       loss      = 'mean_squared_error',
       metrics   = c('mse')
     )
@@ -90,4 +81,5 @@ learnNN_02 <- function(data, ...){
     predicted = colSums(result),
     true = colSums(y_test)
   ) %>% return()
+  
 }

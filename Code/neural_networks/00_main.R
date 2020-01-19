@@ -35,30 +35,32 @@ DT.model <- split_data(DT.input, DT.ouput, 0.80)
 
 ############### Three hidden layers ############### 
 
-result_01 <- learnNN_01(DT.model)
-plot_data(result_01, "result_01.pdf")
+#flag_integer("dense_units1", 128)
 
-result_02 <- learnNN_02(DT.model)
+result_01 <- lapply(1:40, function(x) learnNN_01(DT.model, 8, 'adam'))
+#plot_data(result_01, "result_01.pdf")
+
+result_02 <- lapply(1:40, function(x) learnNN_01(DT.model, 20, 'adam'))
 plot_data(result_02, "result_02.pdf")
 
-result_03 <- learnNN_03(DT.model)
+result_03 <- lapply(1:40, function(x) learnNN_01(DT.model, 37, 'adam'))
 plot_data(result_03, "result_03.pdf")
 
-result_04 <- learnNN_04(DT.model)
+result_04 <- lapply(1:40, function(x) learnNN_01(DT.model, 50, 'adam'))
 plot_data(result_04, "result_04.pdf")
 
 ############### Two hidden layers ###############
 
-result_05 <- learnNN_05(DT.model)
+result_05 <- lapply(1:40, function(x) learnNN_02(DT.model, 8, 'adam'))
 plot_data(result_05, "result_05.pdf")
 
-result_06 <- learnNN_06(DT.model)
+result_06 <- lapply(1:40, function(x) learnNN_02(DT.model, 20, 'adam'))
 plot_data(result_06, "result_06.pdf")
 
-result_07 <- learnNN_07(DT.model)
+result_07 <- lapply(1:40, function(x) learnNN_02(DT.model, 37, 'adam'))
 plot_data(result_07, "result_07.pdf")
 
-result_08 <- learnNN_08(DT.model)
+result_08 <- lapply(1:40, function(x) learnNN_02(DT.model, 50, 'adam'))
 plot_data(result_08, "result_08.pdf")
 
 
