@@ -134,7 +134,7 @@ In the example shown in figure (\ref{fig:simple_neuron}) the neuron takes the th
 		The hyperbolic tangent function is very similar to the sigmoid function and, just like the sigmoid function, also has an order of continuity of $C^{\infty}$. Since the range of output values lies between -1 and 1, the possibilities of using this activation function as a gate are rather limited compared to the sigmoid function. Possible application scenarios can be found in the area of classification problems where all outputs below zero belong to class $A$ and all outputs greater than zero belong to class $B$. 
 		
 	\item ReLu function: 
-		\begin{equation}
+		\begin{equation}\label{eq:relu}
 		\begin{split}
 			g: \R 	& \mapsto [0,+ \infty) \\
 			g(x) 	& = max(0,x) 
@@ -727,7 +727,51 @@ After the basic concepts have been explained, the last section of this chapter i
 
 \section{Cash flow replication}
 
+For the analysis of the effectiveness of neural networks in replicating the cash flows of an insurance portfolio, a subset of an actual insurance portfolio was used. The portfolio used consists of risk insurance policies, whereby only policies of the most often sold tariff were included for the evaluations. This ensures that, if a neural network is successfully trained, a large part of the risk insurance portfolio can already be covered. In principle, all risk tariffs of the portfolio can be described with 37 different characteristics. These features include biometric data such as the sex or age of the insured person as well as actuarial parameters such as a discount label. The approximately 200,000 policies of the tariff analysed here, can be characterised by the following 17 attributes:
 
+    \begin{multicols}{2}
+	\begin{itemize}
+		\item Policy ID
+		\item Age
+		\item Premium
+		\item Reserve
+		\item Months since policy start
+		\item Surpluses
+		\item Policy status
+		\item Policy duration
+		\item Premium frequency
+		\item Premium payment period
+		\item Discount indicator
+		\item Sex
+		\item Main contract flag
+		\item Sum assured
+		\item Sales channel
+		\item Type of sale
+		\item Rider premium
+	\end{itemize}
+\end{multicols}
+
+Since most of the properties are self-explanatory, only those are briefly outlined here where there could be some ambiguity. The sales channel is a categorical variable and indicates how the policy was sold, either through exclusive distribution or through a broker. The type of sale is also a categorical variable and indicates how the contract was concluded. That is, whether it is a new business, a renewal or another type of business transaction. These 17 characteristics were then used to forecast the future portfolio development with the help of proprietary projection software called Prophet. With a future projection period of 60 years and about 60 reporting variables, this results in hundreds of millions of data points. Since this amount of data could not be handled with the available resources, especially since the learning processes of a neural networks would become too costly, there were two simplifications:
+\begin{itemize}
+	\item The number of policies was reduced to approximately 25000. 
+	\item The reporting variables were reduced to the mathematical reserve.
+\end{itemize}
+The policies were chosen in such a way that they form a group that is as homogeneous as possible. These are policies that:
+\begin{itemize}
+	\item Are in the premium payment period with monthly payments.
+	\item Have no discounts.
+	\item Were sold via a broker.
+	\item Are no renewals. 
+\end{itemize}
+It can therefore be seen that there have been some limitations in the selection of policies in terms of discrete features. This fact must be taken into account when evaluating the results, but should not interfere with the further procedure.
+
+The projection software was then used to forecast the reserve trajectories for the next 60 years for those 25000 model points. To be able to check the quality of the tested neural networks, the data was split into a training and a test set. For this purpose, 80\% of the data points were randomly selected and assigned to the training set and the remaining 20\% to the test set. The test set was never used to train the neural nets, but was only used once after training has been finished to check the predictive power. To prevent possible volatility caused by the random initialization of the weight parameters, each test configuration was tested 40 times with randomly initialized parameters and the results were averaged. The two network structures analysed are:
+\begin{enumerate}[label=\Roman*)]
+	\item 2 hidden layers.
+	\item 3 hidden layers.
+\end{enumerate}
+
+In both configurations, the number of neurons in the hidden layers was the same for all hidden layers and was increased in steps from 8 to 50. The individual layers used relu (see equation \ref{eq:relu}) as activation function and initialized the weights uniformly. In addition, a dropout rate of 10\% for each layer has been implemented to prevent the model from overfitting.
 
 
 

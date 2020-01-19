@@ -57,7 +57,7 @@ prepare_input <- function() {
   
   
   # take a sample which forms a homogeneous group 
-  DT.input_tmp <- DT.input_tmp[INIT_POLSTAT_I == 1               # premium paying phase
+  DT.input_tmp <- DT.input_tmp[INIT_POLSTAT_I == 1         # premium paying phase
                         & PREM_FREQ_I    == 12             # monthly payments
                         & RABATT_KZ_I    == "N"            # no discounts
                         & VERTRIEB_I     == "MAKLER"       # sold via broker

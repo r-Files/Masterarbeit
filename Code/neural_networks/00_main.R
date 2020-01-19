@@ -63,4 +63,3 @@ plot_data(result_07, "result_07.pdf")
 result_08 <- lapply(1:40, function(x) learnNN_02(DT.model, 50, 'adam'))
 plot_data(result_08, "result_08.pdf")
 
-
