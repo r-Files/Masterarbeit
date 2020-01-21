@@ -10,8 +10,6 @@ learnNN_01 <- function(data, noNodes, optimizerName){
   # extract the test information  
   x_test <- data$test$input
   y_test <- data$test$output
-
-  set.seed(120)
   
   cols <- c("male","female","StammSeg","NoStammSeg")
 
@@ -76,6 +74,7 @@ learnNN_01 <- function(data, noNodes, optimizerName){
     object = model_keras,
     x = as.matrix(x_train), 
     y = as.matrix(y_train), 
+    view_metrics = FALSE,
     epochs = 50, 
     batch_size = 32
   )
