@@ -37,7 +37,7 @@ The basic idea of the $k$-means clustering is to minimize the variation within t
 \end{remark}
 
 
-\begin{example}(c.f. \cite{analysis_1}) The most common used distance functions for two points $x=(x_1, ..., x_p)$ and  $y=(y_1, ..., y_p)$ in $\R^p$ are: 
+\begin{example}(c.f. \cite{analysis_1}) The most frequently used distance functions for two points $x=(x_1, ..., x_p)$ and  $y=(y_1, ..., y_p)$ in $\R^p$ are: 
 	\begin{itemize}[label=$\star$]
 		\item Euclidean distance:
 			\begin{equation*}
@@ -122,7 +122,7 @@ Even though the problem is NP-hard it is still possible to provide algorithms wh
 	\end{enumerate}
 \end{remark}
 
-One possible formulation for an algorithm that converges to a local optimum is the one from Lloyd \cite{lloyd1982least} which a pseudo code is given below. Note that for algorithm \ref{alg:K-means} we have a fixed number of clusters $k$ as well as a finite set of possible partitions $k^n$. We can therefore show that the stated algorithm converges to a local minimum by minimizing (\ref{equ:Steiner}).
+One possible formulation for an algorithm that converges to a local optimum is the one from Lloyd \cite{lloyd1982least} which is given below as pseudo code. Note that for algorithm \ref{alg:K-means} we have a fixed number of clusters $k$ as well as a finite set of possible partitions $k^n$. We can therefore show that the stated algorithm converges to a local minimum by minimizing (\ref{equ:Steiner}).
 
 \begin{remark}~
 	\begin{enumerate}[label=(\roman*)]
@@ -163,7 +163,7 @@ One possible formulation for an algorithm that converges to a local optimum is t
 	\begin{enumerate}[label=(\roman*)]
 		\item Algorithm \ref{alg:K-means} has a running time of $O(nkpi)$, with n being the number of data points, k the number of cluster, p the number of dimensions and i the number of iterations needed to converge. The only unknown variable is the number of iterations. 
 		\item The trivial upper bound for the number of iterations needed is given by $O(k^n)$, because the algorithm visits every partition of points only once. 
-		\item It can be shown \cite{arthur2006slow} that in the worst case scenario the running time of the algorithm is superpolynomial with a lower bound for the number of iterations of $O(2^{\Omega(\sqrt{n})})$. That means that the running time cannot be bounded above by any polynomial function.
+		\item It can be shown (\cite{arthur2006slow}) that in the worst case scenario the runtime of the algorithm is superpolynomial with a lower bound for the number of iterations of $O(2^{\Omega(\sqrt{n})})$. This means that the runtime is not bounded from above by any polynomial function.
 		\item In practice, the number of iterations required is often small, which makes the algorithm appear to be linearly complex.  
 	\end{enumerate}
 \end{remark}
@@ -178,11 +178,11 @@ It is advisable to run the algorithm several times with different initial centro
 
 
 \clearpage % ensure that all stuff is plotted (images)
-%%%---------------------------------------------------------------------------------------------------------------------
+%%%-----------------------------------------------------------------------------------------------
 %%%			Elbow method
-%%%---------------------------------------------------------------------------------------------------------------------
+%%%-----------------------------------------------------------------------------------------------
 \section{Elbow method - gap statistic}
-Estimating $k$, the parameter that defines the number of clusters, is one of the most difficult  tasks when using k-means. While it is still possible to graphically determine the number of clusters by plotting the data in 2 or 3 dimensional spaces, other methods must be used in higher dimensions. The `elbow' method is one of the most commonly used methods in this context. 
+Estimating $k$, the parameter that defines the number of clusters, is one of the most difficult  tasks when using $k$-means. While it is still possible to graphically determine the number of clusters by plotting the data in 2 or 3 dimensional spaces, other methods must be used in higher dimensions. The `elbow' method is one of the most commonly used methods in this context. 
 
 \begin{definition}
 Let $X = \{x_1, ..., x_n\}$ be a data set and k the number of clusters. Then $C=\{C_1, ..., C_k\}$ is the corresponding partition with the sum of variation within all clusters defined as: 
@@ -250,9 +250,9 @@ In order to find the optimal number of clusters in a computational way, the foll
 
 Figure (\ref{fig:gap_statistics})(b) shows the gap-statistic for different values of $k$ with the corresponding standard errors as a vertical bar. The application of the proposed rule (\ref{equ:gap_statistic_rule}) for selecting the number of clusters results in $\hat{k} = 3$ which corresponds exactly to the actual number of clusters in the data set. 
 
-%%%---------------------------------------------------------------------------------------------------------------------
+%%%-----------------------------------------------------------------------------------------------
 %%%			Silhouette method
-%%%---------------------------------------------------------------------------------------------------------------------
+%%%-----------------------------------------------------------------------------------------------
 \section{Silhouette method}\label{sec:silhouette}
 
 Although the "elbow method" is well suited in many cases to determine the number of clusters, the resulting partitioning is not visually displayable if the dimension is larger than three. A visually appealing graphical display called silhouette plot introduced in \cite{rousseeuw1987silhouettes} tries to overcome this shortcoming in order to be able to interpret cluster results more properly. The plot shows whether a specific partitioning result reflects a cluster structure actually present in the data set or not, by comparing the within dissimilarity with the between dissimilarity for every data point. It can thus be determined how similar a data point is to its own cluster compared to the other clusters. The measure of similarity can be calculated with any distance metric appropriate to the specific problem and will be called $dist(x_i, x_j)$ for two data points $x_i$ and $x_j$.
@@ -309,10 +309,10 @@ Let $X=\{x_1, ..., x_n\}$ be a data set and $C=\{C_1, ..., C_k\}$ the correspond
 
 \begin{remark}
 	In order to understand which values of $s(i)$ correspond to which clustering results, it makes sense to look at values at the boundaries: 
-	\begin{itemize}[label=$\star$]
-		\item $s(i) \in (1 - \epsilon, 1]$: For $s(i)$ close to 1 the within dissimilarity of $x_i$ is much smaller than the minimum between dissimilarity. This shows on the one hand that the data point $x_i$ is very well embedded in its cluster and has a small distance to the other data points of its cluster (i.e. $WD(C_i,i)$ small). On the other hand a relatively large value of $dist(i)$ shows that the minimum distance from $x_i$ to the nearest cluster is very large. Thus one can speak of adequate clustering.		
+	\begin{itemize}%[label=$\star$]
+		\item $s(i) \in (1 - \epsilon, 1]$: For $s(i)$ close to 1 the within dissimilarity of $x_i$ is much smaller than the minimum between dissimilarity. This shows on the one hand that the data point $x_i$ is very well embedded in its cluster and has a small distance to the other data points of its cluster (i.e. $WD(C_i,i)$ small). On the other hand a relatively large value of $dist(i)$ shows that the minimum distance from $x_i$ to the nearest cluster is very large. Thus one can speak of an adequate clustering result.		
 		\item $s(i) \in (-\epsilon, + \epsilon)$: The within dissimilarity of $x_i$ is approximately the same as the minimum between dissimilarity which indicates that $x_i$ lies between two cluster. A small change of the data point $x_i$ could cause it to be assigned to another cluster, suggesting unstable results.		
-		\item $s(i) \in [-1, -1 + \epsilon)$ The minimum between dissimilarity of $x_i$ is much smaller than the within dissimilarity which indicates that $x_i$ may not be correctly clustered. In this case $x_i$ is on average much closer to the neighbor cluster than to the actual cluster which rises doubts if the cluster assignment is right. 
+		\item $s(i) \in [-1, -1 + \epsilon)$ The minimum between dissimilarity of $x_i$ is much smaller than the within dissimilarity which indicates that $x_i$ may not be correctly clustered. In this case $x_i$ is on average much closer to the neighbor cluster than to the actual cluster which rises doubts if the cluster assignment is correct. 
 	\end{itemize}
 \end{remark}
 
@@ -328,7 +328,7 @@ In order to get a visually appealing overview if a clustering result is good or 
 	\label{fig:silhouette}
 \end{figure}
 
-Figure (\ref{fig:silhouette}) shows the silhouette plot for the sample data set with $k=3 \text{ and } 5$, respectively. Each silhouette plots shows on the right side the cluster name, the number of data points assigned to the cluster and the average silhouette width. In the right panel of figure (\ref{fig:silhouette}) cluster 1 consists of 11 data points and has a average silhouette width of $0.37$. In cluster 3, for example, two data points have a silhouette width $s(i)$ close to zero and one data point has a negative value for $s(i)$. Except for cluster 5, all other clusters include data points which have a small or even negative value for $s(i)$. At the bottom of each silhouette plot the average silhouette width for all data points is given. The silhouette plot with $k=3$ has much wider silhouettes compared to the plot with $k=5$ which is an indicator that only 3 clusters are present in the data. Similar plots for $k=2$ and $k=4$ also lead to the conclusion that the data consists of 3 natural clusters. If there are too many ($k > k_{true}$) or too few clusters ($k < k_{true}$) some of the cluster silhouettes will be much narrower compared to the others.  
+Figure (\ref{fig:silhouette}) shows the silhouette plot for the sample data set with $k=3 \text{ and } 5$, respectively. Each silhouette plot shows on the right side the cluster name, the number of data points assigned to the cluster and the average silhouette width. In the right panel of figure (\ref{fig:silhouette}) cluster 1 consists of 11 data points and has a average silhouette width of $0.37$. In cluster 3, for example, two data points have a silhouette width $s(i)$ close to zero and one data point has a negative value for $s(i)$. Except for cluster 5, all other clusters include data points which have a small or even negative value for $s(i)$. At the bottom of each silhouette plot the average silhouette width for all data points is given. The silhouette plot with $k=3$ has much wider silhouettes compared to the plot with $k=5$ which is an indicator that only 3 clusters are present in the data. Similar plots for $k=2$ and $k=4$ also lead to the conclusion that the data consists of 3 natural clusters. If there are too many ($k > k_{true}$) or too few clusters ($k < k_{true}$) some of the cluster silhouettes will be much narrower compared to the others.  
 
 \begin{remark}
 A high average cluster silhouette width indicates that the cluster is well separated from other clusters and is not split up artificially. 
@@ -341,7 +341,7 @@ It can be seen that artificial splits of clusters gets quite heavily penalizes b
 %%%			Curse of dimensionality
 %%%---------------------------------------------------------------------------------------------------------------------
 \section{Curse of dimensionality}
-After presenting two methods namely the elbow method and silhouette method which help identifying the correct number of clusters one should also be aware of phenomena that arise when analyzing data in high dimensional spaces. The `curse of dimensionality' is a term introduced by Richard Bellman \cite{bellman1961adaptive} to describe the rapid increase in volume and therefore the intractability of algorithms, when adding more dimensions of data to a mathematical space. Nowadays there are many different phenomenons referred to when talking about the curse of dimensionality but in the subsequent the focus is on distance functions as a measure of similarity. So far, all the methods presented are based extensively on the underlying distance functions used. To get a better understanding on the issue a simple example is given that helps to illustrate the problem.
+After presenting two methods namely the elbow method and the silhouette method which help identifying the correct number of clusters one should also be aware of a phenomena that arise when analyzing data in high dimensional spaces. The `curse of dimensionality' is a term introduced by Richard Bellman \cite{bellman1961adaptive} to describe the rapid increase in volume and therefore the intractability of algorithms, when adding more dimensions of data to a mathematical space. Nowadays there are many different phenomenons referred to when talking about the curse of dimensionality but in the subsequent the focus is on distance functions as a measure of similarity. So far, all the methods presented are based extensively on the underlying distance functions used. To get a better understanding on the issue a simple example is given that helps to illustrate the problem.
 
 \begin{example}\label{ex:curse_of_dimensionality}~
 	\begin{enumerate}[label=(\roman*)]
@@ -368,7 +368,7 @@ Corollary \ref{cor:volume}  says that as dimension $d$ increases, more and more 
 Some other examples why intuition fails in high dimensions are given in paragraph 6 of \cite{domingos2012few}.
 \end{remark}
 
-Not only do the data points move closer to the edge as the dimension $d$ of the data space increases, but the distance between the individual data points is becoming more and more similar. It can be shown (\cite{beyer1999nearest}) that under a broad set of conditions the distance to the nearest and to the farthest data point converges as dimensionality $d$ increases. Experimental results in \cite{beyer1999nearest} show that this effect can occur even for relatively low dimensional data with only 10 to 15 dimension. The fact that the distance to the farthest data point can get similar to the distance of the nearest data point makes clustering a hard job. The basic concept of $k$-means is to find, in the case of the Euclidean distance measure, spherically shaped clusters that have different characteristics. Therefore, data that is almost identical should not be clustered with a simple $k$-means algorithm without further analysis. Due to the fact that the $k$-means algorithm always returns a result even though there are obviously no clusters in the data because all data points are somehow similar, it is very difficult to determine whether $k$-means is a suitable tool for clustering or not. Situations in which all data points are similar and no cluster structure is present in the data are, as shown in the previous section, indicated by a low silhouette coefficient. When using the methods described in section \ref{sec:silhouette}, a silhouette plot with low silhouette coefficients for the clusters indicates that the clusters found by the algorithm are not well separated. Single clustering attempts can easily be verified by an visual inspection of plots described above. With an automated clustering approach, which is necessary for large insurance portfolios, visual control of the individual silhouette plots is not possible in most cases. In such cases, only a validation of the silhouette coefficient is feasible, but this leads ultimately to a situation where a clustering result is validated by a single value.
+Not only do the data points move closer to the edge as the dimension $d$ of the data space increases, but the distance between the individual data points is becoming more and more similar. It can be shown (\cite{beyer1999nearest}) that under a broad set of conditions the distance to the nearest and to the farthest data point converges as dimensionality $d$ increases. Experimental results in \cite{beyer1999nearest} show that this effect can occur even for relatively low dimensional data with only 10 to 15 dimensions. The fact that the distance to the farthest data point can get similar to the distance of the nearest data point makes clustering a hard job. The basic concept of $k$-means is to find, in the case of the Euclidean distance measure, spherically shaped clusters that have different characteristics. Therefore, data that is almost identical should not be clustered with a simple $k$-means algorithm without further analysis. Due to the fact that the $k$-means algorithm always returns a result even though there are obviously no clusters in the data because all data points are somehow similar, it is very difficult to determine whether $k$-means is a suitable tool for clustering or not. Situations in which all data points are similar and no cluster structure is present in the data are, as shown in the previous section, indicated by a low silhouette coefficient. When using the methods described in section \ref{sec:silhouette}, a silhouette plot with low silhouette coefficients for the clusters indicates that the clusters found by the algorithm are not well separated. Single clustering attempts can easily be verified by an visual inspection of plots described above. With an automated clustering approach, which is necessary for large insurance portfolios, visual control of the individual silhouette plots is not possible in most cases. In such cases, only a validation of the silhouette coefficient is feasible, but this leads ultimately to a situation where a clustering result is validated by a single value.
 It is therefore advisable to use low-dimensional policy data sets or conduct a thorough analysis of the data to avoid situations where problems referred to as 'course of  dimensionality' occur. 
 
 
