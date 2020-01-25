@@ -438,44 +438,6 @@ As shown in example (\ref{ex:householder}), by applying the Householder matrix $
 The task now is to find a matrix $P$ that represents the desired reflection. To achieve this, a step-by-step approach is chosen. In a first step the reflection of a vector at a hyperplane through the origin in Euclidean space is constructed. Once this general case has been derived, it can be used to construct a reflection such that the the first column of matrix $A$ is transformed to a multiple of the first unit vector.
 
 
-
-%\begin{figure}\label{fig:mirror_housholder}
-%	\caption{Mirroring of $\vec{x}$ to $\vec{Px}$ through hyperplane $H$.}
-%	\centering
-%	\begin{tikzpicture}
-%		% draw the projection hyperplane
-%		\coordinate [label=left:{$H$}] (p1) at (-1,0);
-%		\coordinate (p2) at (6.5,0);
-%		
-%		%\draw[very thin] (p1) -- node[at start] {$H$} (p2);
-%		\draw[very thin] (p1) -- (p2);
-%			
-%		
-%		% draw the projection direction
-%		\coordinate (v1) at (5,1);
-%		\coordinate (v2) at (5,-1);
-%		
-%		\draw[very thick, ->] (v1) -- node[near end, right] {$\vec{v}$} (v2);
-%		
-%		% draw the vector and projected vector
-%		\coordinate[label=above:0] (x1) at (0,0);
-%		\coordinate (x2) at (4,2);
-%		\coordinate (x3) at (4,-2);
-%		\coordinate (x4) at (4,0);
-%		
-%		\draw[very thick, ->] (x1) -- node[very near end, above] {$\vec{x}$} (x2);
-%		\draw[very thick, ->] (x1) -- node[very near end, below] {$\vec{Px}$} (x3);
-%		\draw[very thick, dashed, ->] (x2) -- node[right] {$\vec{w}$} (x4);
-%		
-%		\begin{scope}[shift={(4,2)}]
-%		\draw (0,0) -- (207:.75cm) arc (207:270:.75cm);
-%		\draw (-85:0.4cm) node[left] {$\theta$};
-%		\end{scope}
-%		
-%		\rightangle{4,0}{90}{.5} % user defined function
-%	\end{tikzpicture}
-%\end{figure}
-
 \begin{figure}
 	\caption{Mirroring of $\vec{x}$ to $\vec{Px}$ through hyperplane $H$.}
 	\centering
