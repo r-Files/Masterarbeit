@@ -6,7 +6,7 @@
 \chapter{Introduction}
 \label{cha:introduction}
 
-A fundamental problem faced by many insurance companies is the projection of the insurance portfolio into the future. In a projection, the future cash flows for each individual policy must be calculated on the basis of actuarial principles and then saved for further analysis. Depending on the purpose of the forecast, these cash flows have to be provided either on a monthly or annually basis.Together with the contractually agreed benefits to the policyholder, a wide variety of other parameters must also be taken into account and modeled in such projections. These include, for example, all contract changes that may occur during the duration of the contract, such as a premium pause, a surrender or the occurrence of a claim. While the calculation of a small set of policies over a relatively short time horizon does not pose a challenge in terms of computation time, this fact changes greatly when projecting entire portfolios. This problem is particularly severe for life insurance portfolios. These contracts often have durations of several decades and the portfolios tend to grow over time as fewer policyholders leave than new ones are added. Even with the optimistic assumption that the complete projection of a single contract only takes a hundredth of a second, the computing time adds up to several hours for a portfolio with several million policies. As the liabilities are projected over a period of several decades, it is also essential to simulate the development of the assets, underlying the liabilities, over this period. Even under the assumption that the assets can be represented by a small number of different types of investments, their projection additionally increases the run time of the projection. The simultaneous simulation of the asset and liability portfolios results in further factors that have to be taken into account with respect to the behavior of policyholders during the contract term. If one assumes that the policyholder behavior during the projection period also depends on external parameters such as the current interest rates on savings, one also has to include that effect into the simulation. This finally results in a dynamic interaction of all components which can be summarized in a simplified pseudo code given in algorithm \ref{alg:interaction}:
+A fundamental problem faced by many insurance companies is the projection of the insurance portfolio into the future. In a projection, the future cash flows for each individual policy must be calculated on the basis of actuarial principles and then saved for further analysis. Depending on the purpose of the forecast, these cash flows have to be provided either on a monthly or annually basis.Together with the contractually agreed benefits to the policyholder, a wide variety of other parameters must also be taken into account and modelled in such projections. These include, for example, all contract changes that may occur during the duration of the contract, such as a premium pause, a surrender or the occurrence of a claim. While the calculation of a small set of policies over a relatively short time horizon does not pose a challenge in terms of computation time, this fact changes greatly when projecting entire portfolios. This problem is particularly severe for life insurance portfolios. These contracts often have durations of several decades and the portfolios tend to grow over time as fewer policyholders leave than new ones are added. Even with the optimistic assumption that the complete projection of a single contract only takes a hundredth of a second, the computing time adds up to several hours for a portfolio with several million policies. As the liabilities are projected over a period of several decades, it is also essential to simulate the development of the assets, underlying the liabilities, over this period. Even under the assumption that the assets can be represented by a small number of different types of investments, their projection additionally increases the run time of the projection. The simultaneous simulation of the asset and liability portfolios results in further factors that have to be taken into account with respect to the behaviour of policyholders during the contract term. If one assumes that the policyholder behaviour during the projection period also depends on external parameters such as the current interest rates on savings, one also has to include that effect into the simulation. This finally results in a dynamic interaction of all components which can be summarized in a simplified pseudo code given in algorithm \ref{alg:interaction}:
 
 \begin{algorithm}
 	\caption{Simplified dynamic interaction scheme of portfolio projection}\label{alg:interaction}
@@ -18,7 +18,7 @@ A fundamental problem faced by many insurance companies is the projection of the
 			\begin{enumerate}[label=\emph{\alph*})]
 				\item Calculation of one time step for the liabilities. This means that all policies are projected to the next year ($t \mapsto t+1$). 
 				\item Calculation of one time step for the assets. This means that the returns of all investments are simulated for the next year.
-				\item Simulation of the dynamic policyholder behavior based on the current economic parameters from the previous step.
+				\item Simulation of the dynamic policyholder behaviour based on the current economic parameters from the previous step.
 				\item Application of pre-defined management decisions based on current developments in assets and liabilities. This means that in this step it is determined how high the dividend per share, for example, will be for this year. 
 			\end{enumerate}
 		\end{enumerate}
@@ -28,7 +28,7 @@ A fundamental problem faced by many insurance companies is the projection of the
 Note that during an iteration (algorithm \ref{alg:interaction}, 2a - 2d ) all results must be kept in memory until every decision for that loop is made and the next iteration starts. Assuming that there is a portfolio of several million policies and for each policy at least a few dozen variables are relevant for the decision making process, a memory requirement of at least hundreds of million individual values emerges. Also the simulations of the assets side and the subsequent management decisions have a considerable memory requirement. All this leads to the fact that the projection models currently used in the insurance industry are extremely demanding in terms of their memory requirements and execution time. There are at least two different ways to address this problem:
 
 \begin{itemize}
-	\item Outsourcing of calculations to data centers.
+	\item Outsourcing of calculations to an external high performance infrastructure.
 	\item Data compression in the sense that similar policies are grouped together and only the grouped portfolio is calculated.
 \end{itemize}
 
@@ -36,14 +36,14 @@ With the increasing availability of cloud services, it is already an option thes
 
 %--------------------------------------------------------------------- Problem formulation -----------------------------------------------------------------------
 \section{Problem formulation}
-For the sake of simplicity all values calculated by the projection tool are referred to as cashflows regardless of whether they are non-cumulative values such as the reserve or actual cashflows such as the premium. The task is to find a portfolio with a reduced number of policies, the so called grouped portfolio, so that the projected cashflows match those from the reference  portfolio as accurately as possible. In order to be able to define what accurately means in terms of cashflow deviations, some basic concepts must be defined first . 
+For the sake of simplicity all values calculated by the projection tool are referred to as cash flows regardless of whether they are non-cumulative values such as the reserve or actual cash flows such as the premium. The task is to find a portfolio with a reduced number of policies, the so called grouped portfolio, so that the projected cash flows match those from the reference  portfolio as accurately as possible. In order to be able to define what accurately means in terms of cash flow deviations, some basic concepts must be defined first . 
 
 \begin{definition}
 	Let $\V$ = \{V, V is a valid insurance contract\} be the set of all valid insurance contracts. A finite set of elements $P \subset \V$ is called a portfolio and the number of policies within that portfolio is determined by its cardinality.
 \end{definition}
 
 \begin{definition}
-	Let $P \subset \V$ be a portfolio of n policies (i.e. $\vert P \vert$ = n) and $m$ the number of projected cashflows by the simulation $s$. Then the individual cashflows corresponding to $P$ are encoded in $A \in \R^{m \times n}$ and the summed cashflows are encoded in $b \in \R^m$.
+	Let $P \subset \V$ be a portfolio of n policies (i.e. $\vert P \vert$ = n) and $m$ the number of projected cash flows by the simulation $s$. Then the individual cash flows corresponding to $P$ are encoded in $A \in \R^{m \times n}$ and the summed cash flows are encoded in $b \in \R^m$.
 
 	\begin{equation*}
 	\begin{aligned}[c]
@@ -69,7 +69,7 @@ For the sake of simplicity all values calculated by the projection tool are refe
 \end{remark}
 
 \begin{example}
-	Let $P \subset \V$ be a portfolio with $\vert P \vert$ = 1000, the number of cashflows $m = 180$. Then the cashflows generated by the projection software can be described as:
+	Let $P \subset \V$ be a portfolio with $\vert P \vert$ = 1000, the number of cash flows $m = 180$. Then the cash flows generated by the projection software can be described as:
 	
 	\begin{equation*}
 	\begin{aligned}[c]	
@@ -107,20 +107,20 @@ For the sake of simplicity all values calculated by the projection tool are refe
 	\end{equation*}
 \end{example}
 
-A column in matrix $A$ describes all cashflows generated by this policy. One row of matrix $A$ describes the same cashflow generated by the different policies. By calculating line totals, the corresponding cashflow is obtained at portfolio level. The individual policy by policy cashflows are therefore given in matrix $A$, and the portfoliocash flows in vector $b$. 
+A column in matrix $A$ describes all cash flows generated by this policy. One row of matrix $A$ describes the same cash flow generated by the different policies. By calculating line totals, the corresponding cash flow is obtained at portfolio level. The individual policy by policy cash flows are therefore given in matrix $A$, and the portfolio cash flows in vector $b$. 
 
 \begin{definition}
-	Let $P \subset \V$ be a portfolio with $\vert P \vert = n$, $\tilde{P} \subset \V$  the grouped portfolio with $\vert \tilde{P} \vert = \tilde{n}$, $\tilde{n} < n$ and $w \in \R^m_{\geq 0} = \{x \in \R^m, x \geq 0\}$ a vector of weights. Then the weighted sum of squares of the cashflows over the entire projection horizon between the grouped portfolio $\tilde{P}$ and the ungrouped one $P$ is given by: 
+	Let $P \subset \V$ be a portfolio with $\vert P \vert = n$, $\tilde{P} \subset \V$  the grouped portfolio with $\vert \tilde{P} \vert = \tilde{n}$, $\tilde{n} < n$ and $w \in \R^m_{\geq 0} = \{x \in \R^m, x \geq 0\}$ a vector of weights. Then the weighted sum of squares of the cash flows over the entire projection horizon between the grouped portfolio $\tilde{P}$ and the ungrouped one $P$ is given by: 
 	
 	\begin{equation}\label{eq:objective_function}
 		WSS_{total} = \lVert w \circ (b - \tilde{b})\lVert_2^2
 	\end{equation}
 \end{definition}
 
-The weighting parameter $w$ makes it possible to make deviations from certain cashflows more or less important by weighting them differently. This can be useful, for example, to weight deviations at the end of the projection period less heavily compared to deviations at the beginning of the projection horizon. Particularly with projection horizons of 30 years and more, it may make sense to weight deviations in cashflows less strongly at a later point in time. 
+The weighting parameter $w$ makes it possible to make deviations from certain cash flows more or less important by weighting them differently. This can be useful, for example, to weight deviations at the end of the projection period less heavily compared to deviations at the beginning of the projection horizon. Particularly with projection horizons of 30 years and more, it may make sense to weight deviations in cash flows less strongly at a later point in time. 
 
 \begin{remark}
-	In a situation where every deviation of cashflows between the grouped and the ungrouped portfolio is equally important, the elements of $w$ are all one. In this situation equation (\ref{eq:objective_function}) simplifies to:	
+	In a situation where every deviation of cash flows between the grouped and the ungrouped portfolio is equally important, the elements of $w$ are all one. In this situation equation (\ref{eq:objective_function}) simplifies to:	
 	\begin{equation}\label{eq:objective_function_simple}
 		WSS_{total} = \lVert b - \tilde{b}\lVert_2^2
 	\end{equation}	
