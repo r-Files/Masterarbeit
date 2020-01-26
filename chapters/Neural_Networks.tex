@@ -105,7 +105,8 @@ The so called neurons form the basis of every neural network and are the element
 				& = g(z)
 \end{split}
 \end{equation}
-In the example shown in figure (\ref{fig:simple_neuron}) the neuron takes the three input values $x_1, x_2 \text{ and } x_3$ and transforms them in several steps into the output value $\hat{y}$. In the first step, a weighted sum is formed from the input values and the corresponding weights $w_1, w_2 \text{ and } w_3$. A bias $b$ is then added to this weighted sum and the intermediate result is called $z$. This intermediate result is then the input for the activation function $g$. Applying the activation function to $z$ gives the final output value of the neuron. The purpose of the activation function can be seen as a gate. Since both, the values of the inputs and the values of the weights are unrestricted, the value of $z$ can be in the interval (-$\infty$, $+\infty$). A natural way of determining whether the next neuron should be activated or not is to apply a transformation to $z$, which is done by an activation function. For this reason neural networks use non-linear activation functions. Those activation functions can limit the value range and also enable the network to learn complex data structures. Some of the most commonly used activation functions in neural networks are shown in figure (\ref{fig:activation_func}): 
+In the example shown in figure (\ref{fig:simple_neuron}) the neuron takes the three input values $x_1, x_2 \text{ and } x_3$ and transforms them in several steps into the output value $\hat{y}$. In the first step, a weighted sum is formed from the input values and the corresponding weights $w_1, w_2 \text{ and } w_3$. A bias $b$ is then added to this weighted sum and the intermediate result is called $z$. This intermediate result is then the input for the activation function $g$. Applying the activation function to $z$ gives the final output value of the neuron. The purpose of the activation function can be seen 
+. Since both, the values of the inputs and the values of the weights are unrestricted, the value of $z$ can be in the interval (-$\infty$, $+\infty$). A natural way of determining whether the next neuron should be activated or not is to apply a transformation to $z$, which is done by an activation function. For this reason neural networks use non-linear activation functions. Those activation functions can limit the value range and also enable the network to learn complex data structures. Some of the most commonly used activation functions in neural networks are shown in figure (\ref{fig:activation_func}): 
 
 \begin{figure}
 	\centering
@@ -140,7 +141,7 @@ In the example shown in figure (\ref{fig:simple_neuron}) the neuron takes the th
 			g(x) 	& = max(0,x) 
 		\end{split}
 		\end{equation}
-		One of the most successful and widely-used activation functions is the Rectified Linear Unit (ReLU). All values greater than zero activate the next neuron and all negative input values result in the next neuron not being activated by setting the output to zero. Because of the maximization the ReLu-function has only an order of continuity of $C^0$. Although it is non-differentiable, this function is popular because of it's simplicity and reliability as a gate function. \cite{searchingActivation}, \cite{nair2010rectified}
+		One of the most successful and widely-used activation functions is the Rectified Linear Unit (ReLU). All values greater than zero activate the next neuron and all negative input values result in the next neuron not being activated by setting the output to zero. Because of the maximization the ReLu-function has only an order of continuity of $C^0$. Although it is non-differentiable, this function is popular because of it's simplicity and reliability as a gate function (see \cite{searchingActivation}, \cite{nair2010rectified}). 
 			
 	\item Softplus function: 
 		\begin{equation}
@@ -149,7 +150,7 @@ In the example shown in figure (\ref{fig:simple_neuron}) the neuron takes the th
 			g(x) 	& = ln(1 + e^x) 
 		\end{split}
 		\end{equation}	
-		 Since ReLu is non-differentiable at zero a smooth version of it, which also has an order of continuity of $C^{\infty}$, is given by the softplus function. It can be used as a replacement for the ReLu function. As various analyses have shown the performance between the softplus function and the Relu function is negligible in most cases. \cite{searchingActivation}
+		 Since ReLu is non-differentiable at zero a smooth version of it, which also has an order of continuity of $C^{\infty}$, is given by the softplus function. It can be used as a replacement for the ReLu function. As various analyses have shown the performance between the softplus function and the Relu function is negligible in most cases (see \cite{searchingActivation}). 
 \end{itemize}
 
 In the example given in figure (\ref{fig:simple_neuron}), the output value of the neuron is already the prediction $\hat{y}$, but in almost every case the output of one neuron serves as an input for another neuron. The next section is therefore dedicated to the interaction of multiple neurons in multiple layers and also introduces a general notation based on \cite{Mar_Pri}, that allows to describe the mathematical concept of a neural network including an optimization algorithm.
@@ -536,7 +537,7 @@ Those results derived in the last section can be used for any number of hidden l
 		\\
 		\begin{enumerate}
 			\item Define learning rates $\alpha_1, \alpha_2, ...$
-			\item Initialize weight parameters $W$ and $b$ pooled in $\theta$.
+			\item Initialize weight parameters $W$ and $b$ and reference them by $\theta$.
 			\item Set a counter: $k = 1$
 			\item While stopping criterion is not met
 			\begin{enumerate}[label=\emph{\alph*})]
@@ -722,7 +723,7 @@ The last algorithm presented here can be seen as a combination of RMSProp (algor
 	Similarly to remark \ref{rem:unbiased} the correction term for the biased second moment can be derived.
 \end{remark}
 
-After the basic concepts have been explained, the last section of this chapter is dedicated to the question how well cash flows can be replicated with neural networks using different optimizer and layer structures. 
+After the basic concepts have been explained, the last section of this chapter is dedicated to the question how well cash flows can be replicated with neural networks using different neural networks. 
 
 
 \section{Cash flow replication}
@@ -751,7 +752,7 @@ For the analysis of the effectiveness of neural networks in replicating the cash
 	\end{itemize}
 \end{multicols}
 
-Since most of the properties are self-explanatory, only those are briefly outlined here where there could be some ambiguity. The sales channel is a categorical variable and indicates how the policy was sold, either through exclusive distribution or through a broker. The type of sale is also a categorical variable and indicates how the contract was concluded. That is, whether it is a new business, a renewal or another type of business transaction. These 17 characteristics were then used to forecast the future portfolio development with the help of proprietary projection software called Prophet. With a future projection period of 60 years and about 60 reporting variables, this results in hundreds of millions of data points. Since this amount of data could not be handled with the available resources, especially since the learning processes of a neural networks would become too costly, there were two simplifications:
+Since most of the properties are self-explanatory, only those are briefly outlined here where there could be some ambiguity. The sales channel is a categorical variable and indicates how the policy was sold, either through exclusive distribution or through a broker. The type of sale is also a categorical variable and indicates how the contract was concluded. That is, whether it is a new business, a renewal or another type of business transaction. These 17 characteristics were then used to forecast the future portfolio development with the help of a proprietary projection software called Prophet. With a future projection period of 60 years and about 60 reporting variables, this results in hundreds of millions of data points. Since this amount of data could not be handled with the available resources, especially since the learning processes of a neural networks would become too costly, there were two simplifications:
 \begin{itemize}
 	\item The number of policies was reduced to approximately 25,000. 
 	\item The reporting variables were reduced to the mathematical reserve.
