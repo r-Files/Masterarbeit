@@ -9,7 +9,7 @@
 Another way to find a grouped portfolio that minimizes the deviation defined in formula (\ref{eq:objective_function}) is to solve the problem using mathematical optimization methods. The goal is to find a subset of the portfolio and scale it in way so that the square deviation becomes minimal. Of course, this approach must ensure that scaling is only possible in the positive direction. This means that it makes no sense to have a negative policy in the grouped portfolio, because it cannot be defined, not to mention explained logically. 
 
 \begin{definition}[Non-negative least squares]\label{def:NNLS}
-	Let $P \subset \V$ be a portfolio, $A \in \R^{m \times n}$ the matrix with the corresponding cash flows and $b \in \R^m$ the vector with the summed cash flows. Then $x \in \R^n$, the vector of scaling, should be optimized such that:  
+	Let $P \subset \V$ be a portfolio, \linebreak $A \in \R^{m \times n}$ the matrix with the corresponding cash flows and $b \in \R^m$ the vector with the summed cash flows. Then $x \in \R^n$, the vector of scaling, should be optimized such that:  
 	\begin{equation}\label{eq:NNLS}
 		\begin{aligned}
 			\argmin_x \lVert Ax -b \rVert_2^2 \\
@@ -24,7 +24,7 @@ Another way to find a grouped portfolio that minimizes the deviation defined in 
 	\@nobreaktrue
 	\makeatother
 	\begin{itemize}
-		\item 	The entries of the vector $x$ are the so-called scaling values for the cash flows in matrix $A$. Each entry $x_i, i \in \{1,...n\}$ that is greater than zero scales to the $i$-th column of matrix $A$ where column $i$ represents the cash flows of the $i$-th policy of the portfolio.
+		\item 	The entries of the vector $x$ are the so-called scaling values for the cash flows in matrix $A$. Each entry $x_i, i \in \{1,...,n\}$ that is greater than zero scales to the $i$-th column of matrix $A$ where column $i$ represents the cash flows of the $i$-th policy of the portfolio.
 		\item 	It should be noted that this approach optimizes cash flows, not policies. Since there is a one-to-one relationship between cash flows and policies, the scaling factors cannot only be used to scale the cash flows but also to scale the policies in order to create a grouped portfolio. 
 		\item 	Scaling policies can also involve risks, as a policy that is scaled by a factor of 2 will not necessarily produce cash flows that are also increased by a factor of 2. This can be attributed to the fact that, for example, non-linearities occur due to discount effects for higher premiums in the tariff.
 	\end{itemize}
@@ -77,22 +77,23 @@ Algorithm \ref{alg:NNLS} consists, apart from the initialization, of a main loop
 
 
 \begin{remark}\label{rem:gradient}
-	Let $f(x) = \lVert Ax -b \rVert_2^2$ be the function, then the gradient is given by: 
+	Let $f(x) = \lVert Ax -b \rVert_2^2$, then the gradient of $f(x)$ is given by: 
 	\begin{equation*}
 		\nabla f(x) = \nabla \lVert Ax -b \rVert_2^2 = A^\top(Ax-b)
 	\end{equation*}
-	
-	\begin{align*}
-		\nabla \lVert Ax -b \rVert_2^2	&= \nabla (Ax-b)^\top (Ax-b) \\
-										&= \nabla (x^\top A^\top - b^\top)(Ax-b) \\
-										&= \nabla (x^\top A^\top Ax - x^\top A^\top b - b^\top Ax + b^\top b) \\
-										&= \nabla (x^\top A^\top Ax - 2x^\top A^\top b + b^\top b) \\
-										&= 2 (A^\top A x - A^\top b) \\
-										&= 2A^\top (Ax - b)
-	\end{align*}
+	\begin{proof}	
+		\begin{align*}
+			\nabla \lVert Ax -b \rVert_2^2	&= \nabla (Ax-b)^\top (Ax-b) \\
+											&= \nabla (x^\top A^\top - b^\top)(Ax-b) \\
+											&= \nabla (x^\top A^\top Ax - x^\top A^\top b - b^\top Ax + b^\top b) \\
+											&= \nabla (x^\top A^\top Ax - 2x^\top A^\top b + b^\top b) \\
+											&= 2 (A^\top A x - A^\top b) \\
+											&= 2A^\top (Ax - b)
+		\end{align*}
+	\end{proof}
 \end{remark}
 
-As shown in remark \ref{rem:gradient}, step 2 of algorithm \ref{alg:NNLS} calculates the negative gradient of the ordinary least squares problem. In the next step it is checked whether the inner loop still has to be executed or not. If the index set $R$ correspond to the empty set then all indexes are already in $P$ which means that all entries of $x$ are positive (see formula (\ref{equ:final_conditions})). This case is not desirable, as no compression can be achieved. If $max(w) \leq \epsilon$ is satisfied, the gradient has no entry large enough, so that an substantial improvement can be achieved and the algorithm has reached the optimum. If one of the two conditions in step 3) is fulfilled, the main loop is executed. 
+As shown in remark \ref{rem:gradient}, step 2 of algorithm \ref{alg:NNLS} calculates the negative gradient of the ordinary least squares problem. In the next step it is checked whether the inner loop still has to be executed or not. If the index set $R$ correspond to the empty set then all indexes are already in $P$ which means that all entries of $x$ are positive (see formula (\ref{equ:final_conditions})). This case is not desirable, as no compression can be achieved. If $max(w) \leq \epsilon$ is satisfied, the gradient has no entry large enough so that an substantial improvement can be achieved and the algorithm has reached the optimum. If one of the two conditions in step 3) is fulfilled, the main loop is executed. 
 
 The main loop starts with searching for the index of the gradient that is not yet present in the set $P$ and has the highest value. After this index has been moved from the set $R$ to the set $P$, the solution of a restricted least squares problem is calculated in step e). This least squares problem is limited to the columns of the matrix $A$ whose indices occur in the set $P$. The result is then a vector of dimension $P$ which is indicated by the notation $s^P$. To get a solution vector of the dimension $n$, the $n - \vert P \vert = \vert R \vert$ entries $s^R$ of the vector $s$ are filled with zeros - see step f). 
 
@@ -165,7 +166,7 @@ Figure (\ref{fig:iterations}) shows how the number of non-negative entries of th
 	\label{fig:iterations}
 \end{figure}
 
-If not the number of non-negative entries is considered but the development of formula \ref{eq:NNLS} for each iteration, a similar picture emerges. Graph (\ref{fig:residuals}) shows the logarithmic sum of the squared deviations between the fitted cash flows $Ax$ and the reference cash flows $b$. The graph is monotonously falling and can be compared in its characteristics with the previous figure (\ref{fig:iterations}). Starting with the initialization, the solution vector $x$ has only zero entries and therefore $\lVert Ax -b \rVert_2^2$ reduces to $\lVert b \rVert_2^2$ which gives the first data point of the graph at (0, 2.13e+20). Especially at the beginning of the optimization, a new non-negative entry in $x$ is added with each iteration, as seen in figure (\ref{fig:iterations}). This is also reflected in the fact that in figure (\ref{fig:residuals}) the deviation falls significantly for the first iteration. From iteration 50 on there is a clear flattening of the curve which indicates that from then on the improvements of the target function are no longer possible to the same extent as at the beginning of the optimization. This is also confirmed by the fact that after 25\% of the iterations 99.9\% of the reduction of the target function has already taken place. The remaining 0.1\% improvement to the final optimized value of formula (\ref{eq:NNLS}) then takes place in the last 75\% of the iterations. Since, as described in more detail in the next section, the inversion of matrices is one of the most time-consuming steps in terms of execution time, it can be useful to cancel an optimization prematurely.  A large part of the computing time could be saved and at the same time only a fraction of the optimization quality would be lost. 
+If not the number of non-negative entries is considered but the development of formula \ref{eq:NNLS} for each iteration, a similar picture emerges. Figure (\ref{fig:residuals}) shows the logarithmic sum of the squared deviations between the fitted cash flows $Ax$ and the reference cash flows $b$. The graph is monotonously falling and can be compared in its characteristics with the previous figure (\ref{fig:iterations}). Starting with the initialization, the solution vector $x$ has only zero entries and therefore $\lVert Ax -b \rVert_2^2$ reduces to $\lVert b \rVert_2^2$ which gives the first data point of the graph at (0, 2.13e+20). Especially at the beginning of the optimization, a new non-negative entry in $x$ is added with each iteration, as seen in figure (\ref{fig:iterations}). This is also reflected in the fact that in figure (\ref{fig:residuals}) the deviation falls significantly for the first iteration. From iteration 50 on there is a clear flattening of the curve which indicates that from then on the improvements of the target function are no longer possible to the same extent as at the beginning of the optimization. This is also confirmed by the fact that after 25\% of the iterations 99.9\% of the reduction of the target function has already taken place. The remaining 0.1\% improvement to the final optimized value of formula (\ref{eq:NNLS}) then takes place in the last 75\% of the iterations. Since, as described in more detail in the next section, the inversion of matrices is one of the most time-consuming steps in terms of execution time, it can be useful to cancel an optimization prematurely.  A large part of the computing time could be saved and at the same time only a fraction of the optimization quality would be lost. 
 
 \begin{figure}
 	\centering
@@ -199,14 +200,14 @@ Not only the existence of the inverse matrix is important but also its numerical
 \begin{definition}
 	Let $V$ and $W$ be normed vector spaces and $f:V \to W$ a linear operator. Then the operator norm is given by: 
 	\begin{align}\label{eq:operator_Norm}
-		\lVert f \rVert := \sup_{x \in V \setminus \{0\}} \frac{\lVert f(x) \rVert_W}{\lVert x \rVert_V} = \sup_{\lVert x \rVert_{V} = 1} \lVert f(x) \rVert_V
+		\lVert f \rVert := \sup_{x \in V \setminus \{0\}} \frac{\lVert f(x) \rVert_W}{\lVert x \rVert_V} = \sup_{\lVert x \rVert_{V} = 1} \lVert f(x) \rVert_W
 	\end{align}
 \end{definition}
 
 \begin{remark}
-	Since every real valued matrix $A \in \R^{m \times n}$ corresponds to a linear map from $\R^n$ to $R^m$, each pair of norms induces an operator norm. In the special case of choosing the Euclidean norm for both vector spaces, formula (\ref{eq:operator_Norm}) simplifies to:
+	Since every real valued matrix $A \in \R^{m \times n}$ corresponds to a linear map from $\R^n$ to $\R^m$, each pair of norms induces an operator norm. In the special case of choosing the Euclidean norm for both vector spaces, formula (\ref{eq:operator_Norm}) simplifies to:
 	\begin{align}\label{eq:matrix_Norm}
-		\lVert A \rVert_2 := \max_{x \neq 0} \frac{\lVert Ax \rVert_2}{\lVert x \rVert_2} = \max_{\lVert x \rVert_{2 = 1}} \lVert Ax \rVert_2
+		\lVert A \rVert_2 := \max_{x \neq 0} \frac{\lVert Ax \rVert_2}{\lVert x \rVert_2} = \max_{\lVert x \rVert_{2} = 1} \lVert Ax \rVert_2
 	\end{align}	
 	which is a naturally induced matrix norm called spectral norm. 
 \end{remark}
@@ -222,17 +223,33 @@ The natural matrix norm thus vividly corresponds to the greatest possible stretc
 	\end{itemize}
 \end{remark}
 
+\begin{remark}
+	The naturally induced matrix norm is also sub-multiplicative, which means that
+	\begin{align*}
+		\lVert AB \rVert \leq \lVert A \rVert \lVert b \rVert
+	\end{align*}
+	\begin{proof}
+		\begin{align*}
+		\lVert AB \lVert 	&= \max_{x \ne 0} \frac{\lVert ABx \lVert}{\lVert x \lVert} \\
+							&=\max_{Bx \ne 0}\frac{\lVert ABx \lVert }{\lVert x\lVert } \\
+							&=\max_{ Bx\ne 0}\frac{\lVert ABx\lVert}{\lVert Bx \lVert} \frac{\lVert Bx \lVert}{\lVert x \lVert} \\
+							&\le \max_{y \ne 0} \frac{\lVert Ay \lVert}{\lVert y \lVert} \max_{x \ne 0} \frac{\lVert Bx \lVert}{\lVert x \lVert} \\
+							&= \lVert A \lVert \lVert B \lVert
+		\end{align*}
+	\end{proof}
+\end{remark}
+
 \begin{remark}[\cite{stewart1998matrix}]
 	The 2-norm has the following properties:
 	\begin{enumerate}
 		\item $\lVert A \rVert_2$ = $\sigma_{max}(A)$ \hfill largest singular value of $A$
-		\item $\lVert A \rVert_2^2$ = $\lambda_{max}(A^T A)$ \hfill largest eigenvalue value of $A^T A$
+		\item $\lVert A \rVert_2^2$ = $\lambda_{max}(A^T A)$ \hfill largest eigenvalue of $A^T A$
 		\item $\lVert A \rVert_2 = \lVert A^T \rVert_2$
 	\end{enumerate}
 \end{remark}
 
 \begin{definition}
-	Let $A \in \R^{m \times n}$ be a matrix and $\lVert . \rVert$ a matrix norm. Then the condition number of $A$ is defined as:	
+	Let $A \in \R^{m \times n}$ be a matrix, $\lVert . \rVert$ a matrix norm and $A^+$ the generalized inverse of matrix $A$. Then the condition number of $A$ is defined as:	
 	\begin{align}\label{eq:condition_number}
 	\kappa(A) := \lVert A^+ \rVert \lVert A \rVert
 	\end{align}
@@ -269,7 +286,7 @@ The task now is to find a constant $c$, so that for all sufficiently small matri
 \end{equation}
  
 \begin{remark}\label{eq:simplify}
-	It can be shown that:
+	It applies:
 	\begin{equation*}
 		(A + E)^{-1} = (I + A^{-1}E)^{-1}A^{-1}
 	\end{equation*}
@@ -285,7 +302,7 @@ It therefore follows by applying remark \ref{eq:simplify} and corollary \ref{eq:
 \begin{align*}
 	(A + E)^{-1} 	&= (I + A^{-1}E)^{-1}A^{-1} \\
 					&= (I - (A^{-1}E) + (A^{-1}E)^2 - (A^{-1}E)^3 + H.O.T.) A^{-1} \\
-					&= A^{-1} + A^{-1} E A^{-1} + H.O.T.
+					&= A^{-1} - A^{-1} E A^{-1} + H.O.T.
 \end{align*}
  For the estimation of the stability the following inequality can be obtained by using the previous results as well as formula (\ref{eq:stable}):
 \begin{align*}
@@ -302,7 +319,7 @@ The relative error caused by applying a perturbation to matrix $A$ has therefore
 	If the naturally induced spectral norm is used as the matrix norm, formula (\ref{eq:upper_bound}) simplifies to:
 	\begin{align*}
 		\frac{\lVert A^{-1} - (A + E)^{-1} \rVert}{\lVert A^{-1}\rVert} & \leq \kappa_2(A) \frac{\lVert E \rVert}{\lVert A \rVert} + H.O.T. \\
-		& = \frac{\sigma_{max}}{\sigma_{min}} \frac{\lVert E \rVert}{\lVert A \rVert} + H.O.T.
+		& = \frac{\sigma_{max}(A)}{\sigma_{min}(A)} \frac{\lVert E \rVert}{\lVert A \rVert} + H.O.T.
 	\end{align*}
 \end{remark}
 
@@ -334,15 +351,16 @@ This notation is often referred to as reduced $QR$ decomposition of $A$ (\cite{t
 
 \begin{remark} Let $Q \in R^{n \times n}$ be an orthogonal matrix and $x \in \R^n$ a vector, then the following properties can be derived:
 	\begin{itemize}
+		\item $Q^\top Q = I$ \hfill ($Q$ orthogonal)
 		\item $\lVert Qx \rVert_2^2 = (Qx)^T (Qx) = x^T Q^T Q x = x^T I x = \lVert x \rVert_2^2$ \hfill (length-invariant)
-		\item $Q^\top Q = I$
+
 	\end{itemize}
 \end{remark}
 
-The $QR$-decomposition of matrix $A$ can now be used to reduce the numerical instabilities that can occur in algorithm (\ref{alg:NNLS}). 
+The $QR$-decomposition of matrix $A$ can now be used to reduce the numerical instabilities that can occur in algorithm \ref{alg:NNLS}. 
 
 \begin{remark}\label{rem:qr_in_NNLS} 
-	Let $A^P$ be the restricted matrix from algorithm (\ref{alg:NNLS}) and $QR$ the corresponding decomposition such that $A^P = QR$. Then steps e) and iv. from algorithm (\ref{alg:NNLS}) can be written as:
+	Let $A^P$ be the restricted matrix from algorithm \ref{alg:NNLS} and $QR$ the corresponding decomposition such that $A^P = QR$. Then steps e) and iv. from algorithm \ref{alg:NNLS} can be written as:
 	\begin{equation}\label{equ:qr_in_NNLS}
 		\begin{aligned}
 			 s^P 	&= ((A^P)^\top A^P)^{-1} (A^P)^\top b \\
@@ -365,7 +383,7 @@ Since $R$ is an upper triangular matrix, this system of equations can be solved 
 	s^P_i	&= \frac{1}{r_{ii}} \left( \tilde{b}_i - \sum_{j = i + 1}^{n} r_{ij} s^P_j\right) \quad \quad i = n-1, ..., 1
 \end{align*}
 
-After showing how algorithm (\ref{alg:NNLS}) benefits by using the $QR$ decomposition, a way how such a decomposition can be calculated will be presented. In the following, the Householder-transformation, one of the most widespread methods, is derived.
+After showing how algorithm \ref{alg:NNLS} benefits by using the $QR$ decomposition, a way how such a decomposition can be calculated will be presented. In the following, the Householder-transformation, one of the most widespread methods, is derived.
 
 \subsection{Householder Transformation}  
 

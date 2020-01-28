@@ -53,7 +53,7 @@ The basic idea of the $k$-means clustering is to minimize the variation within t
 			\end{equation*}		
 		\item Minkowski distance ($L^q$ distance) with q $\geq$ 1:
 			\begin{equation*}
-				d_p(x,y) := \bigg(\sum_{j=1}^p(x_j - y_j)^q\bigg)^{\frac{1}{q}}
+				d_q(x,y) := \bigg(\sum_{j=1}^p|x_j - y_j|^q\bigg)^{\frac{1}{q}}
 			\end{equation*}	
 	\end{itemize}
 \end{example}
@@ -144,7 +144,7 @@ One possible formulation for an algorithm that converges to a local optimum is t
 	\item Choose $k$ initial centroids randomly.
 	\item  \label{lev:K-means_two}Iterate till the cluster assignments stop changing:
 	\begin{enumerate}[label=\emph{\alph*})]
-		\item \label{lev:K-means_two_a} For each of the $k$ clusters, compute the cluster centroid. The $i$-th cluster centroid is the vector of the $p$ parameter means for the observations in the $i$th cluster. 
+		\item \label{lev:K-means_two_a} For each of the $k$ clusters, compute the cluster centroid. The \linebreak $i$-th cluster centroid is the vector of the $p$ parameter means for the observations in the $i$th cluster. 
 		\item \label{lev:K-means_two_b}Assign each observation to the cluster whose centroid is closest in the sense of Euclidean distance. 
 	\end{enumerate}
 	\end{enumerate}
@@ -212,7 +212,7 @@ To determine the expected value $\E_n\big[log(V_k) \big]$ we draw $B$ different 
 
 The optimal cluster size $k$ is then determined by the following rule which identifies the `elbow':
 
-\begin{definition} Let $Gap(k)$ be the statistic defined above and $s_k$ the standard error (c.f. \cite{tibshirani2001estimating}). Then the rule for choosing $k$ is given by: 
+\begin{definition} Let $Gap(k)$ be the statistic defined above and $s_k$ the standard error. Then the rule for choosing $k$ is given by: (c.f. \cite{tibshirani2001estimating}) 
 	\begin{equation}\label{equ:gap_statistic_rule}
 	\hat{k} := \text{smallest } k \text{ such that } Gap(k) \geq Gap(k+1) - s_{k+1}
 	\end{equation}
@@ -233,7 +233,7 @@ In order to find the optimal number of clusters in a computational way, the foll
 				\item \label{lev:ellbow_c} Cluster each of those $B$ data sets and calculate $\E_n\big[log(V_k) \big] = \frac{1}{B} \sum_{b=1}^B log(V_{kb})$ 
 				\item \label{lev:ellbow_d} Compute the standard deviation: 
 					\begin{equation*}
-						sd(k) = \bigg(\frac{1}{B}\sum_{b=1}^B(log(V_{kb})-\E_n\big[log(V_k) \big])^2\bigg)^\frac{1}{2}
+						s_k(k) = \sqrt{1 + \frac{1}{B}} \bigg(\frac{1}{B}\sum_{b=1}^B(log(V_{kb})-\E_n\big[log(V_k) \big])^2\bigg)^\frac{1}{2}
 					\end{equation*}
 				\item \label{lev:ellbow_e} End the loop if: $Gap(k) \geq Gap(k+1) - s_{k+1}$ 
 			\end{enumerate}
@@ -258,7 +258,7 @@ Figure (\ref{fig:gap_statistics})(b) shows the gap-statistic for different value
 Although the "elbow method" is well suited in many cases to determine the number of clusters, the resulting partitioning is not visually displayable if the dimension is larger than three. A visually appealing graphical display called silhouette plot introduced in \cite{rousseeuw1987silhouettes} tries to overcome this shortcoming in order to be able to interpret cluster results more properly. The plot shows whether a specific partitioning result reflects a cluster structure actually present in the data set or not, by comparing the within dissimilarity with the between dissimilarity for every data point. It can thus be determined how similar a data point is to its own cluster compared to the other clusters. The measure of similarity can be calculated with any distance metric appropriate to the specific problem and will be called $dist(x_i, x_j)$ for two data points $x_i$ and $x_j$.
 
 \begin{definition}[Within dissimilarity]
-	Let $X=\{x_1, ..., x_n\}$ be a data set and $C=\{C_1, ..., C_k\}$ the corresponding partitioning with $k$ cluster. Assume that the data point $x_i$ is assigned to cluster $C_i$ with $1 \leq i \leq k$. Then the average dissimilarity of $x_i$ to all other objects assigned to cluster $C_i$ is defined by: 
+	Let $X=\{x_1, ..., x_n\}$ be a data set and $C=\{C_1, ..., C_k\}$ the corresponding partitioning with $k$ cluster. Assume that the data point $x_i$ is assigned to cluster $C_i$ with $C_i \in C$ and $1 \leq i \leq n$. Then the average dissimilarity of $x_i$ to all other objects assigned to cluster $C_i$ is defined by: 
 	\begin{equation*}\label{equ:dist_A}
 	WD(C_i,i) := \frac{1}{|C_i|}\sum_{x_l \in C_i} dist(x_i, x_l)
 	\end{equation*}
@@ -282,7 +282,7 @@ One can see that $BD(C_j,i)$ is the average distance from data point $x_i$ in cl
 	\end{equation*}
 \end{definition}
 
-Cluster $C_b$ with $1 \leq b \leq k$, which shares the smallest average dissimilarity with point $x_i \in C_i$ is called the neighbor cluster of $x_i$. This neighbor cluster is the first choice if cluster $C_i$ is removed from our analysis and we have to reassign $x_i$ to a new cluster. After computing $WD(C_i,i)$ and $dist(i)$ for every data point $x_i,~i=1,...n$ one can define the silhouette statistic $s(i)$ as follows.
+Cluster $C_b$ with $1 \leq b \leq k$, which shares the smallest average dissimilarity with point $x_i \in C_i$ is called the neighbor cluster of $x_i$. This neighbor cluster is the first choice if cluster $C_i$ is removed from our analysis and we have to reassign $x_i$ to a new cluster. After computing $WD(C_i,i)$ and $dist(i)$ for every data point $x_i,~i=1,...,n$ one can define the silhouette statistic $s(i)$ as follows.
 
 \begin{definition}
 Let $X=\{x_1, ..., x_n\}$ be a data set and $C=\{C_1, ..., C_k\}$ the corresponding partitioning with k cluster. For every $x_i \in X$ the silhouette $s(i)$ is defined as:
@@ -317,7 +317,7 @@ Let $X=\{x_1, ..., x_n\}$ be a data set and $C=\{C_1, ..., C_k\}$ the correspond
 \end{remark}
 
 \begin{remark}	
-	Let $x_i$ be a data point which is assigned to cluster $C_i$ and cluster $C_j$ the neighbor cluster of $x_i$. If $x_i$ is reassigned from cluster $C_i$ to cluster $C_j$ then $s (i)$ becomes $-s(i)$
+	Let $x_i$ be a data point which is assigned to cluster $C_i$ and cluster $C_j$ the neighbor cluster of $x_i$. If $x_i$ is reassigned from cluster $C_i$ to cluster $C_j$ then $s (i)$ becomes $-s(i)$.
 \end{remark}
 In order to get a visually appealing overview if a clustering result is good or not all silhouettes are plotted on top of each other. Silhouettes which belong to the same cluster are plotted together and ranked in decreasing order.
 
