@@ -353,12 +353,12 @@ After presenting two methods namely the elbow method and the silhouette method w
 
 Example \ref{ex:curse_of_dimensionality} illustrates that as the number of dimensions increases the number of data points rises exponentially in order to represent the whole space properly. Thinking of insurance data, one can have data points with various numbers of dimensions ranging from just a few to several hundreds dimensions. Considering the fact that the cash flow projections of grouped policies should coincide over a 60 year horizon, it is easy to see that only 5 of these cash flow characteristics (e.g. premium, costs, ...)  result in data points with a dimension of 300. Of course, it is not advisable to include, over a period of 60 years, all cash flow variables in the grouping process, but it is much more difficult to find only those variables that are relevant for a major part of the results than including everything. For this reason, in practice more variables are often used than would actually be necessary. Another unintuitive fact one needs to be aware of is that the volume of a hypersphere inscribed into a hypercube is getting relatively smaller as the dimension increases. 
 
-\begin{corollary}\label{cor:volume}
+\begin{theorem}\label{cor:volume}
 Let a hypersphere with radius $r$ and dimension $d$ be inscribed into a hypercube with edges of length $2r$. Then we get for the proportion of the volumes:
 	\begin{equation*}
 		\frac{V_{Sphere}}{V_{Cube}} =\frac{r^d\frac{\pi^{\frac{d}{2}}}{\Gamma(\frac{d}{2}+1)}}{(2r)^d} =\frac{\pi^{\frac{d}{2}}}{2^d\Gamma(\frac{d}{2}+1)} \rightarrow 0 \text{ as } d \rightarrow \infty
 	\end{equation*}
-\end{corollary}
+\end{theorem}
 
 \begin{remark}
 Corollary \ref{cor:volume}  says that as dimension $d$ increases, more and more volume of the hypercube is outside the hypersphere. This means that under a uniform distribution most of the data points are located far from the centre and thus close to an edge in a certain sense. 
@@ -369,7 +369,7 @@ Some other examples why intuition fails in high dimensions are given in paragrap
 \end{remark}
 
 Not only do the data points move closer to the edge as the dimension $d$ of the data space increases, but the distance between the individual data points is becoming more and more similar. It can be shown (\cite{beyer1999nearest}) that under a broad set of conditions the distance to the nearest and to the farthest data point converges as dimensionality $d$ increases. Experimental results in \cite{beyer1999nearest} show that this effect can occur even for relatively low dimensional data with only 10 to 15 dimensions. The fact that the distance to the farthest data point can get similar to the distance of the nearest data point makes clustering a hard job. The basic concept of $k$-means is to find, in the case of the Euclidean distance measure, spherically shaped clusters that have different characteristics. Therefore, data that is almost identical should not be clustered with a simple $k$-means algorithm without further analysis. Due to the fact that the $k$-means algorithm always returns a result even though there are obviously no clusters in the data because all data points are somehow similar, it is very difficult to determine whether $k$-means is a suitable tool for clustering or not. Situations in which all data points are similar and no cluster structure is present in the data are, as shown in the previous section, indicated by a low silhouette coefficient. When using the methods described in section \ref{sec:silhouette}, a silhouette plot with low silhouette coefficients for the clusters indicates that the clusters found by the algorithm are not well separated. Single clustering attempts can easily be verified by an visual inspection of plots described above. With an automated clustering approach, which is necessary for large insurance portfolios, visual control of the individual silhouette plots is not possible in most cases. In such cases, only a validation of the silhouette coefficient is feasible, but this leads ultimately to a situation where a clustering result is validated by a single value.
-It is therefore advisable to use low-dimensional policy data sets or conduct a thorough analysis of the data to avoid situations where problems referred to as 'course of  dimensionality' occur. 
+It is therefore advisable to use low-dimensional policy data sets or conduct a thorough analysis of the data to avoid situations where problems referred to as 'curse of  dimensionality' occur. 
 
 
 

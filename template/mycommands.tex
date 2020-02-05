@@ -30,6 +30,7 @@
 % environments for definition, theorems, remarks,...
 \newtheorem{definition}{Definition}[chapter]
 \newtheorem{corollary}{Corollary}[chapter]
+\newtheorem{theorem}{Theorem}[chapter]
 \newtheorem{lemma}{Lemma}[chapter]
 \newtheorem{example}{Example}[chapter]
 \newtheorem{remark}{Remark}[chapter]
@@ -38,6 +39,13 @@
 \newcommand*{\rightangle}[3]{% #1 = point, #2 = start angle, #3 = radius
 	\draw[shift={(#2:#3)}] (#1) arc[start angle=#2, delta angle=90, radius = #3];
 	\fill[shift={(#2+45:#3/2)}] (#1) circle[radius=1.25\pgflinewidth];
+}
+
+\newcommand{\textfield}[2]{
+	\vbox{
+		\hsize=#1\kern3cm\hrule\kern1ex
+		\hbox to \hsize{\strut\hfil\footnotesize#2\hfil}
+	}
 }
 
 \newcommand*{\estimates}{\mathrel{\widehat=}}

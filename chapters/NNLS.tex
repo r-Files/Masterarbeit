@@ -6,7 +6,7 @@
 \chapter{Non-negative least squares (NNLS)}
 \label{cha:NNLS}
 
-Another way to find a grouped portfolio that minimizes the deviation defined in formula (\ref{eq:objective_function}) is to solve the problem using mathematical optimization methods. The goal is to find a subset of the portfolio and scale it in way so that the square deviation becomes minimal. Of course, this approach must ensure that scaling is only possible in the positive direction. This means that it makes no sense to have a negative policy in the grouped portfolio, because it cannot be defined, not to mention explained logically. 
+Another way to find a grouped portfolio that minimizes the deviation defined in formula (\ref{eq:objective_function}) is to solve the problem using mathematical optimization methods. The goal is to find a subset of the portfolio and scale it in a way so that the square deviation becomes minimal. Of course, this approach must ensure that scaling is only possible in the positive direction. This means that it makes no sense to have a negative policy in the grouped portfolio, because it cannot be defined, not to mention explained logically. 
 
 \begin{definition}[Non-negative least squares]\label{def:NNLS}
 	Let $P \subset \V$ be a portfolio, \linebreak $A \in \R^{m \times n}$ the matrix with the corresponding cash flows and $b \in \R^m$ the vector with the summed cash flows. Then $x \in \R^n$, the vector of scaling, should be optimized such that:  
@@ -226,7 +226,7 @@ The natural matrix norm thus vividly corresponds to the greatest possible stretc
 \begin{remark}
 	The naturally induced matrix norm is also sub-multiplicative, which means that
 	\begin{align*}
-		\lVert AB \rVert \leq \lVert A \rVert \lVert b \rVert
+		\lVert AB \rVert \leq \lVert A \rVert \lVert B \rVert
 	\end{align*}
 	\begin{proof}
 		\begin{align*}
@@ -301,25 +301,25 @@ The task now is to find a constant $c$, so that for all sufficiently small matri
 It therefore follows by applying remark \ref{eq:simplify} and corollary \ref{eq:Neumann} that:
 \begin{align*}
 	(A + E)^{-1} 	&= (I + A^{-1}E)^{-1}A^{-1} \\
-					&= (I - (A^{-1}E) + (A^{-1}E)^2 - (A^{-1}E)^3 + H.O.T.) A^{-1} \\
-					&= A^{-1} - A^{-1} E A^{-1} + H.O.T.
+					&= (I - (A^{-1}E) + (A^{-1}E)^2 - (A^{-1}E)^3 + h.o.t.) A^{-1} \\
+					&= A^{-1} - A^{-1} E A^{-1} + h.o.t.
 \end{align*}
  For the estimation of the stability the following inequality can be obtained by using the previous results as well as formula (\ref{eq:stable}):
 \begin{align*}
-	\lVert A^{-1} - (A + E)^{-1} \rVert & = \lVert A^{-1} - (A^{-1} - A^{-1}EA^{-1} + H.O.T.) \rVert \\
-		& = \lVert A^{-1}EA^{-1} - H.O.T. \rVert \\
-		& \leq \lVert A^{-1} \rVert^2 \lVert E \rVert +  H.O.T.
+	\lVert A^{-1} - (A + E)^{-1} \rVert & = \lVert A^{-1} - (A^{-1} - A^{-1}EA^{-1} + h.o.t.) \rVert \\
+		& = \lVert A^{-1}EA^{-1} - h.o.t. \rVert \\
+		& \leq \lVert A^{-1} \rVert^2 \lVert E \rVert +  h.o.t.
 \end{align*}
 The relative error caused by applying a perturbation to matrix $A$ has therefore an upper bound which is given by: 
 \begin{equation}\label{eq:upper_bound}
- \frac{\lVert A^{-1} - (A + E)^{-1} \rVert}{\lVert A^{-1}\rVert} \leq \lVert A \rVert \lVert A^{-1} \rVert \frac{\lVert E \rVert}{\lVert A \rVert} + H.O.T.
+ \frac{\lVert A^{-1} - (A + E)^{-1} \rVert}{\lVert A^{-1}\rVert} \leq \lVert A \rVert \lVert A^{-1} \rVert \frac{\lVert E \rVert}{\lVert A \rVert} + h.o.t.
 \end{equation}
 
 \begin{remark}
 	If the naturally induced spectral norm is used as the matrix norm, formula (\ref{eq:upper_bound}) simplifies to:
 	\begin{align*}
-		\frac{\lVert A^{-1} - (A + E)^{-1} \rVert}{\lVert A^{-1}\rVert} & \leq \kappa_2(A) \frac{\lVert E \rVert}{\lVert A \rVert} + H.O.T. \\
-		& = \frac{\sigma_{max}(A)}{\sigma_{min}(A)} \frac{\lVert E \rVert}{\lVert A \rVert} + H.O.T.
+		\frac{\lVert A^{-1} - (A + E)^{-1} \rVert}{\lVert A^{-1}\rVert} & \leq \kappa_2(A) \frac{\lVert E \rVert}{\lVert A \rVert} + h.o.t. \\
+		& = \frac{\sigma_{max}(A)}{\sigma_{min}(A)} \frac{\lVert E \rVert}{\lVert A \rVert} + h.o.t.
 	\end{align*}
 \end{remark}
 
@@ -385,7 +385,7 @@ Since $R$ is an upper triangular matrix, this system of equations can be solved 
 
 After showing how algorithm \ref{alg:NNLS} benefits by using the $QR$ decomposition, a way how such a decomposition can be calculated will be presented. In the following, the Householder-transformation, one of the most widespread methods, is derived.
 
-\subsection{Householder Transformation}  
+\subsection{Householder transformation}  
 
 The aim of the Householder transformation is to transform matrix $A$ into an upper triangular matrix $R$ by iterative multiplications of so-called Householder matrices $H_i$. 
 The procedure is schematically shown in the following example: 
