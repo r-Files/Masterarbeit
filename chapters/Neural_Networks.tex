@@ -120,7 +120,7 @@ In the example shown in figure (\ref{fig:simple_neuron}) the neuron takes the th
 	\item Sigmoid function: 
 		\begin{equation}
 		\begin{split}
-			g: \R 	& \mapsto (0,1) \\
+			g: \R 	& \rightarrow (0,1) \\
 			g(x) 	& = \frac{1}{1+e^{-x}} 
 		\end{split}
 		\end{equation}
@@ -128,7 +128,7 @@ In the example shown in figure (\ref{fig:simple_neuron}) the neuron takes the th
 	\item Hyperbolic tangent function: 
 		\begin{equation}
 		\begin{split}
-			g: \R 	& \mapsto (-1,1) \\
+			g: \R 	& \rightarrow (-1,1) \\
 			g(x) 	& = \frac{e^x - e^{-x}}{e^x + e^{-x}} 
 		\end{split}
 		\end{equation}
@@ -137,7 +137,7 @@ In the example shown in figure (\ref{fig:simple_neuron}) the neuron takes the th
 	\item ReLu function: 
 		\begin{equation}\label{eq:relu}
 		\begin{split}
-			g: \R 	& \mapsto [0,+ \infty) \\
+			g: \R 	& \rightarrow [0,+ \infty) \\
 			g(x) 	& = max(0,x) 
 		\end{split}
 		\end{equation}
@@ -146,11 +146,11 @@ In the example shown in figure (\ref{fig:simple_neuron}) the neuron takes the th
 	\item Softplus function: 
 		\begin{equation}
 		\begin{split}
-			g: \R 	& \mapsto (0,\infty) \\
+			g: \R 	& \rightarrow (0,\infty) \\
 			g(x) 	& = ln(1 + e^x) 
 		\end{split}
 		\end{equation}	
-		 Since ReLu is non-differentiable at zero a smooth version of it, which also has an order of continuity of $C^{\infty}$, is given by the softplus function. It can be used as a replacement for the ReLu function. As various analyses have shown the performance between the softplus function and the Relu function is negligible in most cases (see \cite{searchingActivation}). 
+		 Since ReLu is non-differentiable at zero a smooth version of it, which also has an order of continuity of $C^{\infty}$, is given by the softplus function. It can be used as a replacement for the ReLu function. As various analyses have shown the performance between the softplus function and the ReLu function is negligible in most cases (see \cite{searchingActivation}). 
 \end{itemize}
 
 In the example given in figure (\ref{fig:simple_neuron}), the output value of the neuron is already the prediction $\hat{y}$, but in almost every case the output of one neuron serves as an input for another neuron. The next section is therefore dedicated to the interaction of multiple neurons in multiple layers and also introduces a general notation based on \cite{Mar_Pri}, that allows to describe the mathematical concept of a neural network including an optimization algorithm.
@@ -283,7 +283,7 @@ Since the possibilities of how the different neurons are connected in a neural n
 	\item Feedforward: The information flows only from one layer to the next higher layer. 
 \end{itemize}
 
-For the calculation and analysis of such a neural network the following notation, which is taken from \cite{Mar_Pri}, is used in accordance with figure (\ref{fig:neuron_notation}) and (\ref{fig:feedforward_network}). Let
+For the calculation and analysis of such a neural network the following notation, which is taken from \cite{Mar_Pri}, is used in accordance with figure (\ref{fig:neuron_notation}) and figure (\ref{fig:feedforward_network}). Let
 
 \begin{itemize}
 	\item $N \in \N$ be the number of hidden layers in the neural network.
@@ -354,7 +354,7 @@ After a notation for the analysis of the neural network has been defined, the ne
 Figure (\ref{fig:simple_neuron}) together with formula (\ref{eq:simple_neuron}) already illustrated in the previous section how a single neuron is constructed and how it processes the inputs. Since the notation has been generalized in the previous section also formula (\ref{eq:simple_neuron}) could be generalized. 
 
 \begin{remark}
-	Let $a^{(i)} \in \R^{n_i}$ be the activation values from layer $i$, $b_j^{(i)} \in \R$ the bias term for the $j$-th neuron in layer $i+1$, $W_{j.}^{(i)}$ the weights and $g: \R \mapsto \R$ any activation function. Then the linear transformation performed by the $j$-th neuron of layer $i+1$ called $s_j^{(i+1)}$ is given by:
+	Let $a^{(i)} \in \R^{n_i}$ be the activation values from layer $i$, $b_j^{(i)} \in \R$ the bias term for the $j$-th neuron in layer $i+1$, $W_{j.}^{(i)}$ the weights and $g: \R \rightarrow \R$ any activation function. Then the linear transformation performed by the $j$-th neuron of layer $i+1$ called $z_j^{(i+1)}$ is given by:
 	\begin{equation}
 		z_j^{(i+1)} = \sum_{k=1}^{n_i} W_{jk}^{(i)} a_k^{(i)} + b_j^{(i)}
 	\end{equation}
@@ -378,14 +378,14 @@ Figure (\ref{fig:simple_neuron}) together with formula (\ref{eq:simple_neuron}) 
 Performing these transformations for all neurons from layer $i+1$ gives a system of $n_{i+1}$ equations:
 \begin{align*}
 	a_1^{(i+1)} &= g( W_{1.}^{(i)} a^{(i)} + b_1^{(i)} ) 	\\
-	a_2^{(i+1)} &= g( W_{1.}^{(i)} a^{(i)} + b_1^{(i)} ) 	\\
+	a_2^{(i+1)} &= g( W_{2.}^{(i)} a^{(i)} + b_2^{(i)} ) 	\\
 				&\vdots										\\	
-	a_{n_{i+1}}^{(i+1)} &= g( W_{1.}^{(i)} a^{(i)} + b_1^{(i)} )
+	a_{n_{i+1}}^{(i+1)} &= g( W_{n_{i+1}.}^{(i)} a^{(i)} + b_{n_{i+1}}^{(i)} )
 \end{align*}
 Since the activation function is only defined for scalar values, a small extension must be made.
 
 \begin{remark}
-	Let $g: \R \mapsto \R$ be an activation function which operates on scalars only. In case that a vector is supplied the scalar activation function $g$ is applied element by element. 
+	Let $g: \R \rightarrow \R$ be an activation function which operates on scalars only. In case that a vector is supplied the scalar activation function $g$ is applied element by element. 
 \end{remark}
 
 With the help of the previous remark it is now possible to represent the flow of information through the network in vector notation.
@@ -394,7 +394,7 @@ With the help of the previous remark it is now possible to represent the flow of
 	a^{(0)} 	&= x								\\
 	z^{(i)} 	&= W^{(i-1)} a^{(i-1)} + b^{(i-1)} 	\\
 	a^{(i)}		&= g(z^{(i)}) 						\\
-	a^{(N+1)} 	&= \hat{y}
+	\hat{y} 	&= a^{(N+1)}
 \end{aligned}
 \end{equation}
 
@@ -407,14 +407,14 @@ This step, where the neural network takes an input vector and transforms it to a
 	\end{equation}
 \end{definition}
 
-By using the notation given in equation (\ref{eq:single_loss}) it is explicitly stated, that the loss of a single forward pass depends on the four parameters $b, W, x^{(i)}$ and $y^{(i)}$. In order to increase the readability in the following paragraphs from now on it is not longer explicitly stated that the estimated output depends on the three parameters $W$, $b$ and $x^{(i)}$, e.g. $\hat{y}_{W,b,x^{(i)}}^{(i)} = \hat{y}$. Since in most cases not only a single pair of input and output data is used for the calculation of the loss function but several, the loss must also be defined for a sample of multiple input and output vectors. In the field of machine learning such a sample of multiple input and output vectors is called a batch. The batch size is one of many so-called hyperparameters of a neural network and specifies how many samples must be sent through the network before the model parameters are updated.
+By using the notation given in definition (\ref{eq:single_loss}) it is explicitly stated, that the loss of a single forward pass depends on the four parameters $b, W, x^{(i)}$ and $y^{(i)}$. In order to increase the readability in the following paragraphs from now on it is not longer explicitly stated that the estimated output depends on the three parameters $W$, $b$ and $x^{(i)}$, e.g. $\hat{y}_{W,b,x^{(i)}}^{(i)} = \hat{y}^{(i)}$. Since in most cases not only a single pair of input and output data is used for the calculation of the loss function but several, the loss must also be defined for a sample of multiple input and output vectors. In the field of machine learning such a sample of multiple input and output vectors is called a batch. The batch size is one of many so-called hyperparameters of a neural network and specifies how many samples must be sent through the network before the model parameters are updated.
 
 \begin{definition}\label{def:batch_loss}
 	Let $\{(x^{(1)}, y^{(1)}), (x^{(2)}, y^{(2)}), ..., (x^{(m)}, y^{(m)})\}$ be a sample of $m$ input and the corresponding output vectors, e.g. the batch size is $m$. Then the total loss is given by:	
 	\begin{equation}\label{eq:multiple_loss}
 	\begin{aligned}
-	L(b, W) &= \frac{1}{m} \sum_i^m \frac{1}{2} \norm{\hat{y}^{(i)} - y^{(i)}}^2_2 \\
-			&= \frac{1}{m} \sum_i^m L(b, W, x^{(i)}, y^{(i)})
+	L(b, W) &= \frac{1}{m} \sum_{i=1}^m \frac{1}{2} \norm{\hat{y}^{(i)} - y^{(i)}}^2_2 \\
+			&= \frac{1}{m} \sum_{i=1}^m L(b, W, x^{(i)}, y^{(i)})
 	\end{aligned}
 	\end{equation}
 \end{definition}
@@ -423,10 +423,11 @@ By using the notation given in equation (\ref{eq:single_loss}) it is explicitly 
 	In order to reduce the complexity of the model by using smaller weights and to reduce overfitting to some extend, a regularization term can be used in equation (\ref{eq:multiple_loss}).
 	\begin{equation}\label{eq:multiple_loss_regularization}
 	\begin{aligned}
-	L(b, W) &= \frac{1}{m} \sum_i^m \frac{1}{2} \norm{\hat{y}^{(i)} - y^{(i)}}^2_2 + \frac{\lambda}{2} \sum_{i=0}^{N} \norm{W^{(i)}}_F^2\\
-	&= \frac{1}{m} \sum_i^m L(b, W, x^{(i)}, y^{(i)}) + \lambda R(W)
+	L(b, W) &= \frac{1}{m} \sum_{i=1}^m \frac{1}{2} \norm{\hat{y}^{(i)} - y^{(i)}}^2_2 + \frac{\lambda}{2} \sum_{i=0}^{N} \norm{W^{(i)}}_F^2\\
+	&= \frac{1}{m} \sum_{i=1}^m L(b, W, x^{(i)}, y^{(i)}) + \lambda R(W)
 	\end{aligned}
 	\end{equation}
+	where $\norm{W^{(i)}}_F^2$ is defined as: $\sqrt{\sum_{j=1}^{n_{i+1}}\sum_{k=1}^{n_i} W^{(i)}_{jk}}$ 
 \end{remark}
 
 If a regularization term is used in a neural network, the choice of the regularization parameter $\lambda$ plays an important role. When the regularization term $\lambda$ is too high the weight matrices $W$ are close to zero and this can lead to simple networks and underfitting. However, if the parameter is set too low and therefore higher weights of the matrices are not penalized enough, regularization has no effect at all.
@@ -454,7 +455,7 @@ This shows that the partial derivative of the loss function based on a batch of 
 \end{equation}
 If the regularization term is used, just an additive expression of the form $\lambda W_{jk}^{(i)}$ is added. Since the construction of the partial derivatives with respect to $W_{jk}^{(i)}$ and $b_j^{(i)}$ are very similar, only the former will be explained step by step in the following. Before the partial derivative can be analysed in more detail a distinction must be made between two different cases.
 
-\textbf{Case 1:} The first case deals with the special situation in which the weights $W^{(N)}$ and $b^{(N)}$ are directly related to the output. These weights are used in the transformation that results in the estimated output values $\hat{y}$ and thus directly influences the loss function $L(b, W, x^{(i)}, y^{(i)})$. Because of their direct influence on the loss function, the calculation of their gradients is easier and can be used as a template for the other case.
+\textbf{Case 1:} The first case deals with the special situation in which the weights $W^{(N)}$ and $b^{(N)}$ are directly related to the output. These weights are used in the transformation that results in the estimated output values $\hat{y}$ and thus directly influences the loss function $L(b, W, x^{(N)}, y^{(N)})$. Because of their direct influence on the loss function, the calculation of their gradients is easier and can be used as a template for the other case.
 
 \begin{remark}
 	Let $W^{(N)}$ be the matrix of weights used in the last layer of the neural network. Then the gradient is given by: 
@@ -469,7 +470,7 @@ If the regularization term is used, just an additive expression of the form $\la
 		&= \frac{\partial}{\partial W_{jk}^{(N)}} \frac{1}{2} \sum_{l = 1}^{n_{N+1}} (a_l^{(N+1)} - y_l)^2  \\
 		&= (a_j^{(N+1)} - y_j)  \frac{\partial}{\partial W_{jk}^{(N)}} (a_j^{(N+1)} - y_j) \\
 		&= (a_j^{(N+1)} - y_j)  \frac{\partial}{\partial W_{jk}^{(N)}} g\big(z_j^{(N+1)} \big)  \\
-		&= (a_j^{(N+1)} - y_j)  g'\big(z_j^{(N+1)} \big) \frac{\partial}{\partial W_{jk}^{(N)}} \sum_{s=1}^{n_N} W_{js}^{(N)} a_s^{(N)} + b_j^{(N)} \\
+		&= (a_j^{(N+1)} - y_j)  g'\big(z_j^{(N+1)} \big) \frac{\partial}{\partial W_{jk}^{(N)}} \bigg[ \sum_{s=1}^{n_N} W_{js}^{(N)} a_s^{(N)} + b_j^{(N)} \bigg] \\
 		&= (a_j^{(N+1)} - y_j)  g'\big(z_j^{(N+1)} \big) a_k^{(N)} \\
 		&=	\delta_j^{(N+1)} a_k^{(N)} 
 	\end{align*}
@@ -490,13 +491,13 @@ If the regularization term is used, just an additive expression of the form $\la
 	Let $z_l^{(N+1)}$ be the result of the linear transformation of neuron $l$ in the $N+1$-th layer and $W_{jk}^{(N-1)}$ the weight for the $j$-th neuron in the $N$-th layer. Then the partial derivative of $z_l^{(N+1)}$ with respect to $W_{jk}^{(N-1)}$ is given by:
 	
 	\begin{equation}
-		\frac{\partial z_l^{(N+1)}}{W_{jk}^{(N-1)}} = \frac{\partial z_l^{(N+1)}}{\partial a_k^{(N)}}\frac{\partial a_k^{(N)}}{\partial W_{jk}^{(N-1)}} = W_{lk}^{(N)} g' \big( z_k^{(N)}\big) a_k^{(N-1)}
+		\frac{\partial z_l^{(N+1)}}{\partial W_{jk}^{(N-1)}} = \frac{\partial z_l^{(N+1)}}{\partial a_k^{(N)}}\frac{\partial a_k^{(N)}}{\partial W_{jk}^{(N-1)}} = W_{lk}^{(N)} g' \big( z_k^{(N)}\big) a_k^{(N-1)}
 	\end{equation}
 	
 	\begin{proof}
 		\begin{align*}
-			\frac{\partial z_l^{(N+1)}}{\partial a_k^{(N)}} &= \frac{\partial}{\partial a_k^{(N)}} \sum_{s=1}^{n_N} W_{ls}^{(N)}a_s^{(N)} + b_l^{(N)} = W_{lk}^{(N)} \\
-			\frac{\partial a_k^{(N)}}{\partial W_{jk}^{(N-1)}} &= g' \big( z_k^{(N)}\big) \frac{\partial}{\partial W_{jk}^{(N-1)}} \sum_{s=1}^{n_{N-1}} W_{ks}^{(N-1)}a_s^{(N-1)} + b_k^{(N-1)} = g' \big( z_k^{(N)}\big) a_k^{(N-1)}
+			\frac{\partial z_l^{(N+1)}}{\partial a_k^{(N)}} &= \frac{\partial}{\partial a_k^{(N)}} \bigg[ \sum_{s=1}^{n_N} W_{ls}^{(N)}a_s^{(N)} + b_l^{(N)} \bigg] = W_{lk}^{(N)} \\
+			\frac{\partial a_k^{(N)}}{\partial W_{jk}^{(N-1)}} &= g' \big( z_k^{(N)}\big) \frac{\partial}{\partial W_{jk}^{(N-1)}} \bigg[ \sum_{s=1}^{n_{N-1}} W_{ks}^{(N-1)}a_s^{(N-1)} + b_k^{(N-1)} \bigg]= g' \big( z_k^{(N)}\big) a_k^{(N-1)}
 		\end{align*}
 	\end{proof}
 \end{remark}
@@ -504,13 +505,13 @@ If the regularization term is used, just an additive expression of the form $\la
 \begin{remark}
 		Let $W^{(N-1)}$ be the matrix of weights used in the last hidden layer of the neural network. Then the gradient is given by: 		
 		\begin{align*} %------------------  CASE 2--------------------------------
-		\frac{\partial L(b,W)}{\partial W_{jk}^{(N-1)}} 
+		\frac{\partial L(b,W^{(N)})}{\partial W_{jk}^{(N-1)}} 
 		&= g'\big( z_k^{(N)}\big) a_k^{(N-1)} \sum_{l = 1}^{n_{N+1}} \delta_l^{(N+1)} W_{lk}^{(N)} 
 		\end{align*}		
 		
 		\begin{proof}
 			\begin{align*} %------------------  CASE 2--------------------------------
-			\frac{\partial L(b,W)}{\partial W_{jk}^{(N-1)}} 
+			\frac{\partial L(b,W^{(N)})}{\partial W_{jk}^{(N-1)}} 
 			&= \frac{\partial}{\partial W_{jk}^{(N-1)}} \frac{1}{2} \sum_{l = 1}^{n_{N+1}} (a_l^{(N+1)} - y_l)^2  \\
 			&= \sum_{l = 1}^{n_{N+1}} (a_l^{(N+1)} - y_l) \frac{\partial}{\partial W_{jk}^{(N-1)}} (a_l^{(N+1)} - y_l) \\
 			&= \sum_{l = 1}^{n_{N+1}} (a_l^{(N+1)} - y_l) \frac{\partial}{\partial W_{jk}^{(N-1)}} g\big(z_l^{(N+1)} \big) \\
@@ -600,7 +601,7 @@ Based on SGD, the algorithm can be optimized in terms of time consumption. By ad
 				\item Sample a minibatch of $m$ examples from the training set with corresponding output values
 				$\{(x^{(1)}, y^{(1)}), (x^{(2)}, y^{(2)}), ..., (x^{(m)}, y^{(m)})\}$
 				\item Compute gradient estimate: $\hat{g} = \frac{1}{m} \nabla_\theta \sum_i L(f(x^{(i)};\theta), y^{(i)})$
-				\item Compute velocity update: $v = \gamma v - \alpha g$
+				\item Compute velocity update: $v = \gamma v - \alpha \hat{g}$
 				\item Apply update: $\theta = \theta + v$.
 				\item Increase counter: $k = k + 1$
 			\end{enumerate}
@@ -630,8 +631,8 @@ Based on SGD, the algorithm can be optimized in terms of time consumption. By ad
 				\item Sample a minibatch of $m$ examples from the training set with corresponding output values
 				$\{(x^{(1)}, y^{(1)}), (x^{(2)}, y^{(2)}), ..., (x^{(m)}, y^{(m)})\}$
 				\item Compute gradient estimate: $\hat{g} = \frac{1}{m} \nabla_\theta \sum_i L(f(x^{(i)};\theta), y^{(i)})$
-				\item Accumulate squared gradient: $r = r + g \odot g$
-				\item Compute update: $\Delta \theta = - \frac{\alpha}{\sqrt{r} + \delta} \odot g$ (Division and square root applied element-wise)
+				\item Accumulate squared gradient: $r = r + \hat{g} \odot \hat{g}$
+				\item Compute update: $\Delta \theta = - \frac{\alpha}{\sqrt{r} + \delta} \odot \hat{g}$ (Division and square root applied element-wise)
 				\item Apply update: $\theta = \theta + \Delta \theta$.
 			\end{enumerate}
 		\end{enumerate}
@@ -652,15 +653,15 @@ Based on SGD, the algorithm can be optimized in terms of time consumption. By ad
 				\item Sample a minibatch of $m$ examples from the training set with corresponding output values
 				$\{(x^{(1)}, y^{(1)}), (x^{(2)}, y^{(2)}), ..., (x^{(m)}, y^{(m)})\}$
 				\item Compute gradient estimate: $\hat{g} = \frac{1}{m} \nabla_\theta \sum_i L(f(x^{(i)};\theta), y^{(i)})$
-				\item Accumulate squared gradient: $r = \rho r + (1 - \rho)g \odot g$
-				\item Compute update: $\Delta \theta = - \frac{\alpha}{\sqrt{r + \delta}} \odot g$ ( $\frac{1}{\sqrt{r + \delta}}$ applied element-wise)
+				\item Accumulate squared gradient: $r = \rho r + (1 - \rho)\hat{g} \odot \hat{g}$
+				\item Compute update: $\Delta \theta = - \frac{\alpha}{\sqrt{r + \delta}} \odot \hat{g}$ ( $\frac{1}{\sqrt{r + \delta}}$ applied element-wise)
 				\item Apply update: $\theta = \theta + \Delta \theta$.
 			\end{enumerate}
 		\end{enumerate}
 	\end{algorithmic}
 \end{algorithm}
 
-In the two algorithms \ref{alg:SGD} and \ref{alg:momentum} presented so far, the learning rate $\alpha$ is specified globally. As mentioned in remark \ref{rem:fall_lernRate} a sequence of learning rates $\alpha_i$ can be defined so that the learning rate is decreasing over time and is then kept constant after a certain number of iterations. If the idea of globally falling learning rates $\alpha_i$ is taken a step further, a group of algorithms can be presented which individually adapts the learning rates of every single model parameter. This then leads to a rapid drop in the individual learning rate for parameters with large partial derivatives. In contrast, the learning rates of parameters with comparatively small partial derivatives are changed only slightly. This approach therefore allows an individual adjustment of the learning rate for each individual parameter depending on how the corresponding gradient behaves. Algorithms \ref{alg:adaGrad} and \ref{alg:RMSProp} show possible implementations of such adaptive learning approaches.
+In the two algorithms \ref{alg:SGD} and algorithm \ref{alg:momentum} presented so far, the learning rate $\alpha$ is specified globally. As mentioned in remark \ref{rem:fall_lernRate} a sequence of learning rates $\alpha_i$ can be defined so that the learning rate is decreasing over time and is then kept constant after a certain number of iterations. If the idea of globally falling learning rates $\alpha_i$ is taken a step further, a group of algorithms can be presented which individually adapts the learning rates of every single model parameter. This then leads to a rapid drop in the individual learning rate for parameters with large partial derivatives. In contrast, the learning rates of parameters with comparatively small partial derivatives are changed only slightly. This approach therefore allows an individual adjustment of the learning rate for each individual parameter depending on how the corresponding gradient behaves. Algorithms \ref{alg:adaGrad} and \ref{alg:RMSProp} show possible implementations of such adaptive learning approaches.
 
 \begin{remark}
 	Algorithm \ref{alg:adaGrad} implements an adoptive learning rate for each individual model parameter by summing all previous squared gradients. As the sum increases with each iteration, this means that the learning rate decreases monotonically.
@@ -695,8 +696,8 @@ The last algorithm presented here can be seen as a combination of RMSProp (algor
 				$\{(x^{(1)}, y^{(1)}), (x^{(2)}, y^{(2)}), ..., (x^{(m)}, y^{(m)})\}$
 				\item Compute gradient estimate: $\hat{g} = \frac{1}{m} \nabla_\theta \sum_i L(f(x^{(i)};\theta), y^{(i)})$
 				\item Increase time step: $t = t + 1$
-				\item Update biased first moment estimate: $s = \rho_1 s + (1-\rho_1) g$
-				\item Update biased second moment estimate: $r = \rho_2 r + (1-\rho_2) g \odot g$
+				\item Update biased first moment estimate: $s = \rho_1 s + (1-\rho_1) \hat{g}$
+				\item Update biased second moment estimate: $r = \rho_2 r + (1-\rho_2) \hat{g} \odot \hat{g}$
 				\item Correct bias in first moment: $\hat{s} = \frac{s}{1 - \rho_1^t}$
 				\item Correct bias in second moment: $\hat{r} = \frac{r}{1 - \rho_2^t}$
 				\item Compute update: $\Delta \theta = - \alpha \frac{\hat{s} }{\sqrt{\hat{r}} + \delta}$

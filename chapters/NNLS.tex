@@ -668,7 +668,7 @@ The two software libraries LINPACK and LAPACK are written in Fortran and enjoy g
 			\end{lstlisting}
 \end{enumerate}
 
-In order to determine how the number of columns of matrix $A$ affects the run time, the following setup was chosen. Matrix $A$ was defined as a square matrix with $n = 5000$, where the entries of $A$ are uniformly distributed between $0$ and $100000$, i.e. $A \in R^{n \times n}$. The values of vector $s$ are uniformly distributed between $0$ and $1000$. By defining matrix $A$ and vector $b$, the result vector $s$ is determined as well. For each of the seven methods, the number of columns used from matrix $A$ was successively increased and then the least squares problem was solved. The results obtained in the test runs were produced with the following configuration: 
+In order to determine how the number of columns of matrix $A$ affects the run time, the following setup was chosen. Matrix $A$ was defined as a square matrix with $n = 5000$, where the entries of $A$ are uniformly distributed between $0$ and $100000$, i.e. $A \in \R^{n \times n}$. The values of vector $b$ are uniformly distributed between $0$ and $1000$. By defining matrix $A$ and vector $b$, the result vector $s$ is determined as well. For each of the seven methods, the number of columns used from matrix $A$ was successively increased and then the least squares problem was solved. The results obtained in the test runs were produced with the following configuration: 
 \begin{itemize}
 	\item Processor: Intel$^{®}$ Core™ i7-6700
 	\item RAM: 64GB
